@@ -18,6 +18,7 @@ export default function Form() {
   const [status, setStatus] = useState('active');
   const [created_at, setCreatedAt] = useState('');
   const [error, setError] =useState('')
+  const [formData,setFormData] =useState('')
 
   useEffect(() => {
     const fetchNextRegId = async () => {
@@ -40,7 +41,7 @@ export default function Form() {
     e.preventDefault();
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString(); 
-
+    setFormData("null")
     if (password !== confirmPassword){
       setError("Passwords do not match");
       return;
@@ -85,6 +86,18 @@ export default function Form() {
         role:"employee"
       });
       alert('Data saved successfully!');
+      setFullName("");
+      setRegId("");
+      setFatherName("");
+      setCNIC("");
+      setEmail("");
+      setDateOfJoining("");
+      setImage("");
+      setStatus("");
+      setCreatedAt("");
+      setPassword("");
+      setConfirmPassword("");
+
     } catch (error) {
       console.error('Error adding document: ', error);
     }
