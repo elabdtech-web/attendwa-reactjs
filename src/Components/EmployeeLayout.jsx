@@ -12,7 +12,7 @@ import { onAuthStateChanged } from "firebase/auth";
 export default function EmployeeLayout() {
   const [loading, setLoading] = useState(true);
   const { userType, setUserType } = useContext(AuthContext);
-  const { allData,setAllData} = useContext(AuthContext)
+  const { allData,setAllData} = useContext(AuthContext);
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const fetchUserRole = async (email) => {

@@ -43,7 +43,6 @@ export default function HeaderDashboard({
 
       <h1 className="text-2xl font-semibold">{headerText}</h1>
 
-      {/* Profile Icon and Dropdown */}
       <div className="relative">
         <button
           onClick={toggleDropdown}

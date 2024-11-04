@@ -8,14 +8,14 @@ export default function LeaveCard() {
       ];
   return (
     <div className=" mx-auto my-8 ">
-      <div className=" py-2 px-4 bg-gray-200 w-full  text-2xl font-semibold">
-        Leaves
+      <div className=" py-2 px-4 shadow w-full  text-2xl font-semibold">
+        Employees On Leave
       </div>
-      <table className="w-full bg-white border border-gray-300">
-        <thead className="">
+      <table className="w-full shadow">
+        <thead className="shadow">
           <tr>
-            <th className="py-2 px-4 bg-gray-200 text-left">Name</th>
-            <th className="py-2 px-4 bg-gray-200 text-left">Date</th>
+            <th className="py-2 px-4 text-left">Name</th>
+            <th className="py-2 px-4 text-left">Date</th>
           </tr>
         </thead>
         <tbody>

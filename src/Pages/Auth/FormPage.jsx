@@ -3,7 +3,7 @@ import Form from '../../Components/Form'
 
 export default function FormPage() {
   return (
-    <div className="">
+    <div>
       <Form/>
     </div>
   )

@@ -67,12 +67,13 @@ const Login = () => {
   },[navigate]);
 
   return (
-    <div className="h-screen flex justify-center items-center bg-gray-100">
+    <div className="h-screen flex justify-center items-center bg-[#FFFFFF]">
       <form
         onSubmit={handleSubmit}
         className="shadow py-[3%] rounded-lg w-[40%]"
       >
-        <h1 className="font-semibold text-2xl text-center pb-[10px]">Login</h1>
+        <h1 className="font-semibold text-2xl w-[60%] mx-auto px-2 pb-[10px]">ATTENDWA</h1>
+        <p className="font-medium text-lg w-[60%] mx-auto px-2 pb-[20px]">Please login to continue</p>
         <div className="flex flex-col items-center">
           <div className="mb-2 w-[60%]">
             <label htmlFor="email" className="block mb-2 text-gray-700 px-2">
@@ -96,7 +97,7 @@ const Login = () => {
               Password
             </label>
             <input
-              type="password" // Change to type="password" to hide input
+              type="password"
               id="password"
               value={password}
               onChange={(e) =>{ setPassword(e.target.value)
@@ -110,11 +111,11 @@ const Login = () => {
           {eror && <p className="text-red-500 mb-4">{eror}</p>}
           {err && <p className="text-red-500 mb-4">{err}</p>}
           {loading ? (
-            <div className="w-[20%] flex items-center justify-center text-white bg-gray-600 rounded-full px-[35px] pt-[6px] pb-[8px] text-[15px]">
-              <span>Loading...</span> {/* Show loading text */}
+            <div className="w-[20%] flex items-center justify-center text-white bg-gray-600 rounded px-[35px] pt-[6px] pb-[8px] text-[15px]">
+              <span>Loading...</span> 
             </div>
           ) : (
-            <div className="w-[20%] flex items-center justify-center text-white bg-black rounded-full px-[35px] pt-[6px] pb-[8px] text-[15px]">
+            <div className="w-[20%] flex items-center justify-center text-white bg-black rounded px-[35px] pt-[6px] pb-[8px] text-[15px]">
               <button type="submit">Login</button>
             </div>
           )}

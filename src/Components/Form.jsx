@@ -1,8 +1,9 @@
 import React, { useState,useEffect } from "react";
 import { collection, addDoc, getDocs} from 'firebase/firestore';
-import {db,auth,storage} from "../Firebase/FirebaseConfig"
+import {db,secondaryAuth,storage} from "../Firebase/FirebaseConfig"
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import {ref,uploadBytes,getDownloadURL} from "firebase/storage"
+import { useNavigate } from "react-router-dom";
 
 
 export default function Form() {
@@ -15,10 +16,11 @@ export default function Form() {
    const [image, setImage] = useState('');
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [status, setStatus] = useState('active');
+  const [status, setStatus] = useState('Active');
   const [created_at, setCreatedAt] = useState('');
   const [error, setError] =useState('')
   const [formData,setFormData] =useState('')
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchNextRegId = async () => {
@@ -36,6 +38,15 @@ export default function Form() {
 
     fetchNextRegId();
   }, []);
+
+  useEffect(()=>{
+    const storedAccessToken = localStorage.getItem("accesstoken");
+    if (storedAccessToken){
+      navigate("/a-dashboard/employees/FormPage");
+    }else{
+      navigate("/login")
+    }
+  },[navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,7 +76,7 @@ export default function Form() {
     
     console.log("Image is ",image)
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
       const user = userCredential.user;
       console.log('User created successfully:', user);
       const imageRef = ref(storage, `images/${image.name}`);
@@ -106,7 +117,7 @@ export default function Form() {
   return ( 
     <div className="flex justify-center items-center ">
       <form
-        className=" bg-gray-200 rounded-lg w-[70%] px-5"
+        className=" shadow rounded-lg w-[70%] px-5"
         onSubmit={handleSubmit}
       >
       <div className="text-center font-semibold text-2xl  pb-[6px] pt-3">
@@ -118,7 +129,7 @@ export default function Form() {
             <label htmlFor="" className=" ">Reg-ID :</label>
             <input
               type="text"
-              className="border-[2px] p-[10px] w-full"
+              className="border-[2px] rounded p-[10px] w-full"
               value={regId}
               readOnly
             />
@@ -127,7 +138,7 @@ export default function Form() {
             <label htmlFor="">Full Name :</label>
             <input
               type="text"
-              className="border-[2px] p-[10px] w-full"
+              className="border-[2px] rounded p-[10px] w-full"
               value={fullName}
               placeholder="Full Name"
               onChange={(e) => setFullName(e.target.value)}
@@ -140,7 +151,7 @@ export default function Form() {
             <label htmlFor="">Father Name :</label>
             <input
               type="text"
-              className="border-[2px] p-[10px] w-full"
+              className="border-[2px] rounded p-[10px] w-full"
               value={fatherName}
               placeholder="Father Name"
               onChange={(e) => setFatherName(e.target.value)}
@@ -151,7 +162,7 @@ export default function Form() {
             <label htmlFor="">CNIC :</label>
             <input
               type="number"
-              className="border-[2px] p-[10px] w-full"
+              className="border-[2px] rounded p-[10px] w-full"
               value={cnic}
               placeholder="CNIC"
               onChange={(e) => setCNIC(e.target.value)}
@@ -165,7 +176,7 @@ export default function Form() {
             <label htmlFor="">Email :</label>
             <input
               type="email"
-              className="border-[2px] p-[10px] w-full"
+              className="border-[2px] rounded p-[10px] w-full"
               value={email}
               placeholder="Email"
               onChange={(e) => setEmail(e.target.value)}
@@ -176,7 +187,7 @@ export default function Form() {
             <label htmlFor="">Date of Joining :</label>
             <input
               type="date"
-              className="border-[2px] p-[10px] w-full"
+              className="border-[2px] rounded p-[10px] w-full"
               value={dateOfJoining}
               onChange={(e) => setDateOfJoining(e.target.value)}
               required
@@ -188,7 +199,7 @@ export default function Form() {
             <label htmlFor="">Password :</label>
             <input
               type="password"
-              className="border-[2px] p-[10px] w-full"
+              className="border-[2px] rounded p-[10px] w-full"
               value={password}
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
@@ -200,7 +211,7 @@ export default function Form() {
             <label htmlFor="">Confirm Password :</label>
             <input
               type="password"
-              className="border-[2px] p-[10px] w-full"
+              className="border-[2px] rounded p-[10px] w-full"
               value={confirmPassword}
               placeholder="Confirm Password"
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -219,7 +230,7 @@ export default function Form() {
             <label htmlFor="">Upload Image :</label>
             <input
               type="file"
-              className="border-[2px] p-[10px] w-full"
+              className="border-[2px] rounded p-[10px] w-full"
               onChange={(e) => setImage(e.target.files[0])}
               required
             />
@@ -227,7 +238,7 @@ export default function Form() {
 
           <div className="w-[50%]">
             <label htmlFor="">Status</label>
-            <select className="border-[2px] p-[10px] w-full">
+            <select className="border-[2px] rounded p-[10px] w-full">
               <option value="active">Active</option>
               <option value="In active">In Active</option>
             </select>
@@ -236,7 +247,7 @@ export default function Form() {
 
         <div className="flex justify-center">
           <button
-            className="bg-blue-500 text-white px-[30px] py-2"
+            className="bg-black rounded text-white px-[30px] py-2"
             type="submit"
           >
             Add

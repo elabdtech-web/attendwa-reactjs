@@ -167,9 +167,9 @@ const hasCheckedIn = async () => {
   };
 
   return (
-    <div className="flex bg-gray-500 h-screen">
-      <div className="flex-1 bg-gray-100">
-        <div className="flex bg-white p-5 m-4 gap-3">
+    <div className="flex bg-[#FFFFFF] h-screen">
+      <div className="flex-1">
+        <div className="flex bg-white p-5 m-4 gap-3 shadow">
           <div className="w-[4%] pt-1">
             <img src={allData.image} alt="User" />
           </div>
@@ -203,7 +203,7 @@ const hasCheckedIn = async () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center bg-white p-5 m-4">
+        <div className="flex justify-between items-center shadow p-5 mx-4 mt-12">
           <div>
             <h1 className="font-semibold text-[18px]">Today's Attendance</h1>
             {isCheckedIn ? (

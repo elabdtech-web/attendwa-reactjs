@@ -39,8 +39,6 @@ export default function Employees() {
   useEffect(() => {
     fetchEmployees();
     setHeaderText("Employees");
-    function useContext() {}
-    useContext();
   }, []);
   return (
     <div className="flex">

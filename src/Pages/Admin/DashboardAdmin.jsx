@@ -55,8 +55,8 @@ export default function DashboardAdmin() {
   return (
     <div className="flex ">
       <div className="flex-1 flex flex-col">
-        <div className="flex-1 p-6 bg-gray-100">
-          <div className="flex bg-white p-5 m-4 gap-3">
+        <div className="flex-1 p-6 bg-white">
+          <div className="flex shadow p-5 m-4 gap-3">
           <div className="rounded-full pt-1">
             <img src={allData.image} alt="User" className="w-14 h-10"/>
           </div>
@@ -90,7 +90,7 @@ export default function DashboardAdmin() {
           </div>
         </div>
 
-          <div className="flex justify-between gap-7 m-4">
+          <div className="flex justify-between gap-7 m-4 mt-8 ">
             {details.map((item) => (
               <div key={item.id} className="w-[23%]">
                 <Details title={item.title} description={item.description} />
