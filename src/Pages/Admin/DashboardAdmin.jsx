@@ -56,7 +56,6 @@ export default function DashboardAdmin() {
     <div className="flex ">
       <div className="flex-1 flex flex-col">
         <div className="flex-1 p-6 bg-gray-100">
-          {/* <h1 className="text-2xl font-semibold mb-[5%]">Welcome Admin!</h1> */}
           <div className="flex bg-white p-5 m-4 gap-3">
           <div className="rounded-full pt-1">
             <img src={allData.image} alt="User" className="w-14 h-10"/>
