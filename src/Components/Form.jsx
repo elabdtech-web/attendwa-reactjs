@@ -129,6 +129,7 @@ export default function Form() {
               type="text"
               className="border-[2px] p-[10px] w-full"
               value={fullName}
+              placeholder="Full Name"
               onChange={(e) => setFullName(e.target.value)}
               required
             />
@@ -141,6 +142,7 @@ export default function Form() {
               type="text"
               className="border-[2px] p-[10px] w-full"
               value={fatherName}
+              placeholder="Father Name"
               onChange={(e) => setFatherName(e.target.value)}
               required
             />
@@ -151,6 +153,7 @@ export default function Form() {
               type="number"
               className="border-[2px] p-[10px] w-full"
               value={cnic}
+              placeholder="CNIC"
               onChange={(e) => setCNIC(e.target.value)}
               required
             />
@@ -187,6 +190,7 @@ export default function Form() {
               type="password"
               className="border-[2px] p-[10px] w-full"
               value={password}
+              placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
               required
             />
@@ -198,6 +202,7 @@ export default function Form() {
               type="password"
               className="border-[2px] p-[10px] w-full"
               value={confirmPassword}
+              placeholder="Confirm Password"
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
