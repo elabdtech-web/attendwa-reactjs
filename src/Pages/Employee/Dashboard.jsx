@@ -18,8 +18,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     setHeaderText("Dashboard");
-    console.log("Dashboard of employee is open ");
-    alert("Welcome to User Dashboard")
     const storedCheckInStatus = localStorage.getItem("isCheckedIn") === "true";
     const storedCheckInTime = localStorage.getItem("checkInTime");
     const storedCheckInDocId = localStorage.getItem("checkInDocId");

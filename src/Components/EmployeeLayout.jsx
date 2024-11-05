@@ -23,7 +23,7 @@ export default function EmployeeLayout() {
       setAllData(userData);
       setUserType(userData.role)
     } else {
-      Alert("No user found with this email.");
+      alert("No user found with this email.");
     }
   };
 
