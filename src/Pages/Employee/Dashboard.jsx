@@ -13,6 +13,8 @@ export default function Dashboard() {
   const [checkInDocId, setCheckInDocId] = useState(null);
   const [totalTime, setTotalTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [showDialog, setShowDialog] = useState(false);
+  const [showCheckOutDialog, setShowCheckOutDialog] = useState(false);
 
   useEffect(() => {
     setHeaderText("Dashboard");
@@ -165,6 +167,22 @@ const hasCheckedIn = async () => {
     return `${hours}:${minutes}:${seconds}`;
   };
 
+  const openCheckInDialog = () => {
+    setShowDialog(true); // Added to open the dialog for check-in confirmation
+  };
+
+  const closeCheckInDialog = () => {
+    setShowDialog(false); // Added to close the dialog
+  };
+
+  const openCheckOutDialog = () => {
+    setShowCheckOutDialog(true); // Show check-out confirmation dialog
+  };
+
+  const closeCheckOutDialog = () => {
+    setShowCheckOutDialog(false); // Close check-out confirmation dialog
+  };
+
   return (
     <div className="flex bg-[#FFFFFF] h-screen">
       <div className="flex-1">
@@ -213,19 +231,9 @@ const hasCheckedIn = async () => {
                     <span>Loading...</span>
                   </div>
                 ) : (
-                  <button
-                  onClick={()=>{
-                    const confirmBox = window.confirm(
-                      "Do you want to check out now?"
-                    )
-                    if (confirmBox === true){
-                      handleCheckOut()
-                    }
-                   }}
-                    className="font-medium text-[14px] text-blue-500"
-                  >
+                   <button onClick={openCheckOutDialog} className="font-medium text-[14px] text-blue-500">
                     Check Out
-                  </button>
+                  </button> 
                 )}
               </div>
             ) : totalTime ? (
@@ -247,17 +255,7 @@ const hasCheckedIn = async () => {
                     <span>Loading...</span>
                   </div>
                 ) : (
-                  <button
-                    onClick={()=>{
-                      const confirmBox = window.confirm(
-                        "Do you want to check in now?"
-                      )
-                      if (confirmBox === true){
-                        handleCheckIn()
-                      }
-                     }}
-                    className="font-medium text-[14px] text-blue-500"
-                  >
+                  <button onClick={openCheckInDialog} className="font-medium text-[14px] text-blue-500">
                     Check In
                   </button>
                 )}
@@ -271,6 +269,57 @@ const hasCheckedIn = async () => {
         )}
         </div>
       </div>
+      {showDialog && ( // Added the dialog rendering condition
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Confirm Check-In</h2>
+            <p className="mb-4">Are you sure you want to check in?</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  handleCheckIn();
+                  closeCheckInDialog(); // Close dialog on confirmation
+                }}
+                className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+              >
+                Yes
+              </button>
+              <button
+                onClick={closeCheckInDialog} // Added button to close dialog without checking in
+                className="bg-gray-300 px-4 py-2 rounded"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+{showCheckOutDialog && ( // Added check-out confirmation dialog
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Confirm Check-Out</h2>
+            <p className="mb-4">Are you sure you want to check out?</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  handleCheckOut();
+                  closeCheckOutDialog(); // Close dialog on confirmation
+                }}
+                className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+              >
+                Yes
+              </button>
+              <button
+                onClick={closeCheckOutDialog} // Close dialog without checking out
+                className="bg-gray-300 px-4 py-2 rounded"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

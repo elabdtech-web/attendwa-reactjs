@@ -8,11 +8,11 @@ export default function EmployeeCard() {
   const [loading, setLoading] = useState(true);
 
   const fetchEmployeesAttendanceData = async () => {
-    console.log("Fetching employee data...");
     try {
       const employeeCollection = collection(db, "users");
       const employeeQuery = query(employeeCollection, where("role", "==", "employee"));
       const employeeSnapshot = await getDocs(employeeQuery);
+      
       
       const startOfToday = startOfDay(new Date());
       const endOfToday = endOfDay(new Date());
@@ -21,8 +21,6 @@ export default function EmployeeCard() {
         employeeSnapshot.docs.map(async (doc) => {
           const employeeData = doc.data();
           const userId = employeeData.regId; 
-
-          console.log("Fetching today's check-in data for user ID:", userId);
           
           const checkInCollection = collection(db, "checkIns");
           const checkInQuery = query(
@@ -35,11 +33,9 @@ export default function EmployeeCard() {
           );
           const checkInSnapshot = await getDocs(checkInQuery);
 
-          console.log(`Check-in snapshot size for user ID ${userId}:`, checkInSnapshot.size);
 
           if (checkInSnapshot.size > 0) {
             const checkInData = checkInSnapshot.docs[0].data();
-            console.log("Today's check-in data found:", checkInData);
 
             return {
               id: doc.id,
@@ -48,7 +44,6 @@ export default function EmployeeCard() {
               checkOutTime: checkInData.checkOutTime ? checkInData.checkOutTime.toDate().toLocaleTimeString() : "N/A",
             };
           } else {
-            console.log("No check-in data found for user ID:", userId);
             return {
               id: doc.id,
               fullName: employeeData.fullName,
