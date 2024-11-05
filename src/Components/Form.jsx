@@ -19,8 +19,10 @@ export default function Form() {
   const [status, setStatus] = useState('Active');
   const [created_at, setCreatedAt] = useState('');
   const [error, setError] =useState('')
-  const [formData,setFormData] =useState('')
+  // const [formData,setFormData] =useState('')
   const navigate = useNavigate();
+  const [loading,setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchNextRegId = async () => {
@@ -39,63 +41,60 @@ export default function Form() {
     fetchNextRegId();
   }, []);
 
-  useEffect(()=>{
-    const storedAccessToken = localStorage.getItem("accesstoken");
-    if (storedAccessToken){
-      navigate("/a-dashboard/employees/FormPage");
-    }else{
-      navigate("/login")
+  const validateFields = () => {
+    let validationErrors = {};
+
+    if (!fullName.trim()) {
+      validationErrors.fullName = "Full name is required";
     }
-  },[navigate])
+    if (!fatherName.trim()) {
+      validationErrors.fatherName = "Father name is required";
+    }
+    if (!cnic.match(/^\d{13}$/)) {
+      validationErrors.cnic = "CNIC should be a 13-digit number";
+    }
+    if (!email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+      validationErrors.email = "Enter a valid email address";
+    }
+    if (password.length < 6) {
+      validationErrors.password = "Password should be at least 6 characters long";
+    }
+    if (password !== confirmPassword) {
+      validationErrors.confirmPassword = "Passwords do not match";
+    }
+    if (!image) {
+      validationErrors.image = "Please upload an image";
+    }
+
+    if (!dateOfJoining) {
+      validationErrors.dateOfJoining = "Date of joining is required";
+    }
+
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString(); 
-    setFormData("null")
-    if (password !== confirmPassword){
-      setError("Passwords do not match");
+    setLoading(true);
+    if (!validateFields()) {
+      setLoading(false);
       return;
-    }else{
-      setError('')
     }
-
-    console.log("Submitting data:", {
-      regId,
-      fullName,
-      fatherName,
-      cnic,
-      email,
-      password,
-      confirmPassword,
-      dateOfJoining,
-      created_at: formattedDate,
-      status
-    });
-  
     
-    console.log("Image is ",image)
+    const formattedDate = new Date().toISOString(); 
+ 
     try {
       const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
       const user = userCredential.user;
-      console.log('User created successfully:', user);
       const imageRef = ref(storage, `images/${image.name}`);
 
       await uploadBytes(imageRef, image); 
       const imageURL = await getDownloadURL(imageRef);
-      console.log(imageURL)
-      await addDoc(collection(db, 'users'), {
-        regId,
-        fullName,
-        fatherName,
-        cnic,
-        email,
-        dateOfJoining, 
-        image: imageURL,
-        status,
-        created_at: formattedDate,
-        role:"employee"
-      });
+
+      await addDoc(collection(db, 'users'), {regId,fullName,fatherName,cnic,email,dateOfJoining, image: imageURL,status,created_at: formattedDate,role:"employee"});
+
       alert('Data saved successfully!');
       setFullName("");
       setRegId("");
@@ -112,6 +111,7 @@ export default function Form() {
     } catch (error) {
       console.error('Error adding document: ', error);
     }
+    setLoading(false);
   
   };
   return ( 
@@ -144,6 +144,7 @@ export default function Form() {
               onChange={(e) => setFullName(e.target.value)}
               required
             />
+            {errors.fullName && <div className="text-red-600">{errors.fullName}</div>}
           </div>
         </div>
         <div className="flex justify-center gap-4 mb-[35px]">
@@ -157,6 +158,7 @@ export default function Form() {
               onChange={(e) => setFatherName(e.target.value)}
               required
             />
+            {errors.fatherName && <div className="text-red-600">{errors.fatherName}</div>}
           </div>
           <div className="w-[50%]">
             <label htmlFor="">CNIC :</label>
@@ -168,6 +170,7 @@ export default function Form() {
               onChange={(e) => setCNIC(e.target.value)}
               required
             />
+            {errors.cnic && <div className="text-red-600">{errors.cnic}</div>}
           </div>
         </div>
 
@@ -182,6 +185,7 @@ export default function Form() {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            {errors.email && <div className="text-red-600">{errors.email}</div>}
           </div>
           <div className="w-[50%]">
             <label htmlFor="">Date of Joining :</label>
@@ -206,6 +210,7 @@ export default function Form() {
               required
             />
           </div>
+          {errors.password && <div className="text-red-600">{errors.password}</div>}
 
           <div className="w-[50%]">
             <label htmlFor="">Confirm Password :</label>
@@ -217,13 +222,9 @@ export default function Form() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
+            {errors.confirmPassword && <div className="text-red-600">{errors.confirmPassword}</div>}
           </div>
         </div>
-        {error && (
-          <div className="text-red-600 mb-[15px]">
-            {error}
-          </div>
-        )}
 
         <div className="flex justify-center gap-4 mb-[35px] ">
           <div className="w-[50%]">
@@ -245,6 +246,16 @@ export default function Form() {
           </div>
         </div>
 
+        {loading ? (
+          <div className="flex justify-center">
+          <button
+            className="bg-black rounded text-white px-[30px] py-2"
+            type="submit"
+          >
+            <span>Loading...</span>
+          </button>
+        </div>
+        ):(
         <div className="flex justify-center">
           <button
             className="bg-black rounded text-white px-[30px] py-2"
@@ -253,6 +264,7 @@ export default function Form() {
             Add
           </button>
         </div>
+        )}
         </div>
       </form>
     </div>

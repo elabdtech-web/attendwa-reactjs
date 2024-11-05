@@ -75,7 +75,6 @@ const hasCheckedIn = async () => {
       ...doc.data()
      }
     })
-    console.log(data)
 
     if(data.length < 1){
       console.log("No data found.")
@@ -215,7 +214,14 @@ const hasCheckedIn = async () => {
                   </div>
                 ) : (
                   <button
-                    onClick={handleCheckOut}
+                  onClick={()=>{
+                    const confirmBox = window.confirm(
+                      "Do you want to check out now?"
+                    )
+                    if (confirmBox === true){
+                      handleCheckOut()
+                    }
+                   }}
                     className="font-medium text-[14px] text-blue-500"
                   >
                     Check Out
@@ -242,7 +248,14 @@ const hasCheckedIn = async () => {
                   </div>
                 ) : (
                   <button
-                    onClick={handleCheckIn}
+                    onClick={()=>{
+                      const confirmBox = window.confirm(
+                        "Do you want to check in now?"
+                      )
+                      if (confirmBox === true){
+                        handleCheckIn()
+                      }
+                     }}
                     className="font-medium text-[14px] text-blue-500"
                   >
                     Check In

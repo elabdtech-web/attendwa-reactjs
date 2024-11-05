@@ -1,38 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../Firebase/FirebaseConfig";
 import { collection, query, where, getDocs, orderBy, limit } from "firebase/firestore";
+import { startOfDay, endOfDay } from "date-fns";
 
 export default function EmployeeCard() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchEmployeesAttendanceData = async () => {
+    console.log("Fetching employee data...");
     try {
       const employeeCollection = collection(db, "users");
       const employeeQuery = query(employeeCollection, where("role", "==", "employee"));
       const employeeSnapshot = await getDocs(employeeQuery);
+      
+      const startOfToday = startOfDay(new Date());
+      const endOfToday = endOfDay(new Date());
 
       const employeeList = await Promise.all(
         employeeSnapshot.docs.map(async (doc) => {
           const employeeData = doc.data();
-          const userId = employeeData.regId; // `regId` corresponds to `userId` in the checkIns collection
+          const userId = employeeData.regId; 
 
+          console.log("Fetching today's check-in data for user ID:", userId);
+          
           const checkInCollection = collection(db, "checkIns");
           const checkInQuery = query(
             checkInCollection,
             where("userId", "==", userId),
-            orderBy("checkIn", "desc"),
+            where("checkInTime", ">=", startOfToday),
+            where("checkInTime", "<=", endOfToday),
+            orderBy("checkInTime", "desc"),
             limit(1)
           );
           const checkInSnapshot = await getDocs(checkInQuery);
-          const checkInData = checkInSnapshot.docs[0]?.data() || {};
 
-          return {
-            id: doc.id,
-            fullName: employeeData.fullName,
-            checkInTime: checkInData.checkIn ? checkInData.checkIn.toDate().toLocaleTimeString() : "N/A",
-            checkOutTime: checkInData.checkOut ? checkInData.checkOut.toDate().toLocaleTimeString() : "N/A",
-          };
+          console.log(`Check-in snapshot size for user ID ${userId}:`, checkInSnapshot.size);
+
+          if (checkInSnapshot.size > 0) {
+            const checkInData = checkInSnapshot.docs[0].data();
+            console.log("Today's check-in data found:", checkInData);
+
+            return {
+              id: doc.id,
+              fullName: employeeData.fullName,
+              checkInTime: checkInData.checkInTime ? checkInData.checkInTime.toDate().toLocaleTimeString() : "N/A",
+              checkOutTime: checkInData.checkOutTime ? checkInData.checkOutTime.toDate().toLocaleTimeString() : "N/A",
+            };
+          } else {
+            console.log("No check-in data found for user ID:", userId);
+            return {
+              id: doc.id,
+              fullName: employeeData.fullName,
+              checkInTime: "N/A",
+              checkOutTime: "N/A",
+            };
+          }
         })
       );
 

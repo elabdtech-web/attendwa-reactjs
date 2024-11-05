@@ -28,7 +28,7 @@ export default function Attendance() {
   const { headerText, setHeaderText } = useUserContext();
   const { allData } = useContext(AuthContext);
   const [attendanceData, setAttendanceData] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(null); 
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); 
   const auth = getAuth();
 
   useEffect(() => {
