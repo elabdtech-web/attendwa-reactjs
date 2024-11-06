@@ -7,9 +7,10 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../Firebase/FirebaseConfig";
 import { useUserContext } from "../../hooks/HeadertextContext";
 import { AuthContext } from "../../hooks/AuthContext";
-export default function Employees() {
-  const {userType} = useContext(AuthContext)
 
+export default function Employees() {
+
+  const {userType} = useContext(AuthContext)
   const [employees, setEmployees] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [showForm, setShowForm] = useState(false);

@@ -14,6 +14,7 @@ import AdminLayout from './Components/AdminLayout';
 import DashboardAdmin from './Pages/Admin/DashboardAdmin';
 import Tasks from './Pages/Admin/Tasks';
 import SettingAdmin from './Pages/Admin/SettingAdmin'
+import Profile from './Pages/Employee/Profile';
 export default function App() {
   const {userType} = useContext(AuthContext)
   return (
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="attendance" element={<Attendance />} />  
           <Route path="settings" element={<Settings />} />
           <Route path="salary" element={<Salary/>} />
+          <Route path="profile" element={<Profile/>}/>
         </Route>
       </Routes>
     </div>

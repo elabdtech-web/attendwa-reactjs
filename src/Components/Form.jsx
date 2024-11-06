@@ -13,7 +13,7 @@ export default function Form() {
   const [cnic, setCNIC] = useState('');
   const [email, setEmail] = useState('');
   const [dateOfJoining, setDateOfJoining] = useState('');
-   const [image, setImage] = useState('');
+  // const [image, setImage] = useState('');
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [status, setStatus] = useState('Active');
@@ -62,9 +62,9 @@ export default function Form() {
     if (password !== confirmPassword) {
       validationErrors.confirmPassword = "Passwords do not match";
     }
-    if (!image) {
-      validationErrors.image = "Please upload an image";
-    }
+    // if (!image) {
+    //   validationErrors.image = "Please upload an image";
+    // }
 
     if (!dateOfJoining) {
       validationErrors.dateOfJoining = "Date of joining is required";
@@ -88,12 +88,13 @@ export default function Form() {
     try {
       const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
       const user = userCredential.user;
-      const imageRef = ref(storage, `images/${image.name}`);
+      // const imageRef = ref(storage, `images/${image.name}`);
 
-      await uploadBytes(imageRef, image); 
-      const imageURL = await getDownloadURL(imageRef);
+      // await uploadBytes(imageRef, image); 
+      // const imageURL = await getDownloadURL(imageRef);
 
-      await addDoc(collection(db, 'users'), {regId,fullName,fatherName,cnic,email,dateOfJoining, image: imageURL,status,created_at: formattedDate,role:"employee"});
+      // await addDoc(collection(db, 'users'), {regId,fullName,fatherName,cnic,email,dateOfJoining, image: imageURL,status,created_at: formattedDate,role:"employee"});
+      await addDoc(collection(db, 'users'), {regId,fullName,fatherName,cnic,email,dateOfJoining,status,created_at: formattedDate,role:"employee"});
 
       alert('Data saved successfully!');
       setFullName("");
@@ -102,7 +103,7 @@ export default function Form() {
       setCNIC("");
       setEmail("");
       setDateOfJoining("");
-      setImage("");
+      // setImage("");
       setStatus("");
       setCreatedAt("");
       setPassword("");
@@ -227,7 +228,7 @@ export default function Form() {
         </div>
 
         <div className="flex justify-center gap-4 mb-[35px] ">
-          <div className="w-[50%]">
+          {/* <div className="w-[50%]">
             <label htmlFor="">Upload Image :</label>
             <input
               type="file"
@@ -235,7 +236,7 @@ export default function Form() {
               onChange={(e) => setImage(e.target.files[0])}
               required
             />
-          </div>
+          </div> */}
 
           <div className="w-[50%]">
             <label htmlFor="">Status</label>

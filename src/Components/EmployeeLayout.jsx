@@ -75,7 +75,7 @@ export default function EmployeeLayout() {
             toggleSidebar={toggleSidebar}
             isSidebarOpen={isSidebarOpen}
             text={"Employees"}
-            imageURL={allData.image}
+            // imageURL={allData.image}
             fullName={allData.fullName}
             email={allData.email}
           />

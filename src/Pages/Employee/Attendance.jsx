@@ -59,7 +59,6 @@ export default function Attendance() {
           userRef,
           where("userId", "==", allData.regId),
           orderBy("checkInTime", "desc"),
-          limit(7)
         );
       }
 

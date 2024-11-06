@@ -57,9 +57,9 @@ export default function DashboardAdmin() {
       <div className="flex-1 flex flex-col">
         <div className="flex-1 p-6 bg-white">
           <div className="flex shadow p-5 m-4 gap-3">
-          <div className="rounded-full pt-1">
+          {/* <div className="rounded-full pt-1">
             <img src={allData.image} alt="User" className="w-14 h-10"/>
-          </div>
+          </div> */}
           <div className="flex w-full justify-between">
             <div>
               <h1 className="font-semibold text-xl text-blue-800">

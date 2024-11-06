@@ -28,7 +28,7 @@ export default function Dashboard() {
       const savedCheckInTime = new Date(storedCheckInTime);
       setElapsedTime(Math.floor((Date.now() - savedCheckInTime) / 1000));
     } else {
-      hasCheckedIn()
+      hasCheckedIn();
     }
 
     const interval = setInterval(() => {
@@ -41,7 +41,7 @@ export default function Dashboard() {
   useEffect(() => {
     let timerInterval;
     if (isCheckedIn) {
-      console.log("Starting Time Interval")
+      console.log("Starting Time Interval");
       timerInterval = setInterval(() => {
         const savedCheckInTime = new Date(localStorage.getItem("checkInTime"));
         setElapsedTime(Math.floor((Date.now() - savedCheckInTime) / 1000));
@@ -53,52 +53,56 @@ export default function Dashboard() {
     return () => clearInterval(timerInterval);
   }, [isCheckedIn]);
 
-  
-const hasCheckedIn = async () => {
-  setLoading(true);
-  try {
-    const currentDate = new Date();
-    const formattedDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate()
-    );
-    const q = query(
-      collection(db, "checkIns"),
-      where("userId", "==", allData.regId),
-      where("checkInTime", ">=", formattedDate),
-      where("checkInTime", "<", new Date(formattedDate.getTime() + 24 * 60 * 60 * 1000))
-    );
+  const hasCheckedIn = async () => {
+    setLoading(true);
+    try {
+      const currentDate = new Date();
+      const formattedDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate()
+      );
+      const q = query(
+        collection(db, "checkIns"),
+        where("userId", "==", allData.regId),
+        where("checkInTime", ">=", formattedDate),
+        where("checkInTime","<",new Date(formattedDate.getTime() + 24 * 60 * 60 * 1000) )
+      );
 
-    const querySnapshot = await getDocs(q);
-    const data = querySnapshot.docs.map(doc => {
-     return {
-      id:doc.id,
-      ...doc.data()
-     }
-    })
+      const querySnapshot = await getDocs(q);
+      const data = querySnapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
 
-    if(data.length < 1){
-      console.log("No data found.")
-      setIsCheckedIn(false)
-    }else{
-      if(data[0].checkOutTime){
-        console.log("USER HAS COMPLETED TODAYS")
+      if (data.length < 1) {
+        console.log("No data found.");
         setIsCheckedIn(false);
-        setTotalTime(data[0].totalWorkingHours)
-      }else {
-        console.log("USER HAS ONLY CHECKED IN BUT NOT CHECKED OUT SO CONTINUE THE TIMER")
-        setIsCheckedIn(true);
-        localStorage.setItem("checkInTime" , new Date(data[0].checkInTime.seconds * 1000).toISOString())
-        localStorage.setItem("isCheckedIn", "true");
-        localStorage.setItem("checkInDocId",data[0].id );
+      } else {
+        if (data[0].checkOutTime) {
+          console.log("USER HAS COMPLETED TODAYS");
+          setIsCheckedIn(false);
+          setTotalTime(data[0].totalWorkingHours);
+        } else {
+          console.log(
+            "USER HAS ONLY CHECKED IN BUT NOT CHECKED OUT SO CONTINUE THE TIMER"
+          );
+          setIsCheckedIn(true);
+          localStorage.setItem(
+            "checkInTime",
+            new Date(data[0].checkInTime.seconds * 1000).toISOString()
+          );
+          localStorage.setItem("isCheckedIn", "true");
+          localStorage.setItem("checkInDocId", data[0].id);
+        }
       }
+    } catch (error) {
+      console.error("Error checking today's check-in status:", error);
     }
-  } catch (error) {
-    console.error("Error checking today's check-in status:", error);
-  }
-  setLoading(false);
-};
+    setLoading(false);
+  };
 
   const handleCheckIn = async () => {
     setLoading(true);
@@ -126,6 +130,11 @@ const hasCheckedIn = async () => {
   const handleCheckOut = async () => {
     setLoading(true);
     try {
+      const checkInDocId = localStorage.getItem("checkInDocId");
+      if (!checkInDocId) {
+        console.error("Check-in document ID not found.");
+        return; 
+      }
       const checkOutTime = Timestamp.now();
       const userRef = doc(db, "checkIns", checkInDocId);
 
@@ -142,7 +151,9 @@ const hasCheckedIn = async () => {
       const totalWorkingMilliseconds = checkOutDate - checkInDate;
       const totalWorkingHours = `
         ${Math.floor(totalWorkingMilliseconds / (1000 * 60 * 60))}h 
-        ${Math.floor((totalWorkingMilliseconds % (1000 * 60 * 60)) / (1000 * 60))}m 
+        ${Math.floor(
+          (totalWorkingMilliseconds % (1000 * 60 * 60)) / (1000 * 60)
+        )}m 
         ${Math.floor((totalWorkingMilliseconds % (1000 * 60)) / 1000)}s`;
 
       await updateDoc(userRef, { checkOutTime, totalWorkingHours });
@@ -162,34 +173,37 @@ const hasCheckedIn = async () => {
 
   const formatElapsedTime = (timeInSeconds) => {
     const hours = String(Math.floor(timeInSeconds / 3600)).padStart(2, "0");
-    const minutes = String(Math.floor((timeInSeconds % 3600) / 60)).padStart(2,"0");
+    const minutes = String(Math.floor((timeInSeconds % 3600) / 60)).padStart(
+      2,
+      "0"
+    );
     const seconds = String(timeInSeconds % 60).padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
   };
 
   const openCheckInDialog = () => {
-    setShowDialog(true); // Added to open the dialog for check-in confirmation
+    setShowDialog(true);
   };
 
   const closeCheckInDialog = () => {
-    setShowDialog(false); // Added to close the dialog
+    setShowDialog(false);
   };
 
   const openCheckOutDialog = () => {
-    setShowCheckOutDialog(true); // Show check-out confirmation dialog
+    setShowCheckOutDialog(true);
   };
 
   const closeCheckOutDialog = () => {
-    setShowCheckOutDialog(false); // Close check-out confirmation dialog
+    setShowCheckOutDialog(false);
   };
 
   return (
     <div className="flex bg-[#FFFFFF] h-screen">
       <div className="flex-1">
         <div className="flex bg-white p-5 m-4 gap-3 shadow">
-          <div className="w-[4%] pt-1">
+          {/* <div className="w-[4%] pt-1">
             <img src={allData.image} alt="User" />
-          </div>
+          </div> */}
           <div className="flex w-full justify-between">
             <div>
               <h1 className="font-semibold text-xl text-blue-800">
@@ -231,9 +245,12 @@ const hasCheckedIn = async () => {
                     <span>Loading...</span>
                   </div>
                 ) : (
-                   <button onClick={openCheckOutDialog} className="font-medium text-[14px] text-blue-500">
+                  <button
+                    onClick={openCheckOutDialog}
+                    className="font-medium text-[14px] text-blue-500"
+                  >
                     Check Out
-                  </button> 
+                  </button>
                 )}
               </div>
             ) : totalTime ? (
@@ -255,21 +272,24 @@ const hasCheckedIn = async () => {
                     <span>Loading...</span>
                   </div>
                 ) : (
-                  <button onClick={openCheckInDialog} className="font-medium text-[14px] text-blue-500">
+                  <button
+                    onClick={openCheckInDialog}
+                    className="font-medium text-[14px] text-blue-500"
+                  >
                     Check In
                   </button>
                 )}
               </div>
             )}
           </div>
-          {totalTime===null &&(
-          <div className="text-xl font-semibold">
-            {formatElapsedTime(elapsedTime)}
-          </div>
-        )}
+          {totalTime === null && (
+            <div className="text-xl font-semibold">
+              {formatElapsedTime(elapsedTime)}
+            </div>
+          )}
         </div>
       </div>
-      {showDialog && ( // Added the dialog rendering condition
+      {showDialog && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Confirm Check-In</h2>
@@ -278,14 +298,14 @@ const hasCheckedIn = async () => {
               <button
                 onClick={() => {
                   handleCheckIn();
-                  closeCheckInDialog(); // Close dialog on confirmation
+                  closeCheckInDialog();
                 }}
                 className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
               >
                 Yes
               </button>
               <button
-                onClick={closeCheckInDialog} // Added button to close dialog without checking in
+                onClick={closeCheckInDialog}
                 className="bg-gray-300 px-4 py-2 rounded"
               >
                 No
@@ -295,7 +315,7 @@ const hasCheckedIn = async () => {
         </div>
       )}
 
-{showCheckOutDialog && ( // Added check-out confirmation dialog
+      {showCheckOutDialog && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Confirm Check-Out</h2>
@@ -304,14 +324,14 @@ const hasCheckedIn = async () => {
               <button
                 onClick={() => {
                   handleCheckOut();
-                  closeCheckOutDialog(); // Close dialog on confirmation
+                  closeCheckOutDialog();
                 }}
                 className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
               >
                 Yes
               </button>
               <button
-                onClick={closeCheckOutDialog} // Close dialog without checking out
+                onClick={closeCheckOutDialog}
                 className="bg-gray-300 px-4 py-2 rounded"
               >
                 No
