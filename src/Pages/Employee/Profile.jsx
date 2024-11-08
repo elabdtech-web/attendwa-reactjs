@@ -1,136 +1,175 @@
-// import React, { useState, useEffect } from 'react';
-// import { getAuth, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
-// import { collection,doc, getDocs } from 'firebase/firestore';
-// import { db } from '../../Firebase/FirebaseConfig';
-// import {useUserContext} from "../../hooks/HeadertextContext"
-
-// export default function Profile() {
-//   const {setHeaderText} =useUserContext(); 
-//   const [userData, setUserData] = useState(null);
-//   const [oldPassword, setOldPassword] = useState('');
-//   const [newPassword, setNewPassword] = useState('');
-//   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-//   const [error, setError] = useState(null);
-//   const [success, setSuccess] = useState(null);
-//   const auth = getAuth();
-
-//   const fetchProfileData = async () => {
-//     try {
-//         const employeeCollection = collection(db,"users");
-//         const employeeQuery = query(employeeCollection, where ("role","==","employee"));
-//         const employeeSnapshot = await getDocs(employeeQuery);
-
-//     }
-//   }
-
-  
-
-
-
-
-
-
-//   const handlePasswordChange = async (e) => {
-//     e.preventDefault();
-//     setError(null);
-//     setSuccess(null);
-//     if (newPassword !== confirmNewPassword) {
-//         setError("New passwords do not match");
-//         return;
-//     }
-//     try{
-//         const user = auth.currentUser;
-//         const credential = EmailAuthProvider.credential(user.email,oldPassword);
-//         await reauthenticateWithCredential(user,credential);
-//         await updatePassword(user,newPassword);
-//         setSuccess("Password updated successfully");
-//     }catch (err){
-//         setError("Failed to update password.please check the old password.");
-//     }
-//   };
-
-//   useEffect(()=>{
-//     setHeaderText("Profile");
-//   })
-  
-
-//   return (
-//     <div className="profile-container">
-//       {/* <div className="info-box">
-//         <h2>User Information</h2>
-//         {userData ? (
-//           <>
-//             <p><strong>Reg No:</strong> {userData.regId}</p>
-//             <p><strong>Email:</strong> {userData.email}</p>
-//             <p><strong>Name:</strong> {userData.name}</p>
-//             <p><strong>CNIC:</strong> {userData.cnic}</p>
-//             <img src={userData.image} alt="User" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
-//           </>
-//         ) : (
-//           <p>Loading user data...</p>
-//         )}
-//       </div> */}
-//       <div>
-//         <h1>User Information</h1>
-//         {userData ? (
-//             <div>
-//                 <p>Reg No:</p>
-//                 <p>Email:</p>
-//                 <p>Name:</p>
-//                 <p>CNIC:</p>
-//                 <img src="" alt="" />
-//             </div>
-//         ):(
-//             <p>Loading User Data...</p>
-//         )}
-//       </div>
-
-//       <div className="password-box">
-//         <h2>Change Password</h2>
-//         <form onSubmit={handlePasswordChange}>
-//           <div>
-//             <label>Old Password:</label>
-//             <input
-//               type="password"
-//               value={oldPassword}
-//               onChange={(e) => setOldPassword(e.target.value)}
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label>New Password:</label>
-//             <input
-//               type="password"
-//               value={newPassword}
-//               onChange={(e) => setNewPassword(e.target.value)}
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label>Confirm New Password:</label>
-//             <input
-//               type="password"
-//               value={confirmNewPassword}
-//               onChange={(e) => setConfirmNewPassword(e.target.value)}
-//               required
-//             />
-//           </div>
-//           <button type="submit">Update Password</button>
-//         </form>
-//         {error && <p style={{ color: 'red' }}>{error}</p>}
-//         {success && <p style={{ color: 'green' }}>{success}</p>}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-import React from 'react'
+import React, { useState, useEffect, useContext } from "react";
+import {
+  getAuth,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+} from "firebase/auth";
+import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../Firebase/FirebaseConfig";
+import { useUserContext } from "../../hooks/HeadertextContext";
+import { AuthContext } from "../../hooks/AuthContext";
 
 export default function Profile() {
+  const { setHeaderText } = useUserContext();
+  const { allData } = useContext(AuthContext);
+  const [userData, setUserData] = useState(null);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const auth = getAuth();
+  const [employeeDetails, setEmployeeDetails] = useState("");
+
+  const fetchProfileData = async () => {
+    try {
+      console.log("allData", allData);
+      const employeeCollection = collection(db, "users");
+      const employeeQuery = query(
+        employeeCollection,
+        where("role", "==", "employee"),
+        where("regId", "==", allData.regId)
+      );
+      const employeeSnapshot = await getDocs(employeeQuery);
+      if (!employeeSnapshot.empty) {
+        const employeeData = employeeSnapshot.docs[0].data();
+        setEmployeeDetails(employeeData);
+        console.log("employeeData", employeeData);
+      } else {
+        console.log("No employee data found for the current user.");
+      }
+    } catch (error) {
+      console.log("Error in profile data fetching", error);
+    }
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    if (newPassword !== confirmNewPassword) {
+      setError("New passwords do not match");
+      return;
+    }
+    setLoading(true);
+    try {
+      const user = auth.currentUser;
+      const credential = EmailAuthProvider.credential(user.email, oldPassword);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPassword);
+      setSuccess("Password updated successfully");
+    } catch (err) {
+      setError("Failed to update password.please check the old password.");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    setHeaderText("Profile");
+    fetchProfileData();
+  }, [allData.regId]);
+
   return (
-    <div>
-      jksndajk
+    <div className="profile-container">
+      <div className="bg-white p-6 m-6 rounded-lg shadow-lg max-w-4xl mx-auto">
+        <h2 className="py-3 text-2xl font-semibold text-gray-800 border-b border-gray-300">
+          Profile Details
+        </h2>
+        {employeeDetails ? (
+          <div className="py-3 space-y-3 text-left">
+            <div className="flex justify-between items-center text-xl text-gray-700">
+              <p className="font-medium text-gray-600">Reg No:</p>
+              <p className="font-normal text-gray-800">
+                {employeeDetails.regId}
+              </p>
+            </div>
+            <div className="flex justify-between items-center text-xl text-gray-700">
+              <p className="font-medium text-gray-600">Name:</p>
+              <p className="font-normal text-gray-800">
+                {employeeDetails.fullName}
+              </p>
+            </div>
+            <div className="flex justify-between items-center text-xl text-gray-700">
+              <p className="font-medium text-gray-600">Email:</p>
+              <p className="font-normal text-gray-800">
+                {employeeDetails.email}
+              </p>
+            </div>
+            <div className="flex justify-between items-center text-xl text-gray-700">
+              <p className="font-medium text-gray-600">CNIC:</p>
+              <p className="font-normal text-gray-800">
+                {employeeDetails.cnic}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <p className="text-center py-4 text-gray-500">Loading user data...</p>
+        )}
+      </div>
+
+      <div className="bg-white p-6 m-6 rounded-lg shadow-lg max-w-4xl mx-auto">
+        <h2 className="py-3 text-2xl font-semibold text-gray-800 border-b border-gray-300">
+          Change Password
+        </h2>
+        <form onSubmit={handlePasswordChange} className="space-y-5 py-4">
+          <div className="flex items-center justify-between">
+            <label className="block text-gray-600 font-medium mb-2 text-xl">
+              Old Password :{" "}
+            </label>
+            <input
+              type="password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              required
+              className=" px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="block text-gray-600 text-xl font-medium mb-2">
+              New Password:
+            </label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="block text-gray-600 text-xl font-medium mb-2">
+              Confirm New Password:
+            </label>
+            <input
+              type="password"
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
+              required
+              className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
+            />
+          </div>
+          {loading ? (
+            <div >
+              <span className=" bg-gray-800 text-white font-semibold px-6 py-2 rounded">Loading...</span>
+            </div>
+          ) : (
+            <button
+              type="submit"
+              className=" bg-gray-800 text-white font-semibold px-3 py-2 rounded "
+            >
+              Update Password
+            </button>
+          )}
+        </form>
+        {error && (
+          <p className="text-center text-red-500 text-sm mt-4">{error}</p>
+        )}
+        {success && (
+          <p className="text-center text-green-500 text-sm mt-4">{success}</p>
+        )}
+      </div>
     </div>
-  )
+  );
 }

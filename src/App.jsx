@@ -16,7 +16,6 @@ import Tasks from './Pages/Admin/Tasks';
 import SettingAdmin from './Pages/Admin/SettingAdmin'
 import Profile from './Pages/Employee/Profile';
 export default function App() {
-  const {userType} = useContext(AuthContext)
   return (
     <div>
       <Routes>

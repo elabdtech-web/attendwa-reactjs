@@ -18,18 +18,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     setHeaderText("Dashboard");
-    const storedCheckInStatus = localStorage.getItem("isCheckedIn") === "true";
-    const storedCheckInTime = localStorage.getItem("checkInTime");
-    const storedCheckInDocId = localStorage.getItem("checkInDocId");
-
-    if (storedCheckInStatus && storedCheckInTime) {
-      setIsCheckedIn(true);
-      setCheckInDocId(storedCheckInDocId);
-      const savedCheckInTime = new Date(storedCheckInTime);
-      setElapsedTime(Math.floor((Date.now() - savedCheckInTime) / 1000));
-    } else {
-      hasCheckedIn();
-    }
 
     const interval = setInterval(() => {
       setCurrentDateTime(new Date());
@@ -39,21 +27,21 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    checkTodayCheckInStatus();
+  }, []);
+
+  useEffect(() => {
     let timerInterval;
     if (isCheckedIn) {
-      console.log("Starting Time Interval");
       timerInterval = setInterval(() => {
-        const savedCheckInTime = new Date(localStorage.getItem("checkInTime"));
-        setElapsedTime(Math.floor((Date.now() - savedCheckInTime) / 1000));
+        setElapsedTime((prevTime) => prevTime + 1);
       }, 1000);
-    } else {
-      clearInterval(timerInterval);
     }
 
     return () => clearInterval(timerInterval);
   }, [isCheckedIn]);
 
-  const hasCheckedIn = async () => {
+  const checkTodayCheckInStatus = async () => {
     setLoading(true);
     try {
       const currentDate = new Date();
@@ -62,40 +50,32 @@ export default function Dashboard() {
         currentDate.getMonth(),
         currentDate.getDate()
       );
+      const nextDay = new Date(formattedDate.getTime() + 24 * 60 * 60 * 1000);
       const q = query(
         collection(db, "checkIns"),
         where("userId", "==", allData.regId),
         where("checkInTime", ">=", formattedDate),
-        where("checkInTime","<",new Date(formattedDate.getTime() + 24 * 60 * 60 * 1000) )
+        where("checkInTime", "<", nextDay)
       );
 
       const querySnapshot = await getDocs(q);
-      const data = querySnapshot.docs.map((doc) => {
-        return {
-          id: doc.id,
-          ...doc.data(),
-        };
-      });
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
       if (data.length < 1) {
-        console.log("No data found.");
         setIsCheckedIn(false);
       } else {
-        if (data[0].checkOutTime) {
-          console.log("USER HAS COMPLETED TODAYS");
+        const checkInData = data[0];
+        if (checkInData.checkOutTime) {
           setIsCheckedIn(false);
-          setTotalTime(data[0].totalWorkingHours);
+          setTotalTime(checkInData.totalWorkingHours);
         } else {
-          console.log(
-            "USER HAS ONLY CHECKED IN BUT NOT CHECKED OUT SO CONTINUE THE TIMER"
-          );
           setIsCheckedIn(true);
-          localStorage.setItem(
-            "checkInTime",
-            new Date(data[0].checkInTime.seconds * 1000).toISOString()
-          );
-          localStorage.setItem("isCheckedIn", "true");
-          localStorage.setItem("checkInDocId", data[0].id);
+          setCheckInDocId(checkInData.id);
+          const savedCheckInTime = checkInData.checkInTime.toDate();
+          setElapsedTime(Math.floor((Date.now() - savedCheckInTime) / 1000));
         }
       }
     } catch (error) {
@@ -108,15 +88,15 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const checkInTime = Timestamp.now();
+      const createdAt = Timestamp.now();
       const docRef = await addDoc(collection(db, "checkIns"), {
         userId: allData.regId,
+        createdAt,
         checkInTime,
         checkOutTime: null,
         totalWorkingHours: null,
+        status: "present",
       });
-      localStorage.setItem("isCheckedIn", "true");
-      localStorage.setItem("checkInTime", checkInTime.toDate().toISOString());
-      localStorage.setItem("checkInDocId", docRef.id);
       setCheckInDocId(docRef.id);
       setIsCheckedIn(true);
       setTotalTime(null);
@@ -130,14 +110,7 @@ export default function Dashboard() {
   const handleCheckOut = async () => {
     setLoading(true);
     try {
-      const checkInDocId = localStorage.getItem("checkInDocId");
-      if (!checkInDocId) {
-        console.error("Check-in document ID not found.");
-        return; 
-      }
-      const checkOutTime = Timestamp.now();
       const userRef = doc(db, "checkIns", checkInDocId);
-
       const checkInDoc = await getDoc(userRef);
       if (!checkInDoc.exists()) {
         console.error("Check-in document does not exist.");
@@ -146,6 +119,7 @@ export default function Dashboard() {
 
       const { checkInTime } = checkInDoc.data();
       const checkInDate = checkInTime.toDate();
+      const checkOutTime = Timestamp.now();
       const checkOutDate = checkOutTime.toDate();
 
       const totalWorkingMilliseconds = checkOutDate - checkInDate;
@@ -159,11 +133,6 @@ export default function Dashboard() {
       await updateDoc(userRef, { checkOutTime, totalWorkingHours });
 
       setTotalTime(totalWorkingHours);
-
-      localStorage.removeItem("isCheckedIn");
-      localStorage.removeItem("checkInTime");
-      localStorage.removeItem("checkInDocId");
-
       setIsCheckedIn(false);
     } catch (error) {
       console.error("Error during check-out:", error);
@@ -173,37 +142,19 @@ export default function Dashboard() {
 
   const formatElapsedTime = (timeInSeconds) => {
     const hours = String(Math.floor(timeInSeconds / 3600)).padStart(2, "0");
-    const minutes = String(Math.floor((timeInSeconds % 3600) / 60)).padStart(
-      2,
-      "0"
-    );
+    const minutes = String(Math.floor((timeInSeconds % 3600) / 60)).padStart(  2,  "0");
     const seconds = String(timeInSeconds % 60).padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
   };
 
-  const openCheckInDialog = () => {
-    setShowDialog(true);
-  };
-
-  const closeCheckInDialog = () => {
-    setShowDialog(false);
-  };
-
-  const openCheckOutDialog = () => {
-    setShowCheckOutDialog(true);
-  };
-
-  const closeCheckOutDialog = () => {
-    setShowCheckOutDialog(false);
-  };
-
+  const openCheckInDialog = () => setShowDialog(true);
+  const closeCheckInDialog = () => setShowDialog(false);
+  const openCheckOutDialog = () => setShowCheckOutDialog(true);
+  const closeCheckOutDialog = () => setShowCheckOutDialog(false);
   return (
     <div className="flex bg-[#FFFFFF] h-screen">
       <div className="flex-1">
         <div className="flex bg-white p-5 m-4 gap-3 shadow">
-          {/* <div className="w-[4%] pt-1">
-            <img src={allData.image} alt="User" />
-          </div> */}
           <div className="flex w-full justify-between">
             <div>
               <h1 className="font-semibold text-xl text-blue-800">

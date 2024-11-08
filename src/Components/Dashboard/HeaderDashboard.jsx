@@ -13,7 +13,6 @@ export default function HeaderDashboard({
   toggleSidebar,
   isSidebarOpen,
   text,
-  // imageURL,
   fullName,
   email,
 }) {
@@ -54,21 +53,12 @@ export default function HeaderDashboard({
           onClick={toggleDropdown}
           className="flex items-center text-xl ml-4"
         >
-          {/* {imageURL ? (
-            <img src={imageURL} alt="User" className="w-8 h-8 rounded-full" /> 
-          ) : (
-            <FiUser /> 
-          )} */}
           <FiUser /> 
           <IoMdArrowDropdown className="ml-1" />
         </button>
 
-        {/* Dropdown Menu */}
         {isDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg p-2">
-            {/* <div className="flex justify-center pb-3 pt-1">
-              <img src={imageURL} alt="User"/>
-            </div> */}
+          <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg p-2 z-50">
             <div className="text-left mb-2 px-1">
               <p className="font-semibold">{fullName}</p>
               <p className="text-sm text-gray-600">{email}</p>

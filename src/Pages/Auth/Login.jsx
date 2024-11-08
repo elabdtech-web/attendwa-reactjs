@@ -115,8 +115,8 @@ const Login = () => {
               <span>Loading...</span> 
             </div>
           ) : (
-            <div className="w-[20%] flex items-center justify-center text-white bg-black rounded px-[35px] pt-[6px] pb-[8px] text-[15px]">
-              <button type="submit">Login</button>
+            <div className="">
+              <button className="w-[20%] flex items-center justify-center text-white bg-black rounded px-[40px] pt-[6px] pb-[8px] text-[15px]" type="submit">Login</button>
             </div>
           )}
         </div>

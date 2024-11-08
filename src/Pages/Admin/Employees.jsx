@@ -1,22 +1,27 @@
 import React, { useState, useEffect, useContext } from "react";
 import HeaderDashboard from "../../Components/Dashboard/HeaderDashboard";
 import Sidebar from "../../Components/Dashboard/EmployeeSidebar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../Firebase/FirebaseConfig";
 import { useUserContext } from "../../hooks/HeadertextContext";
 import { AuthContext } from "../../hooks/AuthContext";
+import {Link} from "react-router-dom"
+import ViewDetails from "../../Components/ViewDetails";
 
 export default function Employees() {
 
   const {userType} = useContext(AuthContext)
   const [employees, setEmployees] = useState([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const[showDetails,setShowDetails] = useState(null)
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const { setHeaderText } = useUserContext();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isEmployeePage = location.pathname == "/a-dashboard/employees";
+
   const handleClick = () => {
     setShowForm(true);
     navigate("/a-dashboard/employees/FormPage");
@@ -42,10 +47,11 @@ export default function Employees() {
     setHeaderText("Employees");
   }, []);
   return (
-    <div className="flex">
+    <>
+    <div className="flex relative">
       <div className="flex-1 flex flex-col ">
         <div className="mt-[3%] mx-[10%] ">
-          {!showForm ? (
+          {isEmployeePage ? (
             <div>
               <div className="flex justify-end mb-1">
                 <button
@@ -66,11 +72,12 @@ export default function Employees() {
                       Full Name
                     </th>
                     <th className="border w-[20%] text-center font-semibold text-[20px] py-2">
-                      CNIC
+                      Email
                     </th>
                     <th className="border w-[20%] text-center font-semibold text-[20px] py-2">
-                      Status
+                      CNIC
                     </th>
+                    
                     <th className="border w-[20%]">
                       <div className="px-5 text-center">
                         <div className="font-semibold text-[20px] py-2 ">
@@ -100,13 +107,15 @@ export default function Employees() {
                         <tr key={employee.id}>
                           <td className="border text-center py-2">{employee.regId}</td>
                           <td className="border text-center py-2">{employee.fullName}</td>
+                          <td className="border text-center py-2">{employee.email}</td>
                           <td className="border text-center py-2">{employee.cnic}</td>
-                          <td className="border text-center py-2">{employee.status}</td>
                           <td className="border">
                             <div className="flex justify-center px-5">
-                              <button className="border bg-gray-800 text-white text-[12px] px-2 py-1 rounded-lg">
+                              
+                              <button className="border bg-gray-800 text-white text-[12px] px-2 py-1 rounded-lg" onClick={()=>setShowDetails(employee)}>
                                 View
                               </button>
+                               
                               <button className="border bg-gray-800 text-white text-[12px] px-2 py-1 rounded-lg">
                                 Terminate
                               </button>
@@ -123,6 +132,11 @@ export default function Employees() {
           )}
         </div>
       </div>
+  {showDetails !== null &&   <div className="absolute top-0 left-0 h-full w-full bg-white">
+    <ViewDetails showDetails={showDetails}/>
     </div>
+    }
+    </div>
+    </>
   );
 }

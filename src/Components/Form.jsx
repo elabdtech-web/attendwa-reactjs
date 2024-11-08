@@ -13,13 +13,11 @@ export default function Form() {
   const [cnic, setCNIC] = useState('');
   const [email, setEmail] = useState('');
   const [dateOfJoining, setDateOfJoining] = useState('');
-  // const [image, setImage] = useState('');
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [status, setStatus] = useState('Active');
   const [created_at, setCreatedAt] = useState('');
   const [error, setError] =useState('')
-  // const [formData,setFormData] =useState('')
   const navigate = useNavigate();
   const [loading,setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -62,9 +60,6 @@ export default function Form() {
     if (password !== confirmPassword) {
       validationErrors.confirmPassword = "Passwords do not match";
     }
-    // if (!image) {
-    //   validationErrors.image = "Please upload an image";
-    // }
 
     if (!dateOfJoining) {
       validationErrors.dateOfJoining = "Date of joining is required";
@@ -88,12 +83,6 @@ export default function Form() {
     try {
       const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
       const user = userCredential.user;
-      // const imageRef = ref(storage, `images/${image.name}`);
-
-      // await uploadBytes(imageRef, image); 
-      // const imageURL = await getDownloadURL(imageRef);
-
-      // await addDoc(collection(db, 'users'), {regId,fullName,fatherName,cnic,email,dateOfJoining, image: imageURL,status,created_at: formattedDate,role:"employee"});
       await addDoc(collection(db, 'users'), {regId,fullName,fatherName,cnic,email,dateOfJoining,status,created_at: formattedDate,role:"employee"});
 
       alert('Data saved successfully!');
@@ -103,11 +92,13 @@ export default function Form() {
       setCNIC("");
       setEmail("");
       setDateOfJoining("");
-      // setImage("");
       setStatus("");
       setCreatedAt("");
       setPassword("");
       setConfirmPassword("");
+      
+      navigate("/a-dashboard/employees");
+      
 
     } catch (error) {
       console.error('Error adding document: ', error);
@@ -116,7 +107,7 @@ export default function Form() {
   
   };
   return ( 
-    <div className="flex justify-center items-center ">
+    <div className="flex justify-center ">
       <form
         className=" shadow rounded-lg w-[70%] px-5"
         onSubmit={handleSubmit}
@@ -228,23 +219,6 @@ export default function Form() {
         </div>
 
         <div className="flex justify-center gap-4 mb-[35px] ">
-          {/* <div className="w-[50%]">
-            <label htmlFor="">Upload Image :</label>
-            <input
-              type="file"
-              className="border-[2px] rounded p-[10px] w-full"
-              onChange={(e) => setImage(e.target.files[0])}
-              required
-            />
-          </div> */}
-
-          <div className="w-[50%]">
-            <label htmlFor="">Status</label>
-            <select className="border-[2px] rounded p-[10px] w-full">
-              <option value="active">Active</option>
-              <option value="In active">In Active</option>
-            </select>
-          </div>
         </div>
 
         {loading ? (

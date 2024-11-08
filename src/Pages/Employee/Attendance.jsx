@@ -5,62 +5,76 @@ import { db } from "../../Firebase/FirebaseConfig";
 import {collection,query,where,orderBy,limit,getDocs,Timestamp } from "firebase/firestore";
 import { AuthContext } from "../../hooks/AuthContext";
 
-const MonthSelector = ({ onChange }) => {
+const Calendar = ({ selectedMonth, selectedYear, onMonthChange, onYearChange }) => {
   const months = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
 
+  const years = [];
+  const currentYear = new Date().getFullYear();
+  for (let i = 2020; i <= currentYear; i++) {
+    years.push(i);
+  }
+
   return (
-    <select
-      onChange={onChange}
-      className="border border-gray-300 rounded-md p-2"
-    >
-      <option value="">Select a month</option>
-      {months.map((month, index) => (
-        <option key={index} value={index}>{month}</option>
-      ))}
-    </select>
+    <div className="flex space-x-4">
+      <select
+        onChange={(e) => onMonthChange(e.target.value)}
+        value={selectedMonth}
+        className="border border-gray-300 rounded "
+      >
+        {months.map((month, index) => (
+          <option key={index} value={index}>
+            {month}
+          </option>
+        ))}
+      </select>
+      
+      <select
+        onChange={(e) => onYearChange(e.target.value)}
+        value={selectedYear}
+        className="border border-gray-300 rounded"
+      >
+        {years.map((year) => (
+          <option key={year} value={year}>
+            {year}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 };
+
 
 export default function Attendance() {
   const { headerText, setHeaderText } = useUserContext();
   const { allData } = useContext(AuthContext);
   const [attendanceData, setAttendanceData] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); 
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const auth = getAuth();
 
   useEffect(() => {
     setHeaderText("Attendance");
-    fetchUserDetails(selectedMonth); 
-  }, [allData.regId, setHeaderText, selectedMonth]);
+    fetchUserDetails(selectedMonth,selectedYear); 
+  }, [allData.regId, setHeaderText, selectedMonth, selectedYear]);
 
-  async function fetchUserDetails(month = null) {
+  async function fetchUserDetails(month ,year) {
     if (allData.regId) {
       const userRef = collection(db, "checkIns");
-      let userQuery;
-
-      if (month !== null) {
-        const now = new Date();
-        const year = now.getFullYear();
-        const startOfMonth = new Date(year, month, 1);
+      const startOfMonth = new Date(year, month, 1);
         const endOfMonth = new Date(year, month + 1, 0);
+      
 
-        userQuery = query(
+        const userQuery = query(
           userRef,
           where("userId", "==", allData.regId),
           where("checkInTime", ">=", Timestamp.fromDate(startOfMonth)),
           where("checkInTime", "<=", Timestamp.fromDate(endOfMonth)),
           orderBy("checkInTime", "desc")
         );
-      } else {
-        userQuery = query(
-          userRef,
-          where("userId", "==", allData.regId),
-          orderBy("checkInTime", "desc"),
-        );
-      }
+      
 
       const userSnapshot = await getDocs(userQuery);
       if (!userSnapshot.empty) {
@@ -76,9 +90,12 @@ export default function Attendance() {
     }
   }
 
-  const handleMonthChange = (event) => {
-    const month = event.target.value;
-    setSelectedMonth(month === "" ? null : parseInt(month)); 
+  const handleMonthChange = (month) => {
+    setSelectedMonth(month === "" ? null : parseInt(month));
+  };
+
+  const handleYearChange = (year) => {
+    setSelectedYear(year);
   };
 
   return (
@@ -87,7 +104,12 @@ export default function Attendance() {
         <div className="flex-1 p-6 bg-white">
           <div className="shadow my-auto py-3 px-12 flex justify-between">
             <h1 className="text-3xl font-semibold">Attendance</h1>
-            <MonthSelector onChange={handleMonthChange} />
+            <Calendar
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              onMonthChange={handleMonthChange}
+              onYearChange={handleYearChange}
+            />
           </div>
           <table className="min-w-full shadow mt-10">
             <thead>
@@ -97,7 +119,7 @@ export default function Attendance() {
                 <th className="py-3">Time In</th>
                 <th className="py-3">Time Out</th>
                 <th className="py-3">Working Hours</th>
-                <th className="py-3">On Leave</th>
+                <th className="py-3">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -124,7 +146,7 @@ export default function Attendance() {
                       {entry.totalWorkingHours || "N/A"}
                     </td>
                     <td className="py-3 text-center">
-                      {entry.onLeave ? "Yes" : "No"}
+                      {entry.status ? entry.status : "No"}
                     </td>
                   </tr>
                 ))
