@@ -106,9 +106,9 @@ export default function EmployeeCard() {
       const createdAt = new Date();
 
       if (checkInSnapshot.empty) {
-        let checkInTime = null;
-        let checkOutTime = null;
-        let totalWorkingHours = null;
+        let checkInTime = "N/A";
+        let checkOutTime = "N/A";
+        let totalWorkingHours = "N/A";
         if (status == "home") {
           totalWorkingHours = "9h 0m 0s";
           const checkInDate = new Date();
@@ -118,7 +118,10 @@ export default function EmployeeCard() {
           checkOutDate.setHours(18, 0, 0, 0);
           checkOutTime = checkOutDate;
         }
-
+        const date = new Date();
+        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
         await setDoc(doc(checkInCollection), {
           userId: userId,
           status: status,
@@ -126,6 +129,7 @@ export default function EmployeeCard() {
           checkOutTime: checkOutTime,
           totalWorkingHours: totalWorkingHours,
           createdAt,
+          date: formattedDate,
         });
         setEmployees((prevEmployees) =>
           prevEmployees.map((employee) =>
@@ -133,8 +137,12 @@ export default function EmployeeCard() {
               ? {
                   ...employee,
                   status: status,
-                  checkInTime: checkInTime ? checkInTime.toLocaleTimeString() : "N/A",
-                  checkOutTime: checkOutTime ? checkOutTime.toLocaleTimeString() : "N/A",
+                  checkInTime: checkInTime
+                    ? checkInTime.toLocaleTimeString()
+                    : "N/A",
+                  checkOutTime: checkOutTime
+                    ? checkOutTime.toLocaleTimeString()
+                    : "N/A",
                   hasCheckedIn: true,
                 }
               : employee

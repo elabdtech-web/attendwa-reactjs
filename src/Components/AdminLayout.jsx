@@ -75,7 +75,6 @@ export default function AdminLayout() {
             toggleSidebar={toggleSidebar}
             isSidebarOpen={isSidebarOpen}
             text={"Employees"}
-            // imageURL={allData.image}
             fullName={allData.fullName}
             email={allData.email}
           />

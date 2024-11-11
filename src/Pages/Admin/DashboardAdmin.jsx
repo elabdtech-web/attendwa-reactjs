@@ -1,11 +1,11 @@
-import React, {useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Details from "../../Components/Dashboard/Details";
 import EmployeeCard from "../../Components/Dashboard/EmployeeCard";
 import LeaveCard from "../../Components/Dashboard/LeaveCard";
 import { AuthContext } from "../../hooks/AuthContext";
 import { useUserContext } from "../../hooks/HeadertextContext";
 import { db } from "../../Firebase/FirebaseConfig";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 
 export default function DashboardAdmin() {
   const { userType, allData } = useContext(AuthContext);
@@ -18,7 +18,10 @@ export default function DashboardAdmin() {
 
     const fetchTotalEmployees = async () => {
       try {
-        const q = query(collection(db, "users"), where("role", "==", "employee"));
+        const q = query(
+          collection(db, "users"),
+          where("role", "==", "employee")
+        );
         const querySnapshot = await getDocs(q);
         setTotalEmployees(querySnapshot.size);
       } catch (error) {
@@ -27,7 +30,7 @@ export default function DashboardAdmin() {
     };
 
     fetchTotalEmployees();
-  },[setHeaderText]);
+  }, [setHeaderText]);
 
   const details = [
     {
@@ -52,40 +55,116 @@ export default function DashboardAdmin() {
     },
   ];
 
+  const updateCheckInDocuments = async () => {
+    try {
+      const checkInsQuerySnapshot = await getDocs(collection(db, "checkIns"));
+
+      checkInsQuerySnapshot.forEach(async (docSnapshot) => {
+        const docRef = doc(db, "checkIns", docSnapshot.id);
+        const docData = docSnapshot.data();
+
+        const missingFields = [];
+
+        if (!docData.checkInTime) missingFields.push("checkInTime");
+        if (!docData.checkOutTime) missingFields.push("checkOutTime");
+        if (!docData.totalWorkingHours) missingFields.push("totalWorkingHours");
+        if (!docData.createdAt) missingFields.push("createdAt");
+        if (!docData.date) missingFields.push("date");
+        if (!docData.status) missingFields.push("status");
+
+        if (missingFields.length > 0) {
+          const updateData = {};
+
+          if (!docData.checkInTime) updateData.checkInTime = "N/A";
+          if (!docData.checkOutTime) updateData.checkOutTime = "N/A";
+          if (!docData.totalWorkingHours) updateData.totalWorkingHours = "N/A";
+
+          if (!docData.createdAt && docData.checkInTime !== "N/A") {
+            const createdAtDate = docData.checkInTime
+            updateData.createdAt = createdAtDate;  
+          }
+
+          if (!docData.date && docData.checkInTime !== "N/A") {
+            let parsedDate;
+            
+            if (docData.checkInTime.seconds) {
+              parsedDate = docData.checkInTime.toDate();
+            } else {
+              parsedDate = new Date(docData.checkInTime);
+            }
+          
+            if (!isNaN(parsedDate)) {
+              const year = parsedDate.getFullYear();
+              const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+              const day = String(parsedDate.getDate()).padStart(2, '0');
+          
+              const formattedDate = `${year}-${month}-${day}`;
+              updateData.date = formattedDate;
+            } else {
+              console.warn("Invalid date format:", docData.checkInTime);
+            }
+          }else {
+            updateData.date = "N/A"
+          }
+
+          if (!docData.status && docData.checkInTime !== "N/A" && docData.checkOutTime !== "N/A"){
+            updateData.status = "present"
+          }else{
+            updateData.status = "N/A";
+          } 
+
+          await updateDoc(docRef, updateData);
+        }
+      });
+    } catch (error) {
+      console.error("Error updating check-in documents:", error);
+    }
+  };
+
   return (
     <div className="flex ">
       <div className="flex-1 flex flex-col">
         <div className="flex-1 p-6 bg-white">
           <div className="flex shadow p-5 m-4 gap-3">
-          <div className="flex w-full justify-between">
-            <div>
-              <h1 className="font-semibold text-xl text-blue-800">
-                Welcome Admin,
-              </h1>
-              <h1>You're logged in as an Admin!</h1>
-            </div>
-            <div className="font-sans font-medium text-gray-500 text-right flex flex-col items-center">
-              <p>
-                {currentDateTime.toLocaleDateString("en-GB", {
-                  weekday: "long",
-                })}
-                ,{" "}
-                {currentDateTime.toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </p>
-              <p>
-                {currentDateTime.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </p>
+            <div className="flex w-full justify-between">
+              <div className="flex">
+                <div>
+                  <h1 className="font-semibold text-xl text-blue-800">
+                    Welcome Admin,
+                  </h1>
+                  <h1>You're logged in as an Admin!</h1>
+                </div>
+                <div className="flex items-end pl-2">
+                  <button 
+                    className="bg-gray-800 text-white font-semibold px-2 py-0.5 rounded text-xs" 
+                    onClick={updateCheckInDocuments}  
+                  >
+                    Database Refresh
+                  </button>
+                </div>
+              </div>
+              <div className="font-sans font-medium text-gray-500 text-right flex flex-col items-center">
+                <p>
+                  {currentDateTime.toLocaleDateString("en-GB", {
+                    weekday: "long",
+                  })}
+                  ,{" "}
+                  {currentDateTime.toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
+                <p>
+                  {currentDateTime.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
           <div className="flex justify-between gap-7 m-4 mt-8 ">
             {details.map((item) => (

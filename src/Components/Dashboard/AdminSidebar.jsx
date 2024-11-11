@@ -4,7 +4,7 @@ import {Link} from "react-router-dom"
 
 export default function Sidebar({ toggleSidebar }) {
   return (
-    <div className=" text-white">
+    <div className="text-white">
       <div className="flex justify-between items-center p-4 bg-gray-900">
         <h2 className="text-2xl font-semibold">ELABD</h2>
         <button onClick={toggleSidebar} className="text-xl">

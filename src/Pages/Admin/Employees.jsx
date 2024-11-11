@@ -8,7 +8,6 @@ import { db } from "../../Firebase/FirebaseConfig";
 import { useUserContext } from "../../hooks/HeadertextContext";
 import { AuthContext } from "../../hooks/AuthContext";
 import {Link} from "react-router-dom"
-import ViewDetails from "../../Components/ViewDetails";
 
 export default function Employees() {
 
@@ -111,9 +110,10 @@ export default function Employees() {
                           <td className="border text-center py-2">{employee.cnic}</td>
                           <td className="border">
                             <div className="flex justify-center px-5">
-                              
                               <button className="border bg-gray-800 text-white text-[12px] px-2 py-1 rounded-lg" onClick={()=>setShowDetails(employee)}>
+                              <Link to={`./${employee.regId}`}>
                                 View
+                                </Link>
                               </button>
                                
                               <button className="border bg-gray-800 text-white text-[12px] px-2 py-1 rounded-lg">
@@ -132,10 +132,6 @@ export default function Employees() {
           )}
         </div>
       </div>
-  {showDetails !== null &&   <div className="absolute top-0 left-0 h-full w-full bg-white">
-    <ViewDetails showDetails={showDetails}/>
-    </div>
-    }
     </div>
     </>
   );
