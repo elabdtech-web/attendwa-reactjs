@@ -98,8 +98,8 @@ export default function EmployeeCard() {
       const checkInQuery = query(
         checkInCollection,
         where("userId", "==", userId),
-        where("checkInTime", ">=", startOfDay(new Date())),
-        where("checkInTime", "<=", endOfDay(new Date()))
+        where("date", ">=", startOfDay(new Date())),
+        where("date", "<=", endOfDay(new Date()))
       );
 
       const checkInSnapshot = await getDocs(checkInQuery);
