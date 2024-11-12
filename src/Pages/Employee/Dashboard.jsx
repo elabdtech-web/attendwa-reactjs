@@ -27,7 +27,9 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    if (userType == "employee"){
     checkTodayCheckInStatus();
+    }
   }, []);
 
   useEffect(() => {

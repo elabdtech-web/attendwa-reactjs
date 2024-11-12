@@ -11,7 +11,7 @@ export default function Sidebar({ toggleSidebar }) {
           <FiX />
         </button>
       </div>
-      <div className="w-64 h-screen bg-gray-800 text-white p-6">
+      <div className="w-64 h-full bg-gray-800 text-white p-6">
         <ul className="space-y-4">
           <li>
             <Link to="/dashboard" className="hover:text-gray-400">

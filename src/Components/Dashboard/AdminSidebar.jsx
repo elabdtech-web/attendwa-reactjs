@@ -4,14 +4,14 @@ import {Link} from "react-router-dom"
 
 export default function Sidebar({ toggleSidebar }) {
   return (
-    <div className="text-white">
+    <div className=" text-white">
       <div className="flex justify-between items-center p-4 bg-gray-900">
         <h2 className="text-2xl font-semibold">ELABD</h2>
         <button onClick={toggleSidebar} className="text-xl">
           <FiX />
         </button>
       </div>
-      <div className="w-64 h-screen bg-gray-800 text-white p-6">
+      <div className="w-64 h-full min-h-[85vh] bg-gray-800 text-white p-6">
         <ul className="space-y-4">
           <li>
             <Link to="/a-dashboard" className="hover:text-gray-400">

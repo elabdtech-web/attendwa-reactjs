@@ -116,11 +116,29 @@ export default function DashboardAdmin() {
           await updateDoc(docRef, updateData);
         }
       });
+      alert("All fields are updated for all employees.");
     } catch (error) {
       console.error("Error updating check-in documents:", error);
     }
   };
 
+  const updateUsersDocuments = async () => {
+    try {
+      const usersRef = collection(db, "users");
+      const employeeQuery = query(usersRef, where("role", "==", "employee"));
+      const querySnapshot = await getDocs(employeeQuery);
+
+      querySnapshot.forEach(async (doc) => {
+        const docRef = doc.ref;
+        await updateDoc(docRef, { status: "active" });
+      });
+  
+      alert("status updated to 'active' for all employees.");
+    } catch (error) {
+      console.error("Error updating documents: ", error);
+      alert("Failed to update documents.");
+    }
+  };
   return (
     <div className="flex ">
       <div className="flex-1 flex flex-col">
@@ -136,10 +154,18 @@ export default function DashboardAdmin() {
                 </div>
                 <div className="flex items-end pl-2">
                   <button 
-                    className="bg-gray-800 text-white font-semibold px-2 py-0.5 rounded text-xs" 
+                    className="bg-gray-800 text-white font-semibold px-2 py-0.5 rounded text-xs hidden" 
                     onClick={updateCheckInDocuments}  
                   >
-                    Database Refresh
+                    Database checkIns Refresh
+                  </button>
+                </div>
+                <div className="flex items-end pl-2">
+                  <button 
+                    className="bg-gray-800 text-white font-semibold px-2 py-0.5 rounded text-xs " 
+                    onClick={updateUsersDocuments}  
+                  >
+                    Database users Refresh
                   </button>
                 </div>
               </div>

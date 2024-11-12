@@ -6,7 +6,7 @@ export default function AddAttendance({ id }) {
   const [checkInTime, setCheckInTime] = useState('');
   const [checkOutTime, setCheckOutTime] = useState('');
   const [date, setDate] = useState('');
-  const [status, setStatus] = useState('Present');
+  const [status, setStatus] = useState('present');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
@@ -16,7 +16,7 @@ export default function AddAttendance({ id }) {
     setLoading(true);
     setError(null);
     setSuccess(null);
-
+  
     try {
       const attendanceQuery = query(
         collection(db, 'checkIns'),
@@ -30,43 +30,44 @@ export default function AddAttendance({ id }) {
         setLoading(false);
         return;
       }
-
+  
       let checkInTimestamp = null;
       let checkOutTimestamp = null;
       let totalWorkingHours = "N/A";
-
+  
       if (status === "home") {
         totalWorkingHours = "9h 0m 0s";
         const checkInDate = new Date();
         checkInDate.setHours(9, 0, 0, 0);
         checkInTimestamp = Timestamp.fromDate(checkInDate);
-
+  
         const checkOutDate = new Date();
         checkOutDate.setHours(18, 0, 0, 0);
         checkOutTimestamp = Timestamp.fromDate(checkOutDate);
       }
-
+  
       if (checkInTime && checkOutTime) {
         const checkInDateTime = new Date(`${date}T${checkInTime}:00`);
         const checkOutDateTime = new Date(`${date}T${checkOutTime}:00`);
-
+  
         if (checkOutDateTime <= checkInDateTime) {
           alert("Check-out time must be greater than check-in time.");
           setLoading(false);
           return;
         }
-
+  
         checkInTimestamp = Timestamp.fromDate(checkInDateTime);
         checkOutTimestamp = Timestamp.fromDate(checkOutDateTime);
-
+  
         const totalWorkingMilliseconds = checkOutTimestamp.toMillis() - checkInTimestamp.toMillis();
-
+  
         totalWorkingHours = `
           ${Math.floor(totalWorkingMilliseconds / (1000 * 60 * 60))}h 
           ${Math.floor((totalWorkingMilliseconds % (1000 * 60 * 60)) / (1000 * 60))}m 
           ${Math.floor((totalWorkingMilliseconds % (1000 * 60)) / 1000)}s
         `;
       }
+  
       await addDoc(collection(db, 'checkIns'), {
         userId: id,
         checkInTime: checkInTimestamp,
@@ -76,16 +77,20 @@ export default function AddAttendance({ id }) {
         status,
         createdAt: Timestamp.now(),
       });
-
+  
       setSuccess('Attendance data saved successfully!');
       setCheckInTime('');
       setCheckOutTime('');
       setDate('');
       setStatus('present');
+
+      window.location.reload();
+  
     } catch (error) {
       setError('Error adding attendance data');
       console.error('Error adding attendance data:', error);
     }
+  
     setLoading(false);
   };
 

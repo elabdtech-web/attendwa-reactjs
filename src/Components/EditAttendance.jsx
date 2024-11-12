@@ -53,14 +53,15 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
   
     let finalCheckInTime = checkInTime ? new Date(`${date}T${checkInTime}:00`) : null;
     let finalCheckOutTime = checkOutTime ? new Date(`${date}T${checkOutTime}:00`) : null;
-    
-    let checkInTimestamp = finalCheckInTime && !isNaN(finalCheckInTime) ? Timestamp.fromDate(finalCheckInTime) : null;
-    let checkOutTimestamp = finalCheckOutTime && !isNaN(finalCheckOutTime) ? Timestamp.fromDate(finalCheckOutTime) : null;
-    if (checkOutTimestamp <= checkInTimestamp) {
+
+    if (finalCheckInTime && finalCheckOutTime && finalCheckOutTime <= finalCheckInTime) {
       alert("Check-out time must be greater than check-in time.");
       return;
     }
-  
+    
+    let checkInTimestamp = finalCheckInTime && !isNaN(finalCheckInTime) ? Timestamp.fromDate(finalCheckInTime) : null;
+    let checkOutTimestamp = finalCheckOutTime && !isNaN(finalCheckOutTime) ? Timestamp.fromDate(finalCheckOutTime) : null;
+    
     let totalWorkingHours = "N/A";
     if (checkInTimestamp && checkOutTimestamp) {
       const totalWorkingMilliseconds = checkOutTimestamp.toMillis() - checkInTimestamp.toMillis();
@@ -81,10 +82,11 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
       checkOutTime: finalCheckOutTime ? Timestamp.fromDate(finalCheckOutTime) : null,
       totalWorkingHours: totalWorkingHours, 
     };
-  
     try {
       await updateDoc(docRef, updatedData);
+      window.location.reload();
       closeEdit(); 
+    
     } catch (error) {
       console.error("Error updating document:", error);
     }
