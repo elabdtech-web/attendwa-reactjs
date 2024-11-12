@@ -19,21 +19,18 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
         setAttendanceData(data);
         setStatus(data.status || "");
 
-        if (data.checkInTime && data.checkInTime !== "N/A") {
-          console.log("sdfdsf",data.checkInTime)
+        if (data.checkInTime instanceof Timestamp) {
           const checkInDate = data.checkInTime.toDate();
           const adjustedCheckInDate = new Date(checkInDate.getTime() + 5 * 60 * 60 * 1000); 
-          const formattedCheckInTime = adjustedCheckInDate.toISOString().slice(11, 16); 
-          setCheckInTime(formattedCheckInTime); 
+          setCheckInTime(adjustedCheckInDate.toISOString().slice(11, 16)); 
         } else {
           setCheckInTime(""); 
         }
     
-        if (data.checkOutTime) {
+        if (data.checkOutTime instanceof Timestamp) {
           const checkOutDate = data.checkOutTime.toDate(); 
           const adjustedCheckOutDate = new Date(checkOutDate.getTime() + 5 * 60 * 60 * 1000); 
-          const formattedCheckOutTime = adjustedCheckOutDate.toISOString().slice(11, 16); 
-          setCheckOutTime(formattedCheckOutTime);
+          setCheckOutTime(adjustedCheckOutDate.toISOString().slice(11, 16));
         } else {
           setCheckOutTime(""); 
         }
@@ -54,22 +51,14 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
       return;
     }
   
-    let finalCheckInTime = checkInTime ? new Date(`${date}T${checkInTime}:00`) : "N/A";
-    let finalCheckOutTime = checkOutTime ? new Date(`${date}T${checkOutTime}:00`) : "N/A";
-  
-    let checkInTimestamp = null;
-    let checkOutTimestamp = null;
-  
-    if (finalCheckInTime !== "N/A" && !isNaN(finalCheckInTime)) {
-      checkInTimestamp = Timestamp.fromDate(finalCheckInTime);
-    } else {
-      finalCheckInTime = "N/A";
-    }
-  
-    if (finalCheckOutTime !== "N/A" && !isNaN(finalCheckOutTime)) {
-      checkOutTimestamp = Timestamp.fromDate(finalCheckOutTime);
-    } else {
-        finalCheckOutTime = "N/A";
+    let finalCheckInTime = checkInTime ? new Date(`${date}T${checkInTime}:00`) : null;
+    let finalCheckOutTime = checkOutTime ? new Date(`${date}T${checkOutTime}:00`) : null;
+    
+    let checkInTimestamp = finalCheckInTime && !isNaN(finalCheckInTime) ? Timestamp.fromDate(finalCheckInTime) : null;
+    let checkOutTimestamp = finalCheckOutTime && !isNaN(finalCheckOutTime) ? Timestamp.fromDate(finalCheckOutTime) : null;
+    if (checkOutTimestamp <= checkInTimestamp) {
+      alert("Check-out time must be greater than check-in time.");
+      return;
     }
   
     let totalWorkingHours = "N/A";
@@ -81,19 +70,15 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
         ${Math.floor((totalWorkingMilliseconds % (1000 * 60)) / 1000)}s
       `;
     }
-    if (status == "home") {
+    if (status === "home") {
       totalWorkingHours = "9h 0m 0s";
-      const checkInDate = new Date();
-      checkInDate.setHours(9, 0, 0, 0);
-      finalCheckInTime = checkInDate;
-      const checkOutDate = new Date();
-      checkOutDate.setHours(18, 0, 0, 0);
-      finalCheckOutTime = checkOutDate;
+      finalCheckInTime = new Date(`${date}T09:00:00`);
+      finalCheckOutTime = new Date(`${date}T18:00:00`);
     }
     const updatedData = {
       status: status,
-      checkInTime: finalCheckInTime,
-      checkOutTime: finalCheckOutTime,
+      checkInTime: finalCheckInTime ? Timestamp.fromDate(finalCheckInTime) : null,
+      checkOutTime: finalCheckOutTime ? Timestamp.fromDate(finalCheckOutTime) : null,
       totalWorkingHours: totalWorkingHours, 
     };
   

@@ -355,7 +355,7 @@ export default function ViewDetails() {
         <div className="absolute w-full h-full top-0 bg-white">
           <EditAttendance
             attendanceId={editAttendance.id}
-            closeEdit={() => setEditAttendance(null)} // Ensure the modal is closed
+            closeEdit={() => setEditAttendance(null)} 
           />
         </div>
       )}

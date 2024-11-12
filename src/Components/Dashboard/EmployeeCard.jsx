@@ -106,8 +106,8 @@ export default function EmployeeCard() {
       const createdAt = new Date();
 
       if (checkInSnapshot.empty) {
-        let checkInTime = "N/A";
-        let checkOutTime = "N/A";
+        let checkInTime = null;
+        let checkOutTime = null;
         let totalWorkingHours = "N/A";
         if (status == "home") {
           totalWorkingHours = "9h 0m 0s";
@@ -139,10 +139,10 @@ export default function EmployeeCard() {
                   status: status,
                   checkInTime: checkInTime
                     ? checkInTime.toLocaleTimeString()
-                    : "N/A",
+                    : null,
                   checkOutTime: checkOutTime
                     ? checkOutTime.toLocaleTimeString()
-                    : "N/A",
+                    : null,
                   hasCheckedIn: true,
                 }
               : employee

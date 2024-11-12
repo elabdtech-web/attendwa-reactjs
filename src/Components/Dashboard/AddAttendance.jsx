@@ -30,8 +30,8 @@ export default function AddAttendance({ id }) {
         setLoading(false);
         return;
       }
-      let checkInTimestamp = "N/A";
-      let checkOutTimestamp = "N/A";
+      let checkInTimestamp = null;
+      let checkOutTimestamp = null;
       let totalWorkingHours = "N/A";
       if (status == "home") {
         totalWorkingHours = "9h 0m 0s";
@@ -46,7 +46,6 @@ export default function AddAttendance({ id }) {
       if (checkInTime && checkOutTime) {
         const checkInDateTime = new Date(`${date}T${checkInTime}:00`);
         const checkOutDateTime = new Date(`${date}T${checkOutTime}:00`);
-        console.log("checkInDateTime",checkInDateTime)
 
       if (checkOutDateTime <= checkInDateTime) {
         alert("Check-out time must be greater than check-in time.");
