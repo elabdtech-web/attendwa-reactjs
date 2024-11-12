@@ -89,6 +89,10 @@ export default function Dashboard() {
     try {
       const checkInTime = Timestamp.now();
       const createdAt = Timestamp.now();
+      const date = new Date();
+        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
       const docRef = await addDoc(collection(db, "checkIns"), {
         userId: allData.regId,
         createdAt,
@@ -96,6 +100,7 @@ export default function Dashboard() {
         checkOutTime: null,
         totalWorkingHours: null,
         status: "present",
+        date: formattedDate,
       });
       setCheckInDocId(docRef.id);
       setIsCheckedIn(true);

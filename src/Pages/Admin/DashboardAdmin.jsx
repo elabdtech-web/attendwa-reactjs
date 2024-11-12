@@ -75,16 +75,16 @@ export default function DashboardAdmin() {
         if (missingFields.length > 0) {
           const updateData = {};
 
-          if (!docData.checkInTime) updateData.checkInTime = "N/A";
-          if (!docData.checkOutTime) updateData.checkOutTime = "N/A";
+          if (!docData.checkInTime) updateData.checkInTime = null;
+          if (!docData.checkOutTime) updateData.checkOutTime = null;
           if (!docData.totalWorkingHours) updateData.totalWorkingHours = "N/A";
 
-          if (!docData.createdAt && docData.checkInTime !== "N/A") {
+          if (!docData.createdAt && docData.checkInTime !== null) {
             const createdAtDate = docData.checkInTime
             updateData.createdAt = createdAtDate;  
           }
 
-          if (!docData.date && docData.checkInTime !== "N/A") {
+          if (!docData.date && docData.checkInTime !== null) {
             let parsedDate;
             
             if (docData.checkInTime.seconds) {
@@ -107,7 +107,7 @@ export default function DashboardAdmin() {
             updateData.date = "N/A"
           }
 
-          if (!docData.status && docData.checkInTime !== "N/A" && docData.checkOutTime !== "N/A"){
+          if (!docData.status && docData.checkInTime !== null && docData.checkOutTime !== null){
             updateData.status = "present"
           }else{
             updateData.status = "N/A";

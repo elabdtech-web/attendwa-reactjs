@@ -19,7 +19,8 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
         setAttendanceData(data);
         setStatus(data.status || "");
 
-        if (data.checkInTime) {
+        if (data.checkInTime && data.checkInTime !== "N/A") {
+          console.log("sdfdsf",data.checkInTime)
           const checkInDate = data.checkInTime.toDate();
           const adjustedCheckInDate = new Date(checkInDate.getTime() + 5 * 60 * 60 * 1000); 
           const formattedCheckInTime = adjustedCheckInDate.toISOString().slice(11, 16); 
