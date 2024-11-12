@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { db } from '../../Firebase/FirebaseConfig';
-import { collection, addDoc, Timestamp,query,where,getDocs } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, query, where, getDocs } from 'firebase/firestore';
 
 export default function AddAttendance({ id }) {
   const [checkInTime, setCheckInTime] = useState('');
@@ -30,39 +30,43 @@ export default function AddAttendance({ id }) {
         setLoading(false);
         return;
       }
+
       let checkInTimestamp = null;
       let checkOutTimestamp = null;
       let totalWorkingHours = "N/A";
-      if (status == "home") {
+
+      if (status === "home") {
         totalWorkingHours = "9h 0m 0s";
         const checkInDate = new Date();
         checkInDate.setHours(9, 0, 0, 0);
-        checkInTimestamp = checkInDate;
+        checkInTimestamp = Timestamp.fromDate(checkInDate);
+
         const checkOutDate = new Date();
         checkOutDate.setHours(18, 0, 0, 0);
-        checkOutTimestamp = checkOutDate;
+        checkOutTimestamp = Timestamp.fromDate(checkOutDate);
       }
 
       if (checkInTime && checkOutTime) {
         const checkInDateTime = new Date(`${date}T${checkInTime}:00`);
         const checkOutDateTime = new Date(`${date}T${checkOutTime}:00`);
 
-      if (checkOutDateTime <= checkInDateTime) {
-        alert("Check-out time must be greater than check-in time.");
-        return;
+        if (checkOutDateTime <= checkInDateTime) {
+          alert("Check-out time must be greater than check-in time.");
+          setLoading(false);
+          return;
+        }
+
+        checkInTimestamp = Timestamp.fromDate(checkInDateTime);
+        checkOutTimestamp = Timestamp.fromDate(checkOutDateTime);
+
+        const totalWorkingMilliseconds = checkOutTimestamp.toMillis() - checkInTimestamp.toMillis();
+
+        totalWorkingHours = `
+          ${Math.floor(totalWorkingMilliseconds / (1000 * 60 * 60))}h 
+          ${Math.floor((totalWorkingMilliseconds % (1000 * 60 * 60)) / (1000 * 60))}m 
+          ${Math.floor((totalWorkingMilliseconds % (1000 * 60)) / 1000)}s
+        `;
       }
-
-      const checkInTimestamp = Timestamp.fromDate(checkInDateTime);
-      const checkOutTimestamp = Timestamp.fromDate(checkOutDateTime);
-
-      const totalWorkingMilliseconds = checkOutTimestamp.toMillis() - checkInTimestamp.toMillis();
-
-      const totalWorkingHours = `
-        ${Math.floor(totalWorkingMilliseconds / (1000 * 60 * 60))}h 
-        ${Math.floor((totalWorkingMilliseconds % (1000 * 60 * 60)) / (1000 * 60))}m 
-        ${Math.floor((totalWorkingMilliseconds % (1000 * 60)) / 1000)}s
-      `;
-    }
       await addDoc(collection(db, 'checkIns'), {
         userId: id,
         checkInTime: checkInTimestamp,
@@ -79,7 +83,7 @@ export default function AddAttendance({ id }) {
       setDate('');
       setStatus('present');
     } catch (error) {
-      setError('Attendance Data of this date is available');
+      setError('Error adding attendance data');
       console.error('Error adding attendance data:', error);
     }
     setLoading(false);
@@ -93,7 +97,9 @@ export default function AddAttendance({ id }) {
     }
     setCheckOutTime(newCheckOutTime);
   };
+
   const today = new Date().toISOString().split('T')[0];
+
   return (
     <div className="p-6 m-6 rounded-lg shadow-lg max-w-4xl mx-auto">
       <h2 className="py-3 text-2xl font-semibold text-gray-800 border-b border-gray-300">
@@ -134,7 +140,7 @@ export default function AddAttendance({ id }) {
             value={date}
             onChange={(e) => setDate(e.target.value)}
             required
-             max={today} 
+            max={today}
             className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
           />
         </div>
