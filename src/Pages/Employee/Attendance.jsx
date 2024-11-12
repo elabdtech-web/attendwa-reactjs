@@ -4,12 +4,10 @@ import { getAuth } from "firebase/auth";
 import { db } from "../../Firebase/FirebaseConfig";
 import {collection,query,where,orderBy,limit,getDocs,Timestamp } from "firebase/firestore";
 import { AuthContext } from "../../hooks/AuthContext";
+import { format } from "date-fns";
 
-const Calendar = ({ selectedMonth, selectedYear, onMonthChange, onYearChange }) => {
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+const Calendar = ({selectedMonth,selectedYear,onMonthChange,onYearChange}) => {
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
   const years = [];
   const currentYear = new Date().getFullYear();
@@ -30,7 +28,7 @@ const Calendar = ({ selectedMonth, selectedYear, onMonthChange, onYearChange }) 
           </option>
         ))}
       </select>
-      
+
       <select
         onChange={(e) => onYearChange(e.target.value)}
         value={selectedYear}
@@ -46,35 +44,38 @@ const Calendar = ({ selectedMonth, selectedYear, onMonthChange, onYearChange }) 
   );
 };
 
-
 export default function Attendance() {
   const { headerText, setHeaderText } = useUserContext();
   const { allData } = useContext(AuthContext);
   const [attendanceData, setAttendanceData] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); 
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const auth = getAuth();
 
   useEffect(() => {
     setHeaderText("Attendance");
-    fetchUserDetails(selectedMonth,selectedYear); 
+    fetchUserDetails(selectedMonth, selectedYear);
   }, [allData.regId, setHeaderText, selectedMonth, selectedYear]);
 
-  async function fetchUserDetails(month ,year) {
+  async function fetchUserDetails(month, year) {
     if (allData.regId) {
       const userRef = collection(db, "checkIns");
-      const startOfMonth = new Date(year, month, 1);
-        const endOfMonth = new Date(year, month + 1, 0);
-      
+      const startOfMonth = format(
+        new Date(selectedYear, selectedMonth, 1),
+        "yyyy-MM-dd"
+      );
+      const endOfMonth = format(
+        new Date(selectedYear, selectedMonth + 1, 0),
+        "yyyy-MM-dd"
+      );
 
-        const userQuery = query(
-          userRef,
-          where("userId", "==", allData.regId),
-          where("checkInTime", ">=", Timestamp.fromDate(startOfMonth)),
-          where("checkInTime", "<=", Timestamp.fromDate(endOfMonth)),
-          orderBy("checkInTime", "desc")
-        );
-      
+      const userQuery = query(
+        userRef,
+        where("userId", "==", allData.regId),
+        where("date", ">=", startOfMonth),
+        where("date", "<=", endOfMonth),
+        orderBy("date", "desc")
+      );
 
       const userSnapshot = await getDocs(userQuery);
       if (!userSnapshot.empty) {
@@ -84,7 +85,6 @@ export default function Attendance() {
         }));
         setAttendanceData(data);
       } else {
-        console.error("No attendance data found");
         setAttendanceData([]);
       }
     }
@@ -127,19 +127,29 @@ export default function Attendance() {
                 attendanceData.map((entry) => (
                   <tr key={entry.id}>
                     <td className="py-3 text-center">
-                      {new Date(entry.checkInTime.toDate()).toLocaleDateString()}
+                      {entry.date
+                        ? new Date(entry.date).toLocaleDateString()
+                        : "N/A"}
                     </td>
                     <td className="py-3 text-center">
-                      {new Date(entry.checkInTime.toDate()).toLocaleString("en-us", { weekday: "long" })}
+                      {entry.date
+                        ? new Date(entry.date).toLocaleString("en-us", {
+                            weekday: "long",
+                          })
+                        : "N/A"}
                     </td>
                     <td className="py-3 text-center">
                       {entry.checkInTime
-                        ? new Date(entry.checkInTime.toDate()).toLocaleTimeString()
+                        ? new Date(
+                            entry.checkInTime.toDate()
+                          ).toLocaleTimeString()
                         : "N/A"}
                     </td>
                     <td className="py-3 text-center">
                       {entry.checkOutTime
-                        ? new Date(entry.checkOutTime.toDate()).toLocaleTimeString()
+                        ? new Date(
+                            entry.checkOutTime.toDate()
+                          ).toLocaleTimeString()
                         : "N/A"}
                     </td>
                     <td className="py-3 text-center">

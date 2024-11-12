@@ -72,7 +72,7 @@ const Calendar = ({
   );
 };
 
-export default function ViewDetails() {
+export default function EmployeeDetails() {
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());

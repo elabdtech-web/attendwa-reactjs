@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../Firebase/FirebaseConfig";
-import { collection, query, where, getDocs, updateDoc, addDoc, Timestamp } from "firebase/firestore";
+import { collection, query, where, getDocs, updateDoc, addDoc, Timestamp,setDoc,doc } from "firebase/firestore";
 
 export default function EmployeeCard() {
   const [employees, setEmployees] = useState([]);
@@ -9,7 +9,7 @@ export default function EmployeeCard() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showDialogConfirmation, setShowDialogConfirmation] = useState(false);
-  const [holidayDate, setHolidayDate] = useState(""); // Added state for selected holiday date
+  const [holidayDate, setHolidayDate] = useState(""); 
 
   const fetchEmployeesAttendanceData = async () => {
     try {
@@ -76,6 +76,82 @@ export default function EmployeeCard() {
     }
   };
 
+  const handleStatusUpdate = async (userId, status) => {
+    setLoading(true);
+    try {
+      const checkInCollection = collection(db, "checkIns");
+      const today = new Date();
+      const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
+
+      const checkInQuery = query(
+        checkInCollection,
+        where("userId", "==", userId),
+        where("date", "==", formattedDate)
+      );
+
+      const checkInSnapshot = await getDocs(checkInQuery);
+      const createdAt = new Date();
+
+      if (checkInSnapshot.empty) {
+        let checkInTime = null;
+        let checkOutTime = null;
+        let totalWorkingHours = "N/A";
+        if (status === "home") {
+          totalWorkingHours = "9h 0m 0s";
+          const checkInDate = new Date();
+          checkInDate.setHours(9, 0, 0, 0);
+          checkInTime = checkInDate;
+          const checkOutDate = new Date();
+          checkOutDate.setHours(18, 0, 0, 0);
+          checkOutTime = checkOutDate;
+        }
+
+        await setDoc(doc(checkInCollection), {
+          userId: userId,
+          status: status,
+          checkInTime: checkInTime,
+          checkOutTime: checkOutTime,
+          totalWorkingHours: totalWorkingHours,
+          createdAt,
+          date: formattedDate,
+        });
+
+        setEmployees((prevEmployees) =>
+          prevEmployees.map((employee) =>
+            employee.regId === userId
+              ? {
+                  ...employee,
+                  status: status,
+                  checkInTime: checkInTime
+                    ? checkInTime.toLocaleTimeString()
+                    : null,
+                  checkOutTime: checkOutTime
+                    ? checkOutTime.toLocaleTimeString()
+                    : null,
+                  hasCheckedIn: true,
+                }
+              : employee
+          )
+        );
+      } else {
+        const docRef = checkInSnapshot.docs[0].ref;
+        await updateDoc(docRef, { status: status, createdAt });
+        setEmployees((prevEmployees) =>
+          prevEmployees.map((employee) =>
+            employee.regId === userId
+              ? { ...employee, status: status }
+              : employee
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+    setLoading(false);
+  };
+
   const markHolidayForActiveEmployees = async () => {
     try {
       const usersRef = collection(db, "users");
@@ -83,7 +159,7 @@ export default function EmployeeCard() {
       const querySnapshot = await getDocs(activeEmployeesQuery);
 
       const timestamp = Timestamp.now();
-      const selectedDate = holidayDate || new Date().toISOString().split("T")[0]; // Default to today's date if none selected
+      const selectedDate = holidayDate || new Date().toISOString().split("T")[0];
 
       for (const doc of querySnapshot.docs) {
         const { regId } = doc.data();

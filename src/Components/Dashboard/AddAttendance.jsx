@@ -36,14 +36,12 @@ export default function AddAttendance({ id }) {
       let totalWorkingHours = "N/A";
   
       if (status === "home") {
-        totalWorkingHours = "9h 0m 0s";
-        const checkInDate = new Date();
-        checkInDate.setHours(9, 0, 0, 0);
+        const checkInDate = new Date(`${date}T09:00:00`);
+        const checkOutDate = new Date(`${date}T18:00:00`);
+        
         checkInTimestamp = Timestamp.fromDate(checkInDate);
-  
-        const checkOutDate = new Date();
-        checkOutDate.setHours(18, 0, 0, 0);
         checkOutTimestamp = Timestamp.fromDate(checkOutDate);
+        totalWorkingHours = "9h 0m 0s";
       }
   
       if (checkInTime && checkOutTime) {
@@ -83,14 +81,12 @@ export default function AddAttendance({ id }) {
       setCheckOutTime('');
       setDate('');
       setStatus('present');
-
       window.location.reload();
-  
+      
     } catch (error) {
       setError('Error adding attendance data');
       console.error('Error adding attendance data:', error);
     }
-  
     setLoading(false);
   };
 
