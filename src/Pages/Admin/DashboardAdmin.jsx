@@ -162,7 +162,7 @@ export default function DashboardAdmin() {
                 </div>
                 <div className="flex items-end pl-2">
                   <button 
-                    className="bg-gray-800 text-white font-semibold px-2 py-0.5 rounded text-xs " 
+                    className="bg-gray-800 text-white font-semibold px-2 py-0.5 rounded text-xs hidden" 
                     onClick={updateUsersDocuments}  
                   >
                     Database users Refresh

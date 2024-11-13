@@ -285,8 +285,8 @@ export default function EmployeeCard() {
             employees.map((employee) => (
               <tr key={employee.id} className="border-b">
                 <td className="py-2 px-4 w-[20%]">{employee.fullName}</td>
-                <td className="py-2 px-4 w-[20%]">{employee.checkInTime}</td>
-                <td className="py-2 px-4 w-[20%]">{employee.checkOutTime}</td>
+                <td className="py-2 px-4 w-[20%]">{employee.checkInTime?employee.checkInTime:"--"}</td>
+                <td className="py-2 px-4 w-[20%]">{employee.checkOutTime?employee.checkOutDate:"--"}</td>
                 <td className="py-2 px-1 w-[30%] flex-1 justify-between">
                   {employee.status !== "N/A" ? (
                     <span className="text-gray-800 ml-2">{employee.status}</span>

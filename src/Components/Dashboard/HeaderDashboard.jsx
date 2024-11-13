@@ -27,14 +27,9 @@ export default function HeaderDashboard({
     signOut(auth);
     localStorage.removeItem("accesstoken");
     localStorage.removeItem("userEmail")
-    localStorage.removeItem("userType")
-    localStorage.removeItem("isCheckedIn")
-    localStorage.removeItem("checkInTime")
-    localStorage.removeItem("checkInDocId")
-    
+        
     setUserType(null);
     setAllData(null);
-    console.log("Removing accesstoken");
 
     navigate("/login");
   };

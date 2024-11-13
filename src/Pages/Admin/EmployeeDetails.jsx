@@ -2,40 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../../Firebase/FirebaseConfig";
 import { format } from "date-fns";
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
-  Timestamp,
-  updateDoc,
-  doc,
-  writeBatch,
-} from "firebase/firestore";
+import {collection,query,where,orderBy,getDocs,Timestamp,updateDoc,doc,writeBatch,} from "firebase/firestore";
 import EditAttendance from "../../Components/EditAttendance";
 import AddAttendance from "../../Components/Dashboard/AddAttendance";
 
-const Calendar = ({
-  selectedMonth,
-  selectedYear,
-  onMonthChange,
-  onYearChange,
-}) => {
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+const Calendar = ({selectedMonth,selectedYear,onMonthChange,onYearChange,}) => {
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December",];
 
   const years = [];
   const currentYear = new Date().getFullYear();

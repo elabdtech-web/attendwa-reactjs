@@ -157,6 +157,7 @@ export default function AddAttendance({ id }) {
             <option value="absent">Absent</option>
             <option value="leave">Leave</option>
             <option value="home">Work From Home</option>
+            <option value="holiday">Holiday</option>
           </select>
         </div>
         {loading ? (

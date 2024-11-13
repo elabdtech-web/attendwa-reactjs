@@ -158,6 +158,8 @@ export default function Dashboard() {
   const closeCheckInDialog = () => setShowDialog(false);
   const openCheckOutDialog = () => setShowCheckOutDialog(true);
   const closeCheckOutDialog = () => setShowCheckOutDialog(false);
+
+  
   return (
     <div className="flex bg-[#FFFFFF] h-screen">
       <div className="flex-1">

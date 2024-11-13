@@ -38,7 +38,6 @@ const Login = () => {
             console.log("Admin is login");
             navigate("/a-dashboard");
           } else if (userData.role === "employee") {
-            console.log(userData)
             setUserType("employee");
             setAllData(userData)
             console.log("Employee is login");
