@@ -4,6 +4,8 @@ import {db,secondaryAuth,storage} from "../Firebase/FirebaseConfig"
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import {ref,uploadBytes,getDownloadURL} from "firebase/storage"
 import { useNavigate } from "react-router-dom";
+import CustomInputField from "./CustomInputField";
+import {toast} from "react-toastify";
 
 
 export default function Form() {
@@ -17,10 +19,8 @@ export default function Form() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [status, setStatus] = useState('active');
   const [created_at, setCreatedAt] = useState('');
-  const [error, setError] =useState('')
   const navigate = useNavigate();
   const [loading,setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchNextRegId = async () => {
@@ -65,7 +65,10 @@ export default function Form() {
       validationErrors.dateOfJoining = "Date of joining is required";
     }
 
-    setErrors(validationErrors);
+    Object.values(validationErrors).forEach(errorMessage => {
+      toast.error(errorMessage);
+    });
+  
     return Object.keys(validationErrors).length === 0;
   };
 
@@ -85,7 +88,7 @@ export default function Form() {
       const user = userCredential.user;
       await addDoc(collection(db, 'users'), {regId,fullName,fatherName,cnic,email,dateOfJoining,status,created_at: formattedDate,role:"employee"});
 
-      alert('Data saved successfully!');
+      toast.success('Employee Created successfully!');
       setFullName("");
       setRegId("");
       setFatherName("");
@@ -101,7 +104,7 @@ export default function Form() {
       
 
     } catch (error) {
-      console.error('Error adding document: ', error);
+      toast.error('Error adding document: ', error);
     }
     setLoading(false);
   
@@ -113,109 +116,50 @@ export default function Form() {
         onSubmit={handleSubmit}
       >
       <div className="text-center font-semibold text-2xl  pb-[6px] pt-3">
-        <h1>Enter Your Details Here</h1>
+        <h1>Enter Employee Details Here</h1>
       </div>
       <div className="py-[4%]">
         <div className="flex justify-center gap-4 mb-[35px]">
           <div className="w-[50%]">
             <label htmlFor="" className=" ">Reg-ID :</label>
-            <input
-              type="text"
-              className="border-[2px] rounded p-[10px] w-full"
-              value={regId}
-              readOnly
-            />
+            <CustomInputField type="text" name="regId" value={regId} readOnly/> 
           </div>
           <div className="w-[50%]">
             <label htmlFor="">Full Name :</label>
-            <input
-              type="text"
-              className="border-[2px] rounded p-[10px] w-full"
-              value={fullName}
-              placeholder="Full Name"
-              onChange={(e) => setFullName(e.target.value)}
-              required
-            />
-            {errors.fullName && <div className="text-red-600">{errors.fullName}</div>}
+            <CustomInputField type="text" name="fullName" value={fullName} onChange={(e)=>setFullName(e.target.value)} placeholder="Full Name" required />
           </div>
         </div>
         <div className="flex justify-center gap-4 mb-[35px]">
           <div className="w-[50%]">
             <label htmlFor="">Father Name :</label>
-            <input
-              type="text"
-              className="border-[2px] rounded p-[10px] w-full"
-              value={fatherName}
-              placeholder="Father Name"
-              onChange={(e) => setFatherName(e.target.value)}
-              required
-            />
-            {errors.fatherName && <div className="text-red-600">{errors.fatherName}</div>}
+            <CustomInputField type="text" name="fatherName" value={fatherName} onChange={(e)=>setFatherName(e.target.value)} placeholder="Father Name" required />
           </div>
           <div className="w-[50%]">
             <label htmlFor="">CNIC :</label>
-            <input
-              type="number"
-              className="border-[2px] rounded p-[10px] w-full"
-              value={cnic}
-              placeholder="CNIC"
-              onChange={(e) => setCNIC(e.target.value)}
-              required
-            />
-            {errors.cnic && <div className="text-red-600">{errors.cnic}</div>}
+            <CustomInputField type="number" name="cnic" value={cnic} onChange={(e)=>setCNIC(e.target.value)} placeholder="CNIC" required />
           </div>
         </div>
 
         <div className="flex justify-center gap-4 mb-[35px]">
           <div className="w-[50%]">
             <label htmlFor="">Email :</label>
-            <input
-              type="email"
-              className="border-[2px] rounded p-[10px] w-full"
-              value={email}
-              placeholder="Email"
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            {errors.email && <div className="text-red-600">{errors.email}</div>}
+            <CustomInputField type="email" name="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Email" required />
           </div>
           <div className="w-[50%]">
             <label htmlFor="">Date of Joining :</label>
-            <input
-              type="date"
-              className="border-[2px] rounded p-[10px] w-full"
-              value={dateOfJoining}
-              onChange={(e) => setDateOfJoining(e.target.value)}
-              required
-            />
+            <CustomInputField type="date" name="dateOfJoining" value={dateOfJoining} onChange={(e)=>setDateOfJoining(e.target.value)} required />
           </div>
         </div>
         <div className="flex justify-center gap-4 mb-[10px]">
         <div className="w-[50%]">
             <label htmlFor="">Password :</label>
-            <input
-              type="password"
-              className="border-[2px] rounded p-[10px] w-full"
-              value={password}
-              placeholder="Password"
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          {errors.password && <div className="text-red-600">{errors.password}</div>}
+            <CustomInputField type="password" name="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password" required />
+            </div>
 
           <div className="w-[50%]">
             <label htmlFor="">Confirm Password :</label>
-            <input
-              type="password"
-              className="border-[2px] rounded p-[10px] w-full"
-              value={confirmPassword}
-              placeholder="Confirm Password"
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-            {errors.confirmPassword && <div className="text-red-600">{errors.confirmPassword}</div>}
-          </div>
+            <CustomInputField type="password" name="confirmPassword" value={confirmPassword} onChange={(e)=>setConfirmPassword(e.target.value)} placeholder="Confirm Password" required />
+            </div>
         </div>
 
         <div className="flex justify-center gap-4 mb-[35px] ">
@@ -227,7 +171,7 @@ export default function Form() {
             className="bg-black rounded text-white px-[30px] py-2"
             type="submit"
           >
-            <span>Loading...</span>
+            Loading...
           </button>
         </div>
         ):(

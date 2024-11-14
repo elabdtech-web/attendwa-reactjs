@@ -8,6 +8,7 @@ import UserContext from "../hooks/HeadertextContext";
 import { AuthContext } from "../hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
+import { toast } from "react-toastify";
 
 export default function EmployeeLayout() {
   const [loading, setLoading] = useState(true);
@@ -22,8 +23,9 @@ export default function EmployeeLayout() {
       const userData = snapshot.docs[0].data();
       setAllData(userData);
       setUserType(userData.role)
-    } else {
-      alert("No user found with this email.");
+    } 
+    if (snapshot.empty) {
+      toast.error("No user found with this email.");
     }
   };
 

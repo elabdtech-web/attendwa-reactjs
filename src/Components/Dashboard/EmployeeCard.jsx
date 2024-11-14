@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../Firebase/FirebaseConfig";
 import { collection, query, where, getDocs, updateDoc, addDoc, Timestamp,setDoc,doc } from "firebase/firestore";
+import { toast } from "react-toastify";
+import CustomInputField from "../CustomInputField";
 
 export default function EmployeeCard() {
   const [employees, setEmployees] = useState([]);
@@ -54,7 +56,8 @@ export default function EmployeeCard() {
               hasCheckedIn: true,
               status: checkInData.status || "present",
             };
-          } else {
+          } 
+          if (checkInSnapshot.size === 0) {
             return {
               id: doc.id,
               regId: userId,
@@ -71,7 +74,7 @@ export default function EmployeeCard() {
       setEmployees(employeeList);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching employees:", error);
+      toast.error("Error fetching employees");
       setLoading(false);
     }
   };
@@ -135,7 +138,8 @@ export default function EmployeeCard() {
               : employee
           )
         );
-      } else {
+      } 
+      if (checkInSnapshot.size > 0) {
         const docRef = checkInSnapshot.docs[0].ref;
         await updateDoc(docRef, { status: status, createdAt });
         setEmployees((prevEmployees) =>
@@ -147,7 +151,7 @@ export default function EmployeeCard() {
         );
       }
     } catch (error) {
-      console.error("Error updating status:", error);
+      toast.error("Error updating status");
     }
     setLoading(false);
   };
@@ -181,7 +185,8 @@ export default function EmployeeCard() {
             status: "holiday",
             totalWorkingHours: "N/A",
           });
-        } else {
+        } 
+        if (checkInSnapshot.empty) {
           await addDoc(checkInCollection, {
             userId: regId,
             checkInTime: null,
@@ -193,10 +198,9 @@ export default function EmployeeCard() {
           });
         }
       }
-      alert("Holiday marked for all active employees.");
+      toast.success("Holiday marked for all active employees.");
     } catch (error) {
-      console.error("Error marking holiday: ", error);
-      alert("Failed to mark holiday for employees.");
+      toast.success("Failed to mark holiday for employees.");
     }
   };
 
@@ -232,7 +236,7 @@ export default function EmployeeCard() {
         <div className="font-semibold">Today's Attendance</div>
         <div>
           <button
-            className="bg-gray-800 text-white px-3 py-1 text-xl rounded-md"
+            className="bg-gray-800 text-white px-3 py-1 text-base rounded-md"
             onClick={openCheckInDialog}
           >
             Holiday
@@ -286,7 +290,7 @@ export default function EmployeeCard() {
               <tr key={employee.id} className="border-b">
                 <td className="py-2 px-4 w-[20%]">{employee.fullName}</td>
                 <td className="py-2 px-4 w-[20%]">{employee.checkInTime?employee.checkInTime:"--"}</td>
-                <td className="py-2 px-4 w-[20%]">{employee.checkOutTime?employee.checkOutDate:"--"}</td>
+                <td className="py-2 px-4 w-[20%]">{employee.checkOutTime?employee.checkOutTime:"--"}</td>
                 <td className="py-2 px-1 w-[30%] flex-1 justify-between">
                   {employee.status !== "N/A" ? (
                     <span className="text-gray-800 ml-2">{employee.status}</span>
@@ -323,12 +327,7 @@ export default function EmployeeCard() {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded shadow-lg">
             <h2 className="text-xl font-semibold mb-4 text-center">Which Date you want to give Holiday</h2>
-            <input
-              type="date"
-              value={holidayDate}
-              onChange={(e) => setHolidayDate(e.target.value)}
-              className="px-4 py-2 border rounded mb-4"
-            />
+            <CustomInputField type="date"  name="holidayDate" value={holidayDate} onChange={(e) => setHolidayDate(e.target.value)} />
             <div className="flex justify-end">
               <button
                 onClick={()=>{markHolidayForActiveEmployees();

@@ -3,6 +3,7 @@ import { AuthContext } from "../../hooks/AuthContext";
 import { useUserContext } from "../../hooks/HeadertextContext";
 import {collection,addDoc,updateDoc,doc,getDoc,Timestamp,query,where,getDocs,} from "firebase/firestore";
 import { db } from "../../Firebase/FirebaseConfig";
+import { toast } from "react-toastify";
 
 export default function Dashboard() {
   const { userType, allData } = useContext(AuthContext);
@@ -81,7 +82,7 @@ export default function Dashboard() {
         }
       }
     } catch (error) {
-      console.error("Error checking today's check-in status:", error);
+      toast.error("Error checking today's check-in status:", error);
     }
     setLoading(false);
   };
@@ -89,6 +90,7 @@ export default function Dashboard() {
   const handleCheckIn = async () => {
     setLoading(true);
     try {
+      toast.success("Check-in successful");
       const checkInTime = Timestamp.now();
       const createdAt = Timestamp.now();
       const date = new Date();
@@ -109,7 +111,7 @@ export default function Dashboard() {
       setTotalTime(null);
       setElapsedTime(0);
     } catch (error) {
-      console.error("Error during check-in:", error);
+      toast.error("Error during check-in:", error);
     }
     setLoading(false);
   };
@@ -117,10 +119,11 @@ export default function Dashboard() {
   const handleCheckOut = async () => {
     setLoading(true);
     try {
+      toast.success("Check-out successful");
       const userRef = doc(db, "checkIns", checkInDocId);
       const checkInDoc = await getDoc(userRef);
       if (!checkInDoc.exists()) {
-        console.error("Check-in document does not exist.");
+        toast.error("Check-in document does not exist.");
         return;
       }
 
@@ -142,7 +145,7 @@ export default function Dashboard() {
       setTotalTime(totalWorkingHours);
       setIsCheckedIn(false);
     } catch (error) {
-      console.error("Error during check-out:", error);
+      toast.error("Error during check-out:", error);
     }
     setLoading(false);
   };
@@ -161,7 +164,7 @@ export default function Dashboard() {
 
   
   return (
-    <div className="flex bg-[#FFFFFF] h-screen">
+    <div className="flex bg-white h-screen">
       <div className="flex-1">
         <div className="flex bg-white p-5 m-4 gap-3 shadow">
           <div className="flex w-full justify-between">

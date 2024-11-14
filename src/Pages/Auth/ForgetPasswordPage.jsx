@@ -8,8 +8,6 @@ import { toast } from "react-toastify";
 const ForgetPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState("");
-  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   const handleResetPassword = async (e) => {
@@ -61,13 +59,9 @@ const ForgetPasswordPage = () => {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setErr("");
-                  setSuccess("");
                 }}
               />
             </div>
-            {err && <p className="text-red-500 mb-4">{err}</p>}
-            {success && <p className="text-green-500 mb-4">{success}</p>}
             {loading ? (
               <div className="text-white text-center bg-primary rounded px-4 w-full py-2">
                 Loading...

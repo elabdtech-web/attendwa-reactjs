@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  getAuth,
-  updatePassword,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
-} from "firebase/auth";
+import {getAuth,updatePassword,reauthenticateWithCredential,EmailAuthProvider,} from "firebase/auth";
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../Firebase/FirebaseConfig";
 import { useUserContext } from "../../hooks/HeadertextContext";
 import { AuthContext } from "../../hooks/AuthContext";
+import {toast} from "react-toastify"
+import CustomInputField from "../../Components/CustomInputField";
 
 export default function Profile() {
   const { setHeaderText } = useUserContext();
@@ -18,14 +15,11 @@ export default function Profile() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
   const auth = getAuth();
   const [employeeDetails, setEmployeeDetails] = useState("");
 
   const fetchProfileData = async () => {
     try {
-      console.log("allData", allData);
       const employeeCollection = collection(db, "users");
       const employeeQuery = query(
         employeeCollection,
@@ -36,21 +30,18 @@ export default function Profile() {
       if (!employeeSnapshot.empty) {
         const employeeData = employeeSnapshot.docs[0].data();
         setEmployeeDetails(employeeData);
-        console.log("employeeData", employeeData);
       } else {
-        console.log("No employee data found for the current user.");
+        toast.error("No employee data found for the current user.");
       }
     } catch (error) {
-      console.log("Error in profile data fetching", error);
+      toast.error("Error in profile data fetching", error);
     }
   };
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
     if (newPassword !== confirmNewPassword) {
-      setError("New passwords do not match");
+      toast.error("New passwords do not match");
       return;
     }
     setLoading(true);
@@ -59,9 +50,9 @@ export default function Profile() {
       const credential = EmailAuthProvider.credential(user.email, oldPassword);
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, newPassword);
-      setSuccess("Password updated successfully");
+      toast.success("Password updated successfully");
     } catch (err) {
-      setError("Failed to update password.please check the old password.");
+      toast.error("Failed to update password.please check the old password.");
     }
     setLoading(false);
   };
@@ -118,37 +109,19 @@ export default function Profile() {
             <label className="block text-gray-600 font-medium mb-2 text-xl">
               Old Password :{" "}
             </label>
-            <input
-              type="password"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-              required
-              className=" px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
-            />
+            <CustomInputField type="password" placeholder="Old Password" name="oldPassword" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required/>
           </div>
           <div className="flex items-center justify-between">
             <label className="block text-gray-600 text-xl font-medium mb-2">
               New Password:
             </label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-              className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
-            />
+            <CustomInputField type="password" placeholder="New Password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required/>
           </div>
           <div className="flex items-center justify-between">
             <label className="block text-gray-600 text-xl font-medium mb-2">
               Confirm New Password:
             </label>
-            <input
-              type="password"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-              required
-              className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
-            />
+            <CustomInputField type="password" placeholder="Confirm New Password" name="confirmNewPassword" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} required/>
           </div>
           {loading ? (
             <div >
@@ -163,12 +136,6 @@ export default function Profile() {
             </button>
           )}
         </form>
-        {error && (
-          <p className="text-center text-red-500 text-sm mt-4">{error}</p>
-        )}
-        {success && (
-          <p className="text-center text-green-500 text-sm mt-4">{success}</p>
-        )}
       </div>
     </div>
   );

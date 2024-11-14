@@ -8,6 +8,7 @@ import { db } from "../../Firebase/FirebaseConfig";
 import { useUserContext } from "../../hooks/HeadertextContext";
 import { AuthContext } from "../../hooks/AuthContext";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function Employees() {
   const { userType } = useContext(AuthContext);
@@ -35,7 +36,7 @@ export default function Employees() {
       setEmployees(employeeList);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching employees: ", error);
+      toast.error("Error fetching employees: ", error);
       setLoading(false);
     }
   };
@@ -52,8 +53,9 @@ export default function Employees() {
             : employee
         )
       );
+      toast.success("Employee terminated successfully"); 
     } catch (error) {
-      console.error("Error updating employee status: ", error);
+      toast.error("Error updating employee status: ", error);
     }
   };
 

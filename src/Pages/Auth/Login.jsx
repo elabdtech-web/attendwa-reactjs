@@ -14,7 +14,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
-  const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -46,7 +45,6 @@ const Login = () => {
             setUserType("admin");
             setAllData(userData);
             toast.success("Admin is login");
-            // Flash message
             navigate("/a-dashboard");
           }
 
@@ -55,17 +53,16 @@ const Login = () => {
             setUserType("employee");
             setAllData(userData);
            toast.success("Employee is login");
-            // Flash message
             navigate("/dashboard");
           }
 
           // Unable to find role
           // Logout user with error flash message
           if (userData.role !== "admin" && userData.role !== "employee") {
-            toast.error("No valid role found for the user.");
+            toast.error("No valid role found for the user.")
+            navigate("/login");
           }   
         } else {
-          // No User found
           toast.error("No user found with this email.");
         }
       }
@@ -94,8 +91,8 @@ const Login = () => {
       <div className="shadow rounded-lg max-w-[500px] w-full p-10 bg-white">
         <form onSubmit={handleSubmit}>
           {/* Header */}
-          <div className="pb-3">
-            <h1 className="font-semibold text-2xl">ATTENDWA</h1>
+          <div className="pb-4">
+            <img src="/logo.png" alt="" className="w-[180px] pb-2"/>
             {/* Add logo here */}
             <p className="font-medium text-md">Please login to continue</p>
           </div>
@@ -114,7 +111,6 @@ const Login = () => {
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
-                    setErr("");
                   }}
                 />
               </div>
@@ -131,7 +127,6 @@ const Login = () => {
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
-                      setErr("");
                     }}
                   />
                   <div className="absolute top-[60%] left-[90%]" onClick={() => setVisible(!visible)}>
@@ -150,8 +145,6 @@ const Login = () => {
                 </button>
               </div>
             </div>
-            {/* Button */}
-            {err && <p className="text-red-500 mb-4">{err}</p>}
             {/* Set Loading */}
             {loading ? (
               <div className="text-white text-center bg-primary rounded px-4 w-full py-2">

@@ -2,47 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../../Firebase/FirebaseConfig";
 import { format } from "date-fns";
-import {collection,query,where,orderBy,getDocs,Timestamp,updateDoc,doc,writeBatch,} from "firebase/firestore";
+import {collection,query,where,orderBy,getDocs,doc,} from "firebase/firestore";
 import EditAttendance from "../../Components/EditAttendance";
 import AddAttendance from "../../Components/Dashboard/AddAttendance";
-
-const Calendar = ({selectedMonth,selectedYear,onMonthChange,onYearChange,}) => {
-  const months = ["January","February","March","April","May","June","July","August","September","October","November","December",];
-
-  const years = [];
-  const currentYear = new Date().getFullYear();
-  for (let i = 2020; i <= currentYear; i++) {
-    years.push(i);
-  }
-
-  return (
-    <div className="flex space-x-4">
-      <select
-        onChange={(e) => onMonthChange(e.target.value)}
-        value={selectedMonth}
-        className="border border-gray-300 rounded"
-      >
-        {months.map((month, index) => (
-          <option key={index} value={index}>
-            {month}
-          </option>
-        ))}
-      </select>
-
-      <select
-        onChange={(e) => onYearChange(e.target.value)}
-        value={selectedYear}
-        className="border border-gray-300 rounded"
-      >
-        {years.map((year) => (
-          <option key={year} value={year}>
-            {year}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-};
+import Calendar from "../../Components/Calendar";
+import {toast} from "react-toastify";
 
 export default function EmployeeDetails() {
   const [attendanceData, setAttendanceData] = useState([]);
@@ -63,7 +27,6 @@ export default function EmployeeDetails() {
 
   const fetchAttendanceData = async (id) => {
     try {
-      updateMissingFields();
       const startOfMonth = format(
         new Date(selectedYear, selectedMonth, 1),
         "yyyy-MM-dd"
@@ -90,12 +53,13 @@ export default function EmployeeDetails() {
           ...doc.data(),
         }));
         setAttendanceData(data);
-      } else {
+      } 
+      if (userSnapshot.empty) {
         setAttendanceData([]);
       }
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching attendance data: ", error);
+      toast.error("Error fetching attendance data ");
       setLoading(false);
     }
   };
@@ -110,11 +74,12 @@ export default function EmployeeDetails() {
       if (!userSnapshot.empty) {
         const userData = userSnapshot.docs[0].data();
         setEmployeeData(userData);
-      } else {
+      } 
+      if (userSnapshot.empty) {
         setEmployeeData(null);
       }
     } catch (error) {
-      console.error("Error fetching employee data: ", error);
+      toast.error("Error fetching employee data ");
     }
   };
 
@@ -123,66 +88,6 @@ export default function EmployeeDetails() {
   };
   const handleEditAttendance = (entry) => {
     setEditAttendance(entry);
-  };
-
-  const updateMissingFields = async () => {
-    const userCollectionRef = collection(db, "checkIns");
-
-    try {
-      const querySnapshot = await getDocs(userCollectionRef);
-
-      const batch = writeBatch(db);
-
-      querySnapshot.forEach((document) => {
-        const docData = document.data();
-        const docRef = doc(db, "checkIns", document.id);
-
-        const fieldsToAdd = {
-          status: docData.status || "N/A",
-          totalWorkingHours:
-            docData.totalWorkingHours ||
-            calculateTotalWorkingHours(
-              docData.checkInTime,
-              docData.checkOutTime
-            ),
-          createdAt: docData.createdAt || docData.checkInTime,
-          date:
-            docData.date ||
-            new Date(docData.checkInTime.seconds * 1000).toLocaleDateString(
-              "en-CA"
-            ),
-        };
-        function calculateTotalWorkingHours(checkInTime, checkOutTime) {
-          if (!checkInTime || !checkOutTime) {
-            return "N/A";
-          }
-          const checkInDate = checkInTime.toDate();
-          const checkOutDate = checkOutTime.toDate();
-
-          const totalMilliseconds = checkOutDate - checkInDate;
-          const totalSeconds = Math.floor(totalMilliseconds / 1000);
-
-          const hours = Math.floor(totalSeconds / 3600);
-          const minutes = Math.floor((totalSeconds % 3600) / 60);
-          const seconds = totalSeconds % 60;
-          return `${hours}h ${minutes}m ${seconds}s`;
-        }
-
-        if (
-          !("status" in docData) ||
-          !("totalWorkingHours" in docData) ||
-          !("createdAt" in docData) ||
-          !("date" in docData)
-        ) {
-          batch.update(docRef, fieldsToAdd);
-        }
-      });
-
-      await batch.commit();
-      console.log("Successfully updated documents with missing fields.");
-    } catch (error) {
-      console.error("Error updating documents: ", error);
-    }
   };
 
   return (

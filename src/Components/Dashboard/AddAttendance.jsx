@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { db } from '../../Firebase/FirebaseConfig';
 import { collection, addDoc, Timestamp, query, where, getDocs } from 'firebase/firestore';
+import { toast } from 'react-toastify';
+import CustomInputField from '../CustomInputField';
 
 export default function AddAttendance({ id }) {
   const [checkInTime, setCheckInTime] = useState('');
@@ -8,14 +10,10 @@ export default function AddAttendance({ id }) {
   const [date, setDate] = useState('');
   const [status, setStatus] = useState('present');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(null);
-  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-    setSuccess(null);
   
     try {
       const attendanceQuery = query(
@@ -26,7 +24,7 @@ export default function AddAttendance({ id }) {
   
       const attendanceSnapshot = await getDocs(attendanceQuery);
       if (!attendanceSnapshot.empty) {
-        alert('Attendance for this date already exists.');
+        toast.warning('Attendance for this date already exists.');
         setLoading(false);
         return;
       }
@@ -49,7 +47,7 @@ export default function AddAttendance({ id }) {
         const checkOutDateTime = new Date(`${date}T${checkOutTime}:00`);
   
         if (checkOutDateTime <= checkInDateTime) {
-          alert("Check-out time must be greater than check-in time.");
+          toast.warning("Check-out time must be greater than check-in time.");
           setLoading(false);
           return;
         }
@@ -76,7 +74,7 @@ export default function AddAttendance({ id }) {
         createdAt: Timestamp.now(),
       });
   
-      setSuccess('Attendance data saved successfully!');
+      toast.success('Attendance data saved successfully!');
       setCheckInTime('');
       setCheckOutTime('');
       setDate('');
@@ -84,18 +82,13 @@ export default function AddAttendance({ id }) {
       window.location.reload();
       
     } catch (error) {
-      setError('Error adding attendance data');
-      console.error('Error adding attendance data:', error);
+      toast.error('Error adding attendance data');
     }
     setLoading(false);
   };
 
   const onCheckOutHandler = (e) => {
     const newCheckOutTime = e.target.value;
-    if (newCheckOutTime <= checkInTime) {
-      alert("Check-out time must be greater than check-in time.");
-      return;
-    }
     setCheckOutTime(newCheckOutTime);
   };
 
@@ -107,43 +100,29 @@ export default function AddAttendance({ id }) {
         Add Attendance
       </h2>
       <form onSubmit={handleSubmit} className="space-y-5 py-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between ">
           <label className="block text-gray-600 font-medium mb-2 text-xl">Reg ID:</label>
-          <input
-            type="text"
-            value={id}
-            readOnly
-            className="px-4 py-2 ml-5 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none w-[30%]"
-          />
+          <div className="w-[300px]">
+          <CustomInputField type="text" name="id" value={id} readOnly/>
+          </div>
         </div>
         <div className="flex items-center justify-between">
           <label className="block text-gray-600 font-medium mb-2 text-xl">Check-In Time:</label>
-          <input
-            type="time"
-            value={checkInTime}
-            onChange={(e) => setCheckInTime(e.target.value)}
-            className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
-          />
+          <div className="w-[300px]">
+          <CustomInputField type="time" name="checkInTime" value={checkInTime} onChange={(e) => setCheckInTime(e.target.value)}  readOnly={status === "home"|| status === "holiday" || status === "leave" || status === "absent"}/> 
+          </div>
         </div>
         <div className="flex items-center justify-between">
           <label className="block text-gray-600 font-medium mb-2 text-xl">Check-Out Time:</label>
-          <input
-            type="time"
-            value={checkOutTime}
-            onChange={onCheckOutHandler}
-            className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
-          />
+          <div className="w-[300px]">
+          <CustomInputField type="time" name="checkOutTime" value={checkOutTime} onChange={(e) => setCheckOutTime(e.target.value)}  readOnly={status === "home"|| status === "holiday" || status === "leave" || status === "absent"}/>
+          </div>
         </div>
         <div className="flex items-center justify-between">
           <label className="block text-gray-600 font-medium mb-2 text-xl">Date:</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-            max={today}
-            className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
-          />
+          <div className="w-[300px]">
+          <CustomInputField type={"date"} name="date" value={date} onChange={(e) => setDate(e.target.value)} required max={today}/>
+          </div>
         </div>
         <div className="flex items-center justify-between">
           <label className="block text-gray-600 font-medium mb-2 text-xl">Status:</label>
@@ -151,7 +130,7 @@ export default function AddAttendance({ id }) {
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             required
-            className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
+            className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[300px]"
           >
             <option value="present">Present</option>
             <option value="absent">Absent</option>
@@ -173,8 +152,6 @@ export default function AddAttendance({ id }) {
           </button>
         )}
       </form>
-      {error && <p className="text-center text-red-500 text-sm mt-4">{error}</p>}
-      {success && <p className="text-center text-green-500 text-sm mt-4">{success}</p>}
-    </div>
+      </div>
   );
 }

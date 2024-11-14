@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../Firebase/FirebaseConfig";
 import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
+import {toast} from "react-toastify";
+import CustomInputField from "../Components/CustomInputField"
 
 const EditAttendance = ({ attendanceId, closeEdit }) => {
   const [attendanceData, setAttendanceData] = useState(null);
@@ -23,7 +25,8 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
           const checkInDate = data.checkInTime.toDate();
           const adjustedCheckInDate = new Date(checkInDate.getTime() + 5 * 60 * 60 * 1000); 
           setCheckInTime(adjustedCheckInDate.toISOString().slice(11, 16)); 
-        } else {
+        } 
+        if (!data.checkInTime) {
           setCheckInTime(""); 
         }
     
@@ -31,12 +34,14 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
           const checkOutDate = data.checkOutTime.toDate(); 
           const adjustedCheckOutDate = new Date(checkOutDate.getTime() + 5 * 60 * 60 * 1000); 
           setCheckOutTime(adjustedCheckOutDate.toISOString().slice(11, 16));
-        } else {
+        } 
+        if (!data.checkOutTime) {
           setCheckOutTime(""); 
         }
         setDate(data.date || "");
-      } else {
-        console.log("No such document!");
+      } 
+      if (!docSnap.exists()) {
+        toast.error("No such document!");
       }
     };
 
@@ -47,7 +52,7 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
     const docRef = doc(db, "checkIns", attendanceId);
   
     if (!date) {
-      alert("Please fill in the date");
+      toast.warning("Please fill in the date");
       return;
     }
   
@@ -55,7 +60,7 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
     let finalCheckOutTime = checkOutTime ? new Date(`${date}T${checkOutTime}:00`) : null;
 
     if (finalCheckInTime && finalCheckOutTime && finalCheckOutTime <= finalCheckInTime) {
-      alert("Check-out time must be greater than check-in time.");
+      toast.warning("Check-out time must be greater than check-in time.");
       return;
     }
     
@@ -88,7 +93,7 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
       closeEdit(); 
     
     } catch (error) {
-      console.error("Error updating document:", error);
+      toast.error("Error updating document:", error);
     }
   };
 
@@ -108,44 +113,35 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               required
-              className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
+              className="px-1 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[300px]"
             >
               <option value="present">Present</option>
               <option value="absent">Absent</option>
               <option value="leave">Leave</option>
               <option value="home">Work From Home</option>
+              <option value="holiday">Holiday</option>
             </select>
           </div>
 
           <div className="flex items-center justify-between">
             <label className="block text-gray-600 font-medium mb-2 text-xl">Check-In Time:</label>
-            <input
-              type="time"
-              value={checkInTime}
-              onChange={(e) => setCheckInTime(e.target.value)}
-              className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
-            />
+            <div className="w-[300px]">
+            <CustomInputField type="time" name="checkInTime" value={checkInTime} onChange={(e) => setCheckInTime(e.target.value)} readOnly={status === "home"|| status === "holiday" || status === "leave" || status === "absent"}/>
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
             <label className="block text-gray-600 font-medium mb-2 text-xl">Check-Out Time:</label>
-            <input
-              type="time"
-              value={checkOutTime}
-              onChange={(e) => setCheckOutTime(e.target.value)}
-              className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
-            />
+            <div className="w-[300px]">
+            <CustomInputField type="time" name="checkOutTime" value={checkOutTime} onChange={(e) => setCheckOutTime(e.target.value)}  readOnly={status === "home"|| status === "holiday" || status === "leave" || status === "absent"}/>
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
             <label className="block text-gray-600 font-medium mb-2 text-xl">Date:</label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              max={today} 
-              className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[30%]"
-            />
+            <div className="w-[300px]">
+            <CustomInputField type="date" name="date" value={date} onChange={(e) => setDate(e.target.value)} max={today}/>
+              </div>
           </div>
 
           <div className="flex justify-between gap-4">

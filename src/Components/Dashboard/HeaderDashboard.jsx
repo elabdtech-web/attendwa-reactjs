@@ -1,4 +1,4 @@
-import React, { useState,useEffect ,useContext} from "react";
+import React, { useState,useEffect ,useContext,useRef} from "react";
 import {Link} from "react-router-dom"
 import { FiMenu, FiUser } from "react-icons/fi";
 import { IoMdArrowDropdown } from "react-icons/io";
@@ -8,6 +8,7 @@ import { auth } from "../../Firebase/FirebaseConfig";
 import { useUserContext } from "../../hooks/HeadertextContext";
 import { AuthContext } from "../../hooks/AuthContext";
 import Profile from "../../Pages/Employee/Profile";
+import { toast } from "react-toastify";
 
 export default function HeaderDashboard({
   toggleSidebar,
@@ -16,22 +17,23 @@ export default function HeaderDashboard({
   fullName,
   email,
 }) {
+  const catMenu = useRef(null)
   const {setUserType,setAllData} = useContext(AuthContext)
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState("");
    const navigate = useNavigate();
   const {headerText} = useUserContext()
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+  
   const handleLogout = () => {
     signOut(auth);
     localStorage.removeItem("accesstoken");
-    localStorage.removeItem("userEmail")
-        
+    localStorage.removeItem("userEmail")    
     setUserType(null);
     setAllData(null);
-
     navigate("/login");
+    toast.success("Logout Successfully");
   };
   return (
     <div className="bg-white shadow p-4 flex justify-between items-center">
@@ -40,7 +42,6 @@ export default function HeaderDashboard({
           <FiMenu />
         </button>
       )}
-
       <h1 className="text-2xl font-semibold">{headerText}</h1>
 
       <div className="relative">

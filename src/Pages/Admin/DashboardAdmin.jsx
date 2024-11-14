@@ -6,6 +6,7 @@ import { AuthContext } from "../../hooks/AuthContext";
 import { useUserContext } from "../../hooks/HeadertextContext";
 import { db } from "../../Firebase/FirebaseConfig";
 import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
+import {toast} from "react-toastify"
 
 export default function DashboardAdmin() {
   const { userType, allData } = useContext(AuthContext);
@@ -25,7 +26,7 @@ export default function DashboardAdmin() {
         const querySnapshot = await getDocs(q);
         setTotalEmployees(querySnapshot.size);
       } catch (error) {
-        console.error("Error fetching employees:", error);
+        toast.error("Error fetching employees:", error);
       }
     };
 
@@ -101,7 +102,7 @@ export default function DashboardAdmin() {
               const formattedDate = `${year}-${month}-${day}`;
               updateData.date = formattedDate;
             } else {
-              console.warn("Invalid date format:", docData.checkInTime);
+              toast.warning("Invalid date format");
             }
           }else {
             updateData.date = "N/A"
@@ -112,13 +113,12 @@ export default function DashboardAdmin() {
           }else{
             updateData.status = "N/A";
           } 
-
           await updateDoc(docRef, updateData);
         }
       });
-      alert("All fields are updated for all employees.");
+      toast.success("All fields are updated for all employees.");
     } catch (error) {
-      console.error("Error updating check-in documents:", error);
+      toast.error("Error updating check-in documents:", error);
     }
   };
 
@@ -133,10 +133,9 @@ export default function DashboardAdmin() {
         await updateDoc(docRef, { status: "active" });
       });
   
-      alert("status updated to 'active' for all employees.");
+      toast.success("status updated to 'active' for all employees.");
     } catch (error) {
-      console.error("Error updating documents: ", error);
-      alert("Failed to update documents.");
+      toast.error("Failed to update documents.");
     }
   };
   return (
