@@ -16,6 +16,7 @@ import Tasks from "./Pages/Admin/Tasks";
 import SettingAdmin from "./Pages/Admin/SettingAdmin";
 import Profile from "./Pages/Employee/Profile";
 import EmployeeDetails from "./Pages/Admin/EmployeeDetails";
+import ForgetPasswordPage from "./Pages/Auth/ForgetPasswordPage";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgetPasswordPage" element={<ForgetPasswordPage/>}/>
         <Route path="/a-dashboard" element={<AdminLayout />}>
           <Route index element={<DashboardAdmin />} />
           <Route path="tasks" element={<Tasks />} />

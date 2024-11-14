@@ -5,25 +5,24 @@ import { query, collection, where, getDocs } from "firebase/firestore";
 import { db, auth } from "../../Firebase/FirebaseConfig";
 import { AuthContext } from "../../hooks/AuthContext";
 import CustomInputField from "../../Components/CustomInputField";
+import { IoEyeSharp, IoEyeOffSharp } from "react-icons/io5";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const { userType, setUserType, allData, setAllData } =
     useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [visible, setVisible] = useState(false);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  /**
-   * Handles login form submission
-   * @param {Event} e - Form submission event
-   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Check if email and password are filled
     if (!email || !password) {
-      setErr("Please fill both fields");
+      toast.error("Please fill both fields");
       return;
     }
     // Set Loading
@@ -46,7 +45,7 @@ const Login = () => {
           if (userData.role === "admin") {
             setUserType("admin");
             setAllData(userData);
-            console.log("Admin is login");
+            toast.success("Admin is login");
             // Flash message
             navigate("/a-dashboard");
           }
@@ -55,24 +54,31 @@ const Login = () => {
           if (userData.role === "employee") {
             setUserType("employee");
             setAllData(userData);
-            console.log("Employee is login");
+           toast.success("Employee is login");
             // Flash message
             navigate("/dashboard");
           }
 
           // Unable to find role
           // Logout user with error flash message
-          setErr("No valid role found for the user.");
+          if (userData.role !== "admin" && userData.role !== "employee") {
+            toast.error("No valid role found for the user.");
+          }   
         } else {
           // No User found
-          setErr("No user found with this email.");
+          toast.error("No user found with this email.");
         }
       }
     } catch (error) {
-      setErr("Your Credentials are Incorrect");
+      toast.error("Your Credentials are Incorrect");
     }
     setLoading(false);
   };
+
+  const handleClick = () => {
+    navigate("/forgetPasswordPage");
+  };
+
   useEffect(() => {
     const storedAccessToken = localStorage.getItem("accesstoken");
     if (storedAccessToken) {
@@ -97,8 +103,8 @@ const Login = () => {
           <div className="items-center">
             <div className="pb-4">
               {/* Email */}
-              <div className="mb-2">
-                <label htmlFor="email" className="text-md pb-2">
+              <div className="">
+                <label htmlFor="email" className="text-md pb-2 leading-8">
                   Email
                 </label>
                 <CustomInputField
@@ -113,26 +119,35 @@ const Login = () => {
                 />
               </div>
               {/* Password */}
-              <div className="mb-2">
-                <label htmlFor="password" className="mb-2">
+              <div className="mb-2 relative">
+                <label htmlFor="password" className=" leading-8">
                   Password
                 </label>
-                <CustomInputField
-                  type="password"
-                  placeholder="Enter your password"
-                  name="password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setErr("");
-                  }}
-                />
+                <div>
+                  <CustomInputField
+                    type={visible ? "text" : "password"}
+                    placeholder="Enter your password"
+                    name="password"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setErr("");
+                    }}
+                  />
+                  <div className="absolute top-[60%] left-[90%]" onClick={() => setVisible(!visible)}>
+                    {visible ? <IoEyeSharp /> : <IoEyeOffSharp />}
+                  </div>
+                </div>
               </div>
               {/* Forget Password */}
               <div className="text-right">
-                <a href="#" className="text-gray-600 text-sm">
+                <button
+                  type="button"
+                  onClick={handleClick}
+                  className="text-gray-600 text-sm"
+                >
                   Forget Password?
-                </a>
+                </button>
               </div>
             </div>
             {/* Button */}

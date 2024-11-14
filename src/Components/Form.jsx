@@ -15,7 +15,7 @@ export default function Form() {
   const [dateOfJoining, setDateOfJoining] = useState('');
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [status, setStatus] = useState('Active');
+  const [status, setStatus] = useState('active');
   const [created_at, setCreatedAt] = useState('');
   const [error, setError] =useState('')
   const navigate = useNavigate();
