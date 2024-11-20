@@ -33,31 +33,26 @@ export default function EmployeeLayout() {
     const access_token = localStorage.getItem("accesstoken");
     if (!access_token) {
       navigate("/login");
+      return;
     }
+    // fetch role based on user id..
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        await fetchUserRole(currentUser.email);
+        setLoading(false);
+      } else {
+        navigate("/login");
+      }
+    });
 
-    if (access_token && !userType) {
-      
-      const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-        if (currentUser) {
-          await fetchUserRole(currentUser.email);
-          setLoading(false);
-        } else {
-          navigate("/login");
-        }
-      });
-
-      return () => unsubscribe();
-    }
+    return () => unsubscribe();
 
     setLoading(false)
-  }, [navigate]);
+  }, []);
   
-
-  useEffect(()=>{
-    if (userType === "admin"){
+  if (userType === "admin"){
         navigate("/a-dashboard")
-      } 
-  },[userType])
+   } 
   
 
   const toggleSidebar = () => {
