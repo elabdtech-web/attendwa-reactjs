@@ -5,8 +5,11 @@ import { Link } from "react-router-dom";
 
 export default function Header() {
   const [accessToken, setAccessToken] = useState(null);
-  const token = auth.currentUser.uid;
-  console.log(token)
+    if (auth.currentUser) {
+      setAccessToken(auth.currentUser.uid);
+    } else {
+      setAccessToken(null);
+    }
   return (
     <div className="flex justify-between items-center px-[5%] bg-gray-600 h-[10vh]">
       <div className="flex items-center gap-3">
@@ -14,7 +17,7 @@ export default function Header() {
         <h1 className="font-semibold text-[20px] text-white">ELABD TECH</h1>
       </div>
       <div>
-        {token  ? (
+        {accessToken  ? (
           <Link to="/dashboard">
             <Button text={"Dashboard"} />
           </Link>
