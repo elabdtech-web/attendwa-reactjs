@@ -4,20 +4,8 @@ import Button from "./Button";
 import { Link } from "react-router-dom";
 
 export default function Header() {
-  const [accessToken, setAccessToken] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setAccessToken(user.uid);  // Set accessToken to user's UID when user is authenticated
-      } else {
-        setAccessToken(null);  // Set accessToken to null when there is no user
-      }
-    });
-
-    // Cleanup the listener on component unmount
-    return () => unsubscribe();
-  }, []);
+  
+  const token = localStorage.getItem("accesstoken");
 
   return (
     <div className="flex justify-between items-center px-[5%] bg-gray-600 h-[10vh]">
@@ -26,7 +14,7 @@ export default function Header() {
         <h1 className="font-semibold text-[20px] text-white">ELABD TECH</h1>
       </div>
       <div>
-        {accessToken ? (
+        {token ? (
           <Link to="/dashboard">
             <Button text={"Dashboard"} />
           </Link>
