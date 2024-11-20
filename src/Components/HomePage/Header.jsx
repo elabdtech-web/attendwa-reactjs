@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 export default function Header() {
   const [accessToken, setAccessToken] = useState(null);
   const token = auth.currentUser.uid;
+  console.log(token)
   return (
     <div className="flex justify-between items-center px-[5%] bg-gray-600 h-[10vh]">
       <div className="flex items-center gap-3">
