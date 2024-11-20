@@ -1,11 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
-import {getAuth,updatePassword,reauthenticateWithCredential,EmailAuthProvider,} from "firebase/auth";
+import {
+  getAuth,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+} from "firebase/auth";
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../Firebase/FirebaseConfig";
 import { useUserContext } from "../../hooks/HeadertextContext";
 import { AuthContext } from "../../hooks/AuthContext";
-import {toast} from "react-toastify"
-import CustomInputField from "../../Components/CustomInputField";
+import { toast } from "react-toastify";
+import { IoEyeSharp, IoEyeOffSharp } from "react-icons/io5";
+import {Link} from "react-router-dom";
 
 export default function Profile() {
   const { setHeaderText } = useUserContext();
@@ -17,6 +23,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const auth = getAuth();
   const [employeeDetails, setEmployeeDetails] = useState("");
+  const [visible, setVisible] = useState(false);
 
   const fetchProfileData = async () => {
     try {
@@ -38,104 +45,81 @@ export default function Profile() {
     }
   };
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    if (newPassword !== confirmNewPassword) {
-      toast.error("New passwords do not match");
-      return;
-    }
-    setLoading(true);
-    try {
-      const user = auth.currentUser;
-      const credential = EmailAuthProvider.credential(user.email, oldPassword);
-      await reauthenticateWithCredential(user, credential);
-      await updatePassword(user, newPassword);
-      toast.success("Password updated successfully");
-    } catch (err) {
-      toast.error("Failed to update password.please check the old password.");
-    }
-    setLoading(false);
-  };
-
   useEffect(() => {
     setHeaderText("Profile");
     fetchProfileData();
   }, [allData.regId]);
 
   return (
-    <div className="profile-container">
-      <div className="bg-white p-6 m-6 rounded-lg shadow-lg max-w-4xl mx-auto">
-        <h2 className="py-3 text-2xl font-semibold text-gray-800 border-b border-gray-300">
-          Profile Details
-        </h2>
-        {employeeDetails ? (
-          <div className="py-3 space-y-3 text-left">
-            <div className="flex justify-between items-center text-xl text-gray-700">
-              <p className="font-medium text-gray-600">Reg No:</p>
-              <p className="font-normal text-gray-800">
-                {employeeDetails.regId}
-              </p>
+    <div className="profile-container lg2:w-[75%] max-lg2:px-10 mx-auto mt-10">
+      <p className="font-semibold text-3xl mb-10 ">Employee Profile</p>
+      <div className="md:flex gap-5 mx-auto">
+        <div className="shadow p-5 md:w-[35%] w-full ">
+          <img
+            src="/PngItem_223968.png"
+            alt=""
+            className="md:w-[80%] rounded-full border-2 mb-5 flex mx-auto"
+          />
+          {employeeDetails ? (
+            <div>
+            <h1 className="text-center font-semibold text-xl">{employeeDetails.fullName}</h1>
+            <p className="text-center text-sm">{employeeDetails.jobTitle}</p>
             </div>
-            <div className="flex justify-between items-center text-xl text-gray-700">
-              <p className="font-medium text-gray-600">Name:</p>
-              <p className="font-normal text-gray-800">
-                {employeeDetails.fullName}
-              </p>
-            </div>
-            <div className="flex justify-between items-center text-xl text-gray-700">
-              <p className="font-medium text-gray-600">Email:</p>
-              <p className="font-normal text-gray-800">
-                {employeeDetails.email}
-              </p>
-            </div>
-            <div className="flex justify-between items-center text-xl text-gray-700">
-              <p className="font-medium text-gray-600">CNIC:</p>
-              <p className="font-normal text-gray-800">
-                {employeeDetails.cnic}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <p className="text-center py-4 text-gray-500">Loading user data...</p>
-        )}
-      </div>
-
-      <div className="bg-white p-6 m-6 rounded-lg shadow-lg max-w-4xl mx-auto">
-        <h2 className="py-3 text-2xl font-semibold text-gray-800 border-b border-gray-300">
-          Change Password
-        </h2>
-        <form onSubmit={handlePasswordChange} className="space-y-5 py-4">
-          <div className="flex items-center justify-between">
-            <label className="block text-gray-600 font-medium mb-2 text-xl">
-              Old Password :{" "}
-            </label>
-            <CustomInputField type="password" placeholder="Old Password" name="oldPassword" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required/>
-          </div>
-          <div className="flex items-center justify-between">
-            <label className="block text-gray-600 text-xl font-medium mb-2">
-              New Password:
-            </label>
-            <CustomInputField type="password" placeholder="New Password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required/>
-          </div>
-          <div className="flex items-center justify-between">
-            <label className="block text-gray-600 text-xl font-medium mb-2">
-              Confirm New Password:
-            </label>
-            <CustomInputField type="password" placeholder="Confirm New Password" name="confirmNewPassword" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} required/>
-          </div>
-          {loading ? (
-            <div >
-              <span className=" bg-gray-800 text-white font-semibold px-6 py-2 rounded">Loading...</span>
-            </div>
-          ) : (
-            <button
-              type="submit"
-              className=" bg-gray-800 text-white font-semibold px-3 py-2 rounded "
-            >
-              Update Password
-            </button>
+          ):(
+            <p>Loading user data...</p>
           )}
-        </form>
+          <div className="border my-5"></div>
+          <div className="pl-2 mt-5">
+            <p className="font-semibold">Email</p>
+            {employeeDetails ? (
+              <p className="text-[#75A4EA]">{employeeDetails.email}</p>
+            ) : (
+              <p>Loading user data...</p>
+            )}
+          </div>
+        </div>
+        <div className="w-full shadow p-5 border max-md:mt-5">
+          <p className="font-medium text-3xl mb-10 ">Basic Information</p>
+          {employeeDetails ? (
+            <>
+              <div className="flex mb-5">
+                <p className="text-gray-500 base:mr-[123px] mr-[33px]">Employee ID:</p>
+                <p>{employeeDetails.regId}</p>
+              </div>
+              <div className="flex mb-5">
+                <p className="text-gray-500 base:mr-[140px] mr-[40px]">Full Name:</p>
+                <p>{employeeDetails.fullName}</p>
+              </div>
+              <div className="flex mb-5">
+                <p className="text-gray-500 base:mr-[120px] mr-[20px]">Father Name:</p>
+                <p>{employeeDetails.fatherName}</p>
+              </div>
+              <div className="flex mb-5">
+                <p className="text-gray-500 base:mr-[104px] mr-[14px]">Phone Number:</p>
+                <p>{employeeDetails.phone || "N/A"}</p>
+              </div>
+              <div className="flex mb-5">
+                <p className="text-gray-500 base:mr-[175px] mr-[85px]">CNIC:</p>
+                <p>{employeeDetails.cnic}</p>
+              </div>
+              <div className="flex mb-5">
+                <p className="text-gray-500 base:mr-[155px] mr-[65px]">Address:</p>
+                <p>{employeeDetails.address || "N/A"}</p>
+              </div>
+              <div className="flex mb-5">
+                <p className="text-gray-500 base:mr-[155px] mr-[65px]">Password:</p>
+                <div className="md:flex items-center gap-5">
+                <p className="">********</p> 
+                <Link to="/dashboard/changePassword" className="bg-primary xsm:px-3 px-1 py-1 rounded text-white max-xsm:text-xs">Change Password</Link>
+                </div>
+              </div>
+            </>
+          ) : (
+            <p className="text-center py-4 text-gray-500">
+              Loading user data...
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -9,8 +9,7 @@ import { IoEyeSharp, IoEyeOffSharp } from "react-icons/io5";
 import { toast } from "react-toastify";
 
 const Login = () => {
-  const { userType, setUserType, allData, setAllData } =
-    useContext(AuthContext);
+  const { userType, setUserType, allData, setAllData } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);

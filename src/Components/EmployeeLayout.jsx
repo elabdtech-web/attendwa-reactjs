@@ -15,7 +15,7 @@ export default function EmployeeLayout() {
   const { userType, setUserType } = useContext(AuthContext);
   const { allData,setAllData} = useContext(AuthContext);
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const fetchUserRole = async (email) => {
     const q = query(collection(db, "users"), where("email", "==", email));
     const snapshot = await getDocs(q);
@@ -71,7 +71,7 @@ export default function EmployeeLayout() {
   return (
     <UserContext>
       <div className="flex">
-        {isSidebarOpen && <Sidebar toggleSidebar={toggleSidebar} />}
+        {isSidebarOpen && <Sidebar toggleSidebar={toggleSidebar} isOpen={isSidebarOpen}/>}
         <div className="flex-1">
           <HeaderDashboard
             toggleSidebar={toggleSidebar}

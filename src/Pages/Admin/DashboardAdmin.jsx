@@ -146,14 +146,14 @@ export default function DashboardAdmin() {
             <div className="flex w-full justify-between">
               <div className="flex">
                 <div>
-                  <h1 className="font-semibold text-xl text-blue-800">
+                  <h1 className="font-semibold text-xl text-primary">
                     Welcome Admin,
                   </h1>
                   <h1>You're logged in as an Admin!</h1>
                 </div>
                 <div className="flex items-end pl-2">
                   <button 
-                    className="bg-gray-800 text-white font-semibold px-2 py-0.5 rounded text-xs hidden" 
+                    className="bg-primary text-white font-semibold px-2 py-0.5 rounded text-xs hidden" 
                     onClick={updateCheckInDocuments}  
                   >
                     Database checkIns Refresh
@@ -161,7 +161,7 @@ export default function DashboardAdmin() {
                 </div>
                 <div className="flex items-end pl-2">
                   <button 
-                    className="bg-gray-800 text-white font-semibold px-2 py-0.5 rounded text-xs hidden" 
+                    className="bg-primary text-white font-semibold px-2 py-0.5 rounded text-xs hidden" 
                     onClick={updateUsersDocuments}  
                   >
                     Database users Refresh

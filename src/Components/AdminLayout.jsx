@@ -11,7 +11,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
 
 export default function AdminLayout() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { userType, setUserType } = useContext(AuthContext);
   const { allData,setAllData} = useContext(AuthContext)
   const navigate = useNavigate();
@@ -72,7 +72,7 @@ export default function AdminLayout() {
   return (
     <UserContext>
       <div className="flex">
-        {isSidebarOpen && <Sidebar toggleSidebar={toggleSidebar} />}
+        {isSidebarOpen && <Sidebar toggleSidebar={toggleSidebar} isOpen={isSidebarOpen}/>}
         <div className="flex-1">
           <HeaderDashboard
             toggleSidebar={toggleSidebar}

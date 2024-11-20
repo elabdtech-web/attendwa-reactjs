@@ -69,9 +69,10 @@ export default function Employees() {
         <div className="mt-[3%] mx-[10%] ">
           {isEmployeePage ? (
             <div>
-              <div className="flex justify-end mb-3">
+              <div className="flex justify-between mb-3">
+                <h1 className="text-2xl font-semibold">Employees</h1>
                 <button
-                  className=" bg-gray-800 text-white font-semibold px-3 py-2 rounded-lg"
+                  className=" bg-primary text-white font-semibold px-3 py-2 rounded-lg"
                   onClick={handleClick}
                 >
                   Add Employee
@@ -79,7 +80,7 @@ export default function Employees() {
               </div>
 
               <table className="w-full">
-                <thead className="">
+                <thead className="bg-primary">
                   <tr>
                     <th className="border w-[20%] text-center font-semibold text-[20px] py-2">
                       REG-ID
@@ -124,7 +125,7 @@ export default function Employees() {
                         return regIdB - regIdA;
                       })
                       .map((employee) => (
-                        <tr key={employee.id}>
+                        <tr key={employee.id} className="bg-[#ECF4FF]">
                           <td className="border text-center py-2">
                             {employee.regId}
                           </td>
@@ -138,19 +139,24 @@ export default function Employees() {
                             {employee.cnic}
                           </td>
                           <td className="border">
-                            <div className="flex justify-center px-5">
+                            <div className="flex justify-center px-5 gap-1">
                               <button
-                                className="border bg-gray-800 text-white text-[12px] px-2 py-1 rounded-lg"
+                                className="border bg-primary text-white text-[12px] px-2 py-1 rounded-lg"
                                 onClick={() => setShowDetails(employee)}
                               >
                                 <Link to={`./${employee.regId}`}>View</Link>
                               </button>
 
+                              <button className="border bg-primary text-white text-[12px] px-2 py-1 rounded-lg"
+                              onClick={() => setShowDetails(employee)}
+                              >
+                                <Link to={`./${employee.regId}/edit`}>Edit</Link></button>
+
                               <button
                                 className={`border text-[12px] px-2 py-1 rounded-lg ${
                                   employee.status === "inactive"
                                     ? "bg-red-500 text-white cursor-not-allowed"
-                                    : "bg-gray-800 text-white"
+                                    : "bg-secondary text-white"
                                 }`}
                                 onClick={() =>
                                   employee.status !== "inactive" &&

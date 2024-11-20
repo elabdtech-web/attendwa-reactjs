@@ -236,7 +236,7 @@ export default function EmployeeCard() {
         <div className="font-semibold">Today's Attendance</div>
         <div>
           <button
-            className="bg-gray-800 text-white px-3 py-1 text-base rounded-md"
+            className="bg-primary text-white px-3 py-1 text-base rounded-md"
             onClick={openCheckInDialog}
           >
             Holiday
@@ -254,7 +254,7 @@ export default function EmployeeCard() {
             <div className="flex justify-end">
               <button
                 onClick={confirmStatusUpdate}
-                className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+                className="bg-primary text-white px-4 py-2 rounded mr-2"
               >
                 Yes
               </button>
@@ -270,7 +270,7 @@ export default function EmployeeCard() {
       )}
 
       <table className="w-full shadow">
-        <thead className="shadow">
+        <thead className="shadow bg-primary">
           <tr>
             <th className="py-2 px-4 text-left">Name</th>
             <th className="py-2 px-4 text-left">Check In</th>
@@ -287,29 +287,29 @@ export default function EmployeeCard() {
             </tr>
           ) : (
             employees.map((employee) => (
-              <tr key={employee.id} className="border-b">
-                <td className="py-2 px-4 w-[20%]">{employee.fullName}</td>
-                <td className="py-2 px-4 w-[20%]">{employee.checkInTime?employee.checkInTime:"--"}</td>
-                <td className="py-2 px-4 w-[20%]">{employee.checkOutTime?employee.checkOutTime:"--"}</td>
-                <td className="py-2 px-1 w-[30%] flex-1 justify-between">
+              <tr key={employee.id} className="border-b bg-[#ECF4FF]">
+                <td className="py-2 px-4 w-[19%]">{employee.fullName}</td>
+                <td className="py-2 px-4 w-[18%]">{employee.checkInTime?employee.checkInTime:"--"}</td>
+                <td className="py-2 px-4 w-[18%]">{employee.checkOutTime?employee.checkOutTime:"--"}</td>
+                <td className="py-2 px-1 w-[45%] flex-1 justify-between">
                   {employee.status !== "N/A" ? (
                     <span className="text-gray-800 ml-2">{employee.status}</span>
                   ) : (
                     <div>
                       <button
-                        className="bg-gray-800 text-white ml-2 px-5 py-1 rounded"
+                        className="bg-primary text-white ml-2 px-5 py-1 rounded"
                         onClick={() => openDialog(employee, "absent")}
                       >
                         Absent
                       </button>
                       <button
-                        className="bg-gray-800 text-white ml-4 px-5 py-1 rounded"
+                        className="bg-primary text-white ml-4 px-5 py-1 rounded"
                         onClick={() => openDialog(employee, "leave")}
                       >
                         Leave
                       </button>
                       <button
-                        className="bg-gray-800 text-white ml-4 px-5 py-1 rounded"
+                        className="bg-primary text-white ml-4 px-5 py-1 rounded"
                         onClick={() => openDialog(employee, "home")}
                       >
                         Home
@@ -328,11 +328,11 @@ export default function EmployeeCard() {
           <div className="bg-white p-6 rounded shadow-lg">
             <h2 className="text-xl font-semibold mb-4 text-center">Which Date you want to give Holiday</h2>
             <CustomInputField type="date"  name="holidayDate" value={holidayDate} onChange={(e) => setHolidayDate(e.target.value)} />
-            <div className="flex justify-end">
+            <div className="flex justify-end mt-4">
               <button
                 onClick={()=>{markHolidayForActiveEmployees();
                 setShowDialogConfirmation(false);}}
-                className="bg-gray-800 text-white px-4 py-2 rounded mr-2"
+                className="bg-primary text-white px-4 py-2 rounded mr-2"
               >
                 Mark Holiday
               </button>

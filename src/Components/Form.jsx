@@ -10,10 +10,12 @@ import {toast} from "react-toastify";
 
 export default function Form() {
   const [regId, setRegId] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [fullName, setFullName] = useState('');zx
   const [fatherName, setFatherName] = useState('');
   const [cnic, setCNIC] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [dateOfJoining, setDateOfJoining] = useState('');
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -65,6 +67,14 @@ export default function Form() {
       validationErrors.dateOfJoining = "Date of joining is required";
     }
 
+    if (!phone.match(/^\d{11}$/)) {
+      validationErrors.phone = "Phone number should be 11 digits";
+    }
+
+    if (!address.trim()) {
+      validationErrors.address = "Address is required";
+    }
+
     Object.values(validationErrors).forEach(errorMessage => {
       toast.error(errorMessage);
     });
@@ -86,7 +96,7 @@ export default function Form() {
     try {
       const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
       const user = userCredential.user;
-      await addDoc(collection(db, 'users'), {regId,fullName,fatherName,cnic,email,dateOfJoining,status,created_at: formattedDate,role:"employee"});
+      await addDoc(collection(db, 'users'), {regId,fullName,fatherName,cnic,phone,email,address,dateOfJoining,status,created_at: formattedDate,role:"employee"});
 
       toast.success('Employee Created successfully!');
       setFullName("");
@@ -94,6 +104,8 @@ export default function Form() {
       setFatherName("");
       setCNIC("");
       setEmail("");
+      setPhone("");
+      setAddress("");
       setDateOfJoining("");
       setStatus("");
       setCreatedAt("");
@@ -135,7 +147,7 @@ export default function Form() {
             <CustomInputField type="text" name="fatherName" value={fatherName} onChange={(e)=>setFatherName(e.target.value)} placeholder="Father Name" required />
           </div>
           <div className="w-[50%]">
-            <label htmlFor="">CNIC :</label>
+            <label htmlFor="">CNIC :   <span className="text-gray-600">(13 Digits without dashes)</span></label>
             <CustomInputField type="number" name="cnic" value={cnic} onChange={(e)=>setCNIC(e.target.value)} placeholder="CNIC" required />
           </div>
         </div>
@@ -146,10 +158,22 @@ export default function Form() {
             <CustomInputField type="email" name="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Email" required />
           </div>
           <div className="w-[50%]">
+            <label htmlFor="">Phone : <span className="text-gray-600">(03xxxxxxxxx)</span></label>
+            <CustomInputField type="number" name="phone" value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder="Phone" required />
+          </div>
+        </div>
+
+        <div className="flex justify-center gap-4 mb-[35px]">
+          <div className="w-[50%]">
+            <label htmlFor="">Address :</label>
+            <CustomInputField type="text" name="address" value={address} onChange={(e)=>setAddress(e.target.value)} placeholder="Address" required />
+          </div>
+          <div className="w-[50%]">
             <label htmlFor="">Date of Joining :</label>
             <CustomInputField type="date" name="dateOfJoining" value={dateOfJoining} onChange={(e)=>setDateOfJoining(e.target.value)} required />
           </div>
         </div>
+
         <div className="flex justify-center gap-4 mb-[10px]">
         <div className="w-[50%]">
             <label htmlFor="">Password :</label>
@@ -177,7 +201,7 @@ export default function Form() {
         ):(
         <div className="flex justify-center">
           <button
-            className="bg-black rounded text-white px-[30px] py-2"
+            className="bg-primary rounded text-white px-[30px] py-2"
             type="submit"
           >
             Add

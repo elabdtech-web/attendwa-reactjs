@@ -5,7 +5,43 @@ import { db } from "../../Firebase/FirebaseConfig";
 import {collection,query,where,orderBy,limit,getDocs,Timestamp } from "firebase/firestore";
 import { AuthContext } from "../../hooks/AuthContext";
 import { format } from "date-fns";
-import Calendar from "../../Components/Calendar";
+const Calendar = ({selectedMonth,selectedYear,onMonthChange,onYearChange}) => {
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  const years = [];
+  const currentYear = new Date().getFullYear();
+  for (let i = 2020; i <= currentYear; i++) {
+    years.push(i);
+  }
+
+  return (
+    <div className="flex space-x-4">
+      <select
+        onChange={(e) => onMonthChange(e.target.value)}
+        value={selectedMonth}
+        className="border border-gray-300 rounded "
+      >
+        {months.map((month, index) => (
+          <option key={index} value={index}>
+            {month}
+          </option>
+        ))}
+      </select>
+
+      <select
+        onChange={(e) => onYearChange(e.target.value)}
+        value={selectedYear}
+        className="border border-gray-300 rounded"
+      >
+        {years.map((year) => (
+          <option key={year} value={year}>
+            {year}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
 
 export default function Attendance() {
   const { headerText, setHeaderText } = useUserContext();
@@ -64,28 +100,30 @@ export default function Attendance() {
   return (
     <div className="flex h-screen">
       <div className="flex-1 flex flex-col">
-        <div className="flex-1 p-6 bg-white">
-          <div className="shadow my-auto py-3 px-12 flex justify-between">
+        <div className="flex-1 base:p-6 p-2 bg-white">
+          <div className="shadow my-auto py-3 base:px-8 px-2 base:flex justify-between">
             <h1 className="text-3xl font-semibold">Attendance</h1>
+            <div className="flex max-base:justify-end max-base:mt-2">
             <Calendar
               selectedMonth={selectedMonth}
               selectedYear={selectedYear}
               onMonthChange={handleMonthChange}
               onYearChange={handleYearChange}
             />
+            </div>
           </div>
-          <table className="min-w-full shadow mt-10">
+          <table className="min-w-full shadow ">
             <thead>
-              <tr className="shadow text-lg">
+              <tr className="bg-primary text-base">
                 <th className="py-3">Date</th>
-                <th className="py-3">Day</th>
+                <th className="py-3 max-xsm:hidden">Day</th>
                 <th className="py-3">Time In</th>
                 <th className="py-3">Time Out</th>
-                <th className="py-3">Working Hours</th>
+                <th className="py-3 max-sm:hidden">Working Hours</th>
                 <th className="py-3">Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-[#ECF4FF]">
               {attendanceData.length > 0 ? (
                 attendanceData.map((entry) => (
                   <tr key={entry.id}>
@@ -94,7 +132,7 @@ export default function Attendance() {
                         ? new Date(entry.date).toLocaleDateString()
                         : "N/A"}
                     </td>
-                    <td className="py-3 text-center">
+                    <td className="py-3 text-center max-xsm:hidden">
                       {entry.date
                         ? new Date(entry.date).toLocaleString("en-us", {
                             weekday: "long",
@@ -115,7 +153,7 @@ export default function Attendance() {
                           ).toLocaleTimeString()
                         : "N/A"}
                     </td>
-                    <td className="py-3 text-center">
+                    <td className="py-3 text-center max-sm:hidden">
                       {entry.totalWorkingHours || "N/A"}
                     </td>
                     <td className="py-3 text-center">

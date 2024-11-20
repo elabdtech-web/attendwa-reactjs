@@ -10,7 +10,7 @@ export default function Details({ title, description }) {
           <p className="font-normal text-[20px]">{description}</p>
         </div>
         <div className="my-auto">
-          <FaUser size={30} className="text-blue-500"/>
+          <FaUser size={30} className="text-primary"/>
         </div>
       </div>
     </div>

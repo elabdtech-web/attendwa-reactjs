@@ -141,12 +141,12 @@ export default function AddAttendance({ id }) {
         </div>
         {loading ? (
           <div>
-            <span className="bg-gray-800 text-white font-semibold px-6 py-2 rounded">Loading...</span>
+            <span className="bg-primary text-white font-semibold px-6 py-2 rounded">Loading...</span>
           </div>
         ) : (
           <button
             type="submit"
-            className="bg-gray-800 text-white font-semibold px-3 py-2 rounded"
+            className="bg-primary text-white font-semibold px-3 py-2 rounded"
           >
             Save Attendance
           </button>

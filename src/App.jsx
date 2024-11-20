@@ -17,6 +17,8 @@ import SettingAdmin from "./Pages/Admin/SettingAdmin";
 import Profile from "./Pages/Employee/Profile";
 import EmployeeDetails from "./Pages/Admin/EmployeeDetails";
 import ForgetPasswordPage from "./Pages/Auth/ForgetPasswordPage";
+import ChangePassword from "./Pages/Employee/ChangePassword";
+import EditPage from "./Pages/Admin/EditEmployeePage";
 
 export default function App() {
   return (
@@ -31,6 +33,7 @@ export default function App() {
           <Route path="employees" element={<Employees />}>
             <Route path="FormPage" element={<FormPage />} />
             <Route path=":id" element={<EmployeeDetails />}/>
+            <Route path=":id/edit" element={<EditPage />} />
           </Route>
           <Route path="a-settings" element={<SettingAdmin />} />
         </Route>
@@ -41,6 +44,7 @@ export default function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="salary" element={<Salary />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="changePassword" element={<ChangePassword/>}/>
         </Route>
       </Routes>
     </div>

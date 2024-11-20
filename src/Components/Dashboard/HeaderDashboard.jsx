@@ -36,25 +36,28 @@ export default function HeaderDashboard({
     toast.success("Logout Successfully");
   };
   return (
-    <div className="bg-white shadow p-4 flex justify-between items-center">
+    <div className="p-4 flex justify-end items-end w-full h-[80px]">
       {!isSidebarOpen && (
-        <button onClick={toggleSidebar} className="text-2xl mr-4">
+        <div className="flex justify-start xsm:ml-5 w-[50%]">
+        <button onClick={toggleSidebar} className="text-2xl xsm:mr-4">
           <FiMenu />
         </button>
+        </div>
       )}
-      <h1 className="text-2xl font-semibold">{headerText}</h1>
+      {/* <h1 className="text-2xl font-semibold">{headerText}</h1> */}
 
-      <div className="relative">
+      <div className="relative flex justify-end w-[60%]">
+      <p className="font-semibold">{fullName}</p>
         <button
           onClick={toggleDropdown}
-          className="flex items-center text-xl ml-4"
+          className="flex items-center text-xl xsm:ml-4 ml-2 xsm:mr-5"
         >
-          <FiUser /> 
-          <IoMdArrowDropdown className="ml-1" />
+          <FiUser className="text-gray-400" /> 
+          <IoMdArrowDropdown className="text-gray-400" />
         </button>
 
         {isDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg p-2 z-50">
+          <div className="absolute right-0 mt-10 mr-5 w-60 bg-white border rounded shadow-lg p-5 z-50">
             <div className="text-left mb-2 px-1">
               <p className="font-semibold">{fullName}</p>
               <p className="text-sm text-gray-600">{email}</p>

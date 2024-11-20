@@ -5,8 +5,44 @@ import { format } from "date-fns";
 import {collection,query,where,orderBy,getDocs,doc,} from "firebase/firestore";
 import EditAttendance from "../../Components/EditAttendance";
 import AddAttendance from "../../Components/Dashboard/AddAttendance";
-import Calendar from "../../Components/Calendar";
 import {toast} from "react-toastify";
+const Calendar = ({selectedMonth,selectedYear,onMonthChange,onYearChange}) => {
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  const years = [];
+  const currentYear = new Date().getFullYear();
+  for (let i = 2020; i <= currentYear; i++) {
+    years.push(i);
+  }
+
+  return (
+    <div className="flex space-x-4">
+      <select
+        onChange={(e) => onMonthChange(e.target.value)}
+        value={selectedMonth}
+        className="border border-gray-300 rounded "
+      >
+        {months.map((month, index) => (
+          <option key={index} value={index}>
+            {month}
+          </option>
+        ))}
+      </select>
+
+      <select
+        onChange={(e) => onYearChange(e.target.value)}
+        value={selectedYear}
+        className="border border-gray-300 rounded"
+      >
+        {years.map((year) => (
+          <option key={year} value={year}>
+            {year}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
 
 export default function EmployeeDetails() {
   const [attendanceData, setAttendanceData] = useState([]);
@@ -90,6 +126,14 @@ export default function EmployeeDetails() {
     setEditAttendance(entry);
   };
 
+  const handleMonthChange = (month) => {
+    setSelectedMonth(month === "" ? null : parseInt(month));
+  };
+
+  const handleYearChange = (year) => {
+    setSelectedYear(year);
+  };
+
   return (
     <div className="relative">
       <div className=" p-6 m-6 rounded-lg max-w-4xl mx-auto">
@@ -99,14 +143,14 @@ export default function EmployeeDetails() {
           </h2>
           <button
             onClick={handleAttendance}
-            className="bg-gray-800 text-white font-semibold px-3 py-2 rounded"
+            className="bg-primary text-white font-semibold px-3 py-2 rounded"
           >
             Add Attendance
           </button>
         </div>
         {employeeData ? (
-          <div className="py-[2%] text-left flex justify-between">
-            <div>
+          <div className="py-[2%] text-left">
+            <div className="flex justify-between">
               <div className="flex items-center text-xl text-gray-700">
                 <p className="font-medium text-gray-600">Name:</p>
                 <p className="font-normal text-gray-800 pl-1">
@@ -120,7 +164,7 @@ export default function EmployeeDetails() {
                 </p>
               </div>
             </div>
-            <div>
+            <div className="flex justify-between">
               <div className="flex items-center text-xl text-gray-700">
                 <p className="font-medium text-gray-600">Email:</p>
                 <p className="font-normal text-gray-800 pl-1">
@@ -131,6 +175,20 @@ export default function EmployeeDetails() {
                 <p className="font-medium text-gray-600">CNIC:</p>
                 <p className="font-normal text-gray-800 pl-1">
                   {employeeData.cnic}
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <div className="flex items-center text-xl text-gray-700">
+                <p className="font-medium text-gray-600">Phone:</p>
+                <p className="font-normal text-gray-800 pl-1">
+                  {employeeData.phone || "N/A"}
+                </p>
+              </div>
+              <div className="flex items-center text-xl text-gray-700 pt-1">
+                <p className="font-medium text-gray-600">Address:</p>
+                <p className="font-normal text-gray-800 pl-1">
+                  {employeeData.address || "N/A"}
                 </p>
               </div>
             </div>
@@ -146,11 +204,11 @@ export default function EmployeeDetails() {
             </h2>
           </div>
           <div className="flex justify-end">
-            <Calendar
+          <Calendar
               selectedMonth={selectedMonth}
               selectedYear={selectedYear}
-              onMonthChange={(month) => setSelectedMonth(Number(month))}
-              onYearChange={(year) => setSelectedYear(Number(year))}
+              onMonthChange={handleMonthChange}
+              onYearChange={handleYearChange}
             />
           </div>
         </div>
@@ -207,7 +265,7 @@ export default function EmployeeDetails() {
                   <td className="py-3 text-center">{entry.status || "No"}</td>
                   <td className="py-3 text-center">
                     <button
-                      className="border bg-gray-800 text-white text-[12px] px-2 py-1 rounded-lg"
+                      className="border bg-primary text-white text-[12px] px-2 py-1 rounded-lg"
                       onClick={() => handleEditAttendance(entry)}
                     >
                       Edit

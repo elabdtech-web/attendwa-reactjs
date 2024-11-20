@@ -81,6 +81,11 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
       finalCheckInTime = new Date(`${date}T09:00:00`);
       finalCheckOutTime = new Date(`${date}T18:00:00`);
     }
+    if (status === "holiday" || status === "leave" || status === "absent") {
+      totalWorkingHours = "N/A";
+      finalCheckInTime = null;
+      finalCheckOutTime = null;
+    }
     const updatedData = {
       status: status,
       checkInTime: finalCheckInTime ? Timestamp.fromDate(finalCheckInTime) : null,
@@ -113,7 +118,7 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               required
-              className="px-1 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[300px]"
+              className="px-1 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-primary w-[300px]"
             >
               <option value="present">Present</option>
               <option value="absent">Absent</option>
@@ -148,14 +153,14 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
             <button
               type="button"
               onClick={handleSave}
-              className="bg-gray-800 text-white font-semibold px-4 py-2 rounded-lg w-full"
+              className="bg-primary text-white font-semibold px-4 py-2 rounded-lg w-full"
             >
               Save Changes
             </button>
             <button
               type="button"
               onClick={closeEdit}
-              className="bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg w-full"
+              className="border border-gray-400 font-semibold px-4 py-2 rounded-lg w-full"
             >
               Cancel
             </button>
