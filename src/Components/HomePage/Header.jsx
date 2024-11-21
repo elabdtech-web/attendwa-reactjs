@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { auth } from "../../Firebase/FirebaseConfig";
 import Button from "./Button";
 import { Link } from "react-router-dom";
+import HeaderPart from "../Dashboard/HeaderPart";
 
 export default function Header() {
   
@@ -13,11 +14,9 @@ export default function Header() {
         <img src="/logo.png" alt="" className="size-14" />
         <h1 className="font-semibold text-[20px] text-white">ELABD TECH</h1>
       </div>
-      <div>
+      <div className="flex gap-5">
         {token ? (
-          <Link to="/dashboard">
-            <Button text={"Dashboard"} />
-          </Link>
+          <HeaderPart/>
         ) : (
           <Link to="/login">
             <Button text={"Login"} />

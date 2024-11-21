@@ -35,7 +35,6 @@ export default function EmployeeLayout() {
       navigate("/login");
       return;
     }
-    // fetch role based on user id..
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         await fetchUserRole(currentUser.email);
@@ -45,9 +44,8 @@ export default function EmployeeLayout() {
       }
     });
 
-    return () => unsubscribe();
-
     setLoading(false)
+    return () => unsubscribe();
   }, []);
   
   if (userType === "admin"){

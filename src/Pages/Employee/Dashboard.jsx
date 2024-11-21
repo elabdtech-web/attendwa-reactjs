@@ -564,7 +564,7 @@ export default function Dashboard() {
       {/* ------> Dialog Boxes <------- */}
 
       {showDialog && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Confirm Check-In</h2>
             <p className="mb-4">Are you sure you want to check in?</p>
@@ -574,7 +574,7 @@ export default function Dashboard() {
                   handleCheckIn();
                   closeCheckInDialog();
                 }}
-                className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+                className="bg-primary text-white px-4 py-2 rounded mr-2"
               >
                 Yes
               </button>
@@ -590,7 +590,7 @@ export default function Dashboard() {
       )}
 
       {showCheckOutDialog && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Confirm Check-Out</h2>
             <p className="mb-4">Are you sure you want to check out?</p>
@@ -642,7 +642,7 @@ export default function Dashboard() {
                 disabled={!allChecked}
                 className={`px-4 py-2 rounded mr-2 ${
                   allChecked
-                    ? "bg-blue-500 text-white"
+                    ? "bg-primary text-white"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >

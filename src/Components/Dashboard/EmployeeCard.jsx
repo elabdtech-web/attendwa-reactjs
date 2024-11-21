@@ -245,7 +245,7 @@ export default function EmployeeCard() {
       </div>
 
       {showDialog && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Confirm Action</h2>
             <p className="mb-4">
@@ -324,7 +324,7 @@ export default function EmployeeCard() {
       </table>
 
       {showDialogConfirmation && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded shadow-lg">
             <h2 className="text-xl font-semibold mb-4 text-center">Which Date you want to give Holiday</h2>
             <CustomInputField type="date"  name="holidayDate" value={holidayDate} onChange={(e) => setHolidayDate(e.target.value)} />
