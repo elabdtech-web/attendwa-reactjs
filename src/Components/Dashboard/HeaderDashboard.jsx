@@ -25,7 +25,9 @@ export default function HeaderDashboard({
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
-
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+  };
   const handleLogout = () => {
     signOut(auth);
     localStorage.removeItem("accesstoken");
@@ -62,7 +64,7 @@ export default function HeaderDashboard({
               <p className="font-semibold">{fullName}</p>
               <p className="text-sm text-gray-600">{email}</p>
             </div>
-            <ul>
+            <ul onClick={closeDropdown}>
               <li className="px-1 py-2 hover:bg-gray-100 cursor-pointer">
                 <Link to="/dashboard/profile">Profile</Link>
               </li>

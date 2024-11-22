@@ -43,14 +43,27 @@ export default function EmployeeLayout() {
         navigate("/login");
       }
     });
-
-    setLoading(false)
     return () => unsubscribe();
   }, []);
   
-  if (userType === "admin"){
-        navigate("/a-dashboard")
-   } 
+  useEffect(() => {
+    if (userType === "admin"){
+      navigate("/a-dashboard")
+}
+  }, [userType, navigate]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isMdOrAbove = window.matchMedia("(min-width: 768px)").matches;
+      setIsSidebarOpen(isMdOrAbove); 
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize); 
+
+    return () => window.removeEventListener("resize", handleResize); 
+  }, []);
+ 
   
 
   const toggleSidebar = () => {
@@ -64,7 +77,9 @@ export default function EmployeeLayout() {
   return (
     <UserContext>
       <div className="flex">
-        {isSidebarOpen && <Sidebar toggleSidebar={toggleSidebar} isOpen={isSidebarOpen}/>}
+      {isSidebarOpen && (
+          <Sidebar toggleSidebar={toggleSidebar} isOpen={isSidebarOpen} />
+        )}
         <div className="flex-1">
           <HeaderDashboard
             toggleSidebar={toggleSidebar}

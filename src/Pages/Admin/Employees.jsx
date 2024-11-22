@@ -20,6 +20,8 @@ export default function Employees() {
   const navigate = useNavigate();
   const location = useLocation();
   const isEmployeePage = location.pathname == "/a-dashboard/employees";
+  const [showDialog, setShowDialog] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const handleClick = () => {
     setShowForm(true);
@@ -53,7 +55,7 @@ export default function Employees() {
             : employee
         )
       );
-      toast.success("Employee terminated successfully"); 
+      toast.success("Employee terminated successfully");
     } catch (error) {
       toast.error("Error updating employee status: ", error);
     }
@@ -147,10 +149,14 @@ export default function Employees() {
                                 <Link to={`./${employee.regId}`}>View</Link>
                               </button>
 
-                              <button className="border bg-primary text-white text-[12px] px-2 py-1 rounded-lg"
-                              onClick={() => setShowDetails(employee)}
+                              <button
+                                className="border bg-primary text-white text-[12px] px-2 py-1 rounded-lg"
+                                onClick={() => setShowDetails(employee)}
                               >
-                                <Link to={`./${employee.regId}/edit`}>Edit</Link></button>
+                                <Link to={`./${employee.regId}/edit`}>
+                                  Edit
+                                </Link>
+                              </button>
 
                               <button
                                 className={`border text-[12px] px-2 py-1 rounded-lg ${
@@ -158,10 +164,12 @@ export default function Employees() {
                                     ? "bg-red-500 text-white cursor-not-allowed"
                                     : "bg-secondary text-white"
                                 }`}
-                                onClick={() =>
-                                  employee.status !== "inactive" &&
-                                  terminateEmployee(employee.id)
-                                }
+                                onClick={() => {
+                                  if (employee.status !== "inactive") {
+                                    setSelectedEmployee(employee);
+                                    setShowDialog(true);
+                                  }
+                                }}
                                 disabled={employee.status === "inactive"}
                               >
                                 {employee.status === "inactive"
@@ -181,6 +189,35 @@ export default function Employees() {
           )}
         </div>
       </div>
+
+      {showDialog && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Confirm Termination</h2>
+            <p className="mb-4">
+              Are you sure you want to terminate{" "}
+              <span className="font-bold">{selectedEmployee?.fullName}</span>?
+            </p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  terminateEmployee(selectedEmployee?.id);
+                  setShowDialog(false);
+                }}
+                className="bg-primary text-white px-4 py-2 rounded mr-2"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setShowDialog(false)}
+                className="bg-gray-300 px-4 py-2 rounded"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

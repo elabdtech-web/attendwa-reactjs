@@ -10,7 +10,7 @@ import {toast} from "react-toastify";
 
 export default function Form() {
   const [regId, setRegId] = useState('');
-  const [fullName, setFullName] = useState('');zx
+  const [fullName, setFullName] = useState('');
   const [fatherName, setFatherName] = useState('');
   const [cnic, setCNIC] = useState('');
   const [email, setEmail] = useState('');

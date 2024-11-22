@@ -19,6 +19,9 @@ import EmployeeDetails from "./Pages/Admin/EmployeeDetails";
 import ForgetPasswordPage from "./Pages/Auth/ForgetPasswordPage";
 import ChangePassword from "./Pages/Employee/ChangePassword";
 import EditPage from "./Pages/Admin/EditEmployeePage";
+import Announcements from "./Pages/Admin/Announcement";
+import AddNewAnnouncement from "./Pages/Admin/AddNewAnnouncement";
+import AnnouncementDetails from "./Pages/Admin/AnnouncementDetails";
 
 export default function App() {
   return (
@@ -33,9 +36,13 @@ export default function App() {
           <Route path="employees" element={<Employees />}>
             <Route path="FormPage" element={<FormPage />} />
             <Route path=":id" element={<EmployeeDetails />}/>
-            <Route path=":id/edit" element={<EditPage />} />
+            <Route path=":id/edit" element={<EditPage />} /> 
           </Route>
           <Route path="a-settings" element={<SettingAdmin />} />
+          <Route path="announcements" element={<Announcements/>} >
+            <Route path="addNewAnnouncement" element={<AddNewAnnouncement/>}/>
+            <Route path=":id" element={<AnnouncementDetails />} />
+            </Route>
         </Route>
 
         <Route path="/dashboard" element={<EmployeeLayout />}>
@@ -45,6 +52,10 @@ export default function App() {
           <Route path="salary" element={<Salary />} />
           <Route path="profile" element={<Profile />} />
           <Route path="changePassword" element={<ChangePassword/>}/>
+          <Route path="announcements" element={<Announcements/>} >
+            <Route path="addNewAnnouncement" element={<AddNewAnnouncement/>}/>
+            <Route path=":id" element={<AnnouncementDetails />} />
+            </Route>
         </Route>
       </Routes>
     </div>

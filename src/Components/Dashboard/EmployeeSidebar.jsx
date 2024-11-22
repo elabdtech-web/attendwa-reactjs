@@ -37,7 +37,7 @@ export default function Sidebar({ toggleSidebar, isOpen }) {
             </Link>
           </li>
           <li>
-            <Link to="/dashboard/settings" className="hover:text-primary">
+            <Link to="/dashboard/announcements" className="hover:text-primary">
             <div className="flex items-center gap-3 hover:underline">
              <GrUpdate className="w-[20px] size-10"/>
               <p className='font-semibold text-[18px]'>Updates</p>

@@ -5,6 +5,7 @@ import { MdDashboard } from "react-icons/md";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { FaTasks } from "react-icons/fa";
 import { IoSettings } from "react-icons/io5";
+import { GrAnnounce } from "react-icons/gr";
 
 export default function Sidebar({ toggleSidebar, isOpen }) {
   return (
@@ -19,7 +20,7 @@ export default function Sidebar({ toggleSidebar, isOpen }) {
           <FiX />
         </button>
       </div>
-      <div className="p-[55px]">
+      <div className="p-[45px]">
         <ul className="space-y-8">
           <li>
             <Link to="/a-dashboard" className="hover:text-primary">
@@ -50,6 +51,14 @@ export default function Sidebar({ toggleSidebar, isOpen }) {
             <div className="flex items-center gap-3 hover:underline">
               <IoSettings className="w-[20px] size-10"/>
               <p className='font-semibold text-[18px]'>Settings</p>
+              </div>
+            </Link>
+          </li>
+          <li>
+            <Link to="/a-dashboard/announcements" className="hover:text-primary">
+            <div className="flex items-center gap-3 hover:underline">
+              <GrAnnounce className="w-[20px] size-10"/>
+              <p className='font-semibold text-[18px]'>Announcements</p>
               </div>
             </Link>
           </li>
