@@ -4,7 +4,7 @@ import {Link} from "react-router-dom"
 import { MdDashboard } from "react-icons/md";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { FaTasks } from "react-icons/fa";
-import { IoSettings } from "react-icons/io5";
+import { FaRegMoneyBillAlt } from "react-icons/fa";
 import { GrAnnounce } from "react-icons/gr";
 
 export default function Sidebar({ toggleSidebar, isOpen }) {
@@ -47,10 +47,10 @@ export default function Sidebar({ toggleSidebar, isOpen }) {
             </Link>
           </li>
           <li>
-            <Link to="/a-dashboard/a-settings" className="hover:text-primary">
+            <Link to="/a-dashboard/a-salary" className="hover:text-primary">
             <div className="flex items-center gap-3 hover:underline">
-              <IoSettings className="w-[20px] size-10"/>
-              <p className='font-semibold text-[18px]'>Settings</p>
+              <FaRegMoneyBillAlt className="w-[20px] size-10"/>
+              <p className='font-semibold text-[18px]'>Salary</p>
               </div>
             </Link>
           </li>

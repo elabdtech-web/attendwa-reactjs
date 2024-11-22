@@ -17,6 +17,7 @@ export default function Form() {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [dateOfJoining, setDateOfJoining] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [status, setStatus] = useState('active');
@@ -70,7 +71,10 @@ export default function Form() {
     if (!phone.match(/^\d{11}$/)) {
       validationErrors.phone = "Phone number should be 11 digits";
     }
-
+    
+    if (!dateOfJoining) {
+      validationErrors.dateOfJoining = "Date of joining is required";
+    }
     if (!address.trim()) {
       validationErrors.address = "Address is required";
     }
@@ -108,6 +112,7 @@ export default function Form() {
       setAddress("");
       setDateOfJoining("");
       setStatus("");
+      setJobTitle("");
       setCreatedAt("");
       setPassword("");
       setConfirmPassword("");
@@ -164,15 +169,32 @@ export default function Form() {
         </div>
 
         <div className="flex justify-center gap-4 mb-[35px]">
-          <div className="w-[50%]">
-            <label htmlFor="">Address :</label>
-            <CustomInputField type="text" name="address" value={address} onChange={(e)=>setAddress(e.target.value)} placeholder="Address" required />
+            <div className="w-[40%]">
+              <label htmlFor="">Address :</label>
+              <CustomInputField
+                type="text"
+                name="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Address"
+                required
+              />
+            </div>
+            <div className="w-[35%]">
+                <label htmlFor="">Job Title :</label>
+                <CustomInputField type="text" name="jobTitle" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="Job Title" required/>
+            </div>
+            <div className="w-[25%]">
+              <label htmlFor="">Date of Joining :</label>
+              <CustomInputField
+                type="date"
+                name="dateOfJoining"
+                value={dateOfJoining}
+                onChange={(e) => setDateOfJoining(e.target.value)}
+                required
+              />
+            </div>
           </div>
-          <div className="w-[50%]">
-            <label htmlFor="">Date of Joining :</label>
-            <CustomInputField type="date" name="dateOfJoining" value={dateOfJoining} onChange={(e)=>setDateOfJoining(e.target.value)} required />
-          </div>
-        </div>
 
         <div className="flex justify-center gap-4 mb-[10px]">
         <div className="w-[50%]">

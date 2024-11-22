@@ -44,7 +44,6 @@ export default function EditEmployee() {
     }
   };
 
-  // Populate the form fields with fetched data
   useEffect(() => {
     if (employeeData) {
       setRegId(employeeData.regId || "");
@@ -155,7 +154,6 @@ export default function EditEmployee() {
             </div>
           </div>
 
-          {/* Repeat similar layout for other fields */}
           <div className="flex justify-center gap-4 mb-[35px]">
             <div className="w-[50%]">
               <label htmlFor="">Father Name :</label>

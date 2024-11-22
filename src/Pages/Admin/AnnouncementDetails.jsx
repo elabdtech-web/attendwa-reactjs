@@ -1,16 +1,16 @@
-import React, { useState, useEffect,useRef,useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { db } from "../../Firebase/FirebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import CustomInputField from "../../Components/CustomInputField";
 import { AuthContext } from "../../hooks/AuthContext";
 import ReactQuill from "react-quill";
-import 'react-quill/dist/quill.snow.css'; 
+import "react-quill/dist/quill.snow.css";
 export default function AnnouncementDetails() {
   const [announcement, setAnnouncement] = useState(null);
-  const {allData} = useContext(AuthContext);
+  const { allData } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
-  const { id } = useParams(); 
+  const { id } = useParams();
 
   useEffect(() => {
     const fetchAnnouncement = async () => {
@@ -44,10 +44,10 @@ export default function AnnouncementDetails() {
   };
 
   const handleClose = () => {
-    if (allData.role === "admin"){
+    if (allData.role === "admin") {
       window.location.href = "/a-dashboard/announcements";
     }
-    if (allData.role === "employee"){
+    if (allData.role === "employee") {
       window.location.href = "/dashboard/announcements";
     }
   };
@@ -59,41 +59,36 @@ export default function AnnouncementDetails() {
       ) : announcement ? (
         <div>
           <h1 className="text-2xl font-semibold mb-6">Announcement Details</h1>
-          <div className="flex justify-between">
-          <div className="mb-4 w-[40%]">
-            <label className="block text-lg font-semibold mb-2">Title</label>
-            <input
-              type="text"
-              value={announcement.title}
-              readOnly
-              className="w-full px-4 py-2 border rounded bg-gray-100"
+          <div className="flex gap-2 items-center justify-end mb-4">
+            <label className="block text-lg font-semibold">Date :</label>
+            <p className="text-base">{formatDate(announcement.createdAt)}</p>
+          </div>
+
+          <div className="mb-4 flex items-center gap-2">
+            <label className="block text-xl font-semibold">Title :</label>
+            <p className="text-lg">{announcement.title}</p>
+          </div>
+
+          <div className="gap-2">
+            <label className="block text-lg font-semibold">
+              Description :
+            </label>
+            <p
+              className="text-html"
+              dangerouslySetInnerHTML={{ __html: announcement.description }}
             />
           </div>
 
-          <div className="mb-4 w-[30%]">
-            <label className="block text-lg font-semibold mb-2">Date :</label>
-            <input
-              type="text"
-              value={formatDate(announcement.createdAt)}
-              readOnly
-              className="w-full px-4 py-2 border rounded bg-gray-100"
-            />
+          <div className="mt-5">
+            <button
+              onClick={() => {
+                handleClose();
+              }}
+              className="bg-primary text-white px-4 py-1 rounded"
+            >
+              Back
+            </button>
           </div>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-lg font-semibold mb-2">Description</label>
-            <ReactQuill
-              value={announcement.description}
-              theme="snow"
-              readOnly
-              className="h-40 bg-gray-100"
-            />
-          </div>
-
-          <div className="xsm:mt-16 mt-20">
-            <button onClick={() => {handleClose()}} className="bg-primary text-white px-4 py-1 rounded">Close</button>
-            </div>
         </div>
       ) : (
         <p>No announcement found.</p>

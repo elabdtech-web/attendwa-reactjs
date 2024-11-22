@@ -64,31 +64,26 @@ export default function AddNewAnnouncement() {
         return;
       }
   
-      // Loop through email list and send email to each recipient
       for (const email of emailList) {
         const templateParams = {
-          to_email: email, // Pass recipient email dynamically
-        from_name:"Elabd Tech", // Ensure title is defined in your component
-         message: description, // Ensure description is defined in your component
+          to_email: email, 
+        from_name:"Elabd Tech", 
+         message: description, 
         };
   
         try {
           await emailjs.send(
-            "service_lhnotzd", // Your EmailJS Service ID
-            "template_5im90xe", // Your EmailJS Template ID
+            "service_lhnotzd", 
+            "template_5im90xe", 
             templateParams,
-            "f7Wu4pE1pLAeAua39" // Your EmailJS Public Key
+            "f7Wu4pE1pLAeAua39" 
           );
-          toast.success(`Email sent to ${email}`);
         } catch (error) {
-          console.error(`Failed to send email to ${email}:`, error);
-          toast.error(`Failed to send email to ${email}: ${error.text}`);
+          toast.error(`Failed to send email`);
         }
       }
-  
       toast.success("All email notifications sent successfully!");
     } catch (error) {
-      console.error("Error sending email notifications:", error);
       toast.error("Error sending email notifications.");
     }
   };

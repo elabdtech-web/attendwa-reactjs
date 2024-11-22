@@ -71,7 +71,7 @@ export default function EmployeeLayout() {
   };
 
   if (loading) {
-    return <p>LOADING</p>;
+    return <p className="flex justify-center items-center h-screen text-xl">LOADING ..</p>;
   }
 
   return (

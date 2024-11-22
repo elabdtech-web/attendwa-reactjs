@@ -9,6 +9,7 @@ import { useUserContext } from "../../hooks/HeadertextContext";
 import { AuthContext } from "../../hooks/AuthContext";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { RiFileDownloadFill } from "react-icons/ri";
 
 export default function Employees() {
   const { userType } = useContext(AuthContext);
@@ -156,6 +157,13 @@ export default function Employees() {
                                 <Link to={`./${employee.regId}/edit`}>
                                   Edit
                                 </Link>
+                              </button>
+
+                              <button
+                                className="border bg-primary text-white text-[12px] px-2 py-1 rounded-lg"
+                                onClick={() => setShowDetails(employee)}
+                              >
+                                <Link to={`./${employee.regId}/salary`}><RiFileDownloadFill /></Link>
                               </button>
 
                               <button
