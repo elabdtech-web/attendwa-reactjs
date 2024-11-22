@@ -127,36 +127,36 @@ export default function Attendance() {
               {attendanceData.length > 0 ? (
                 attendanceData.map((entry) => (
                   <tr key={entry.id}>
-                    <td className="py-3 text-center">
+                    <td className="py-3 text-center max-lg:text-xs max-lg:font-semibold">
                       {entry.date
                         ? new Date(entry.date).toLocaleDateString()
                         : "N/A"}
                     </td>
-                    <td className="py-3 text-center max-xsm:hidden">
+                    <td className="py-3 text-center max-xsm:hidden  max-lg:text-xs max-lg:font-semibold">
                       {entry.date
                         ? new Date(entry.date).toLocaleString("en-us", {
                             weekday: "long",
                           })
                         : "N/A"}
                     </td>
-                    <td className="py-3 text-center">
+                    <td className="py-3 text-center max-lg:text-xs max-lg:font-semibold">
                       {entry.checkInTime
                         ? new Date(
                             entry.checkInTime.toDate()
                           ).toLocaleTimeString()
                         : "N/A"}
                     </td>
-                    <td className="py-3 text-center">
+                    <td className="py-3 text-center max-lg:text-xs max-lg:font-semibold">
                       {entry.checkOutTime
                         ? new Date(
                             entry.checkOutTime.toDate()
                           ).toLocaleTimeString()
                         : "N/A"}
                     </td>
-                    <td className="py-3 text-center max-sm:hidden">
+                    <td className="py-3 text-center max-sm:hidden max-lg:text-xs max-lg:font-semibold">
                       {entry.totalWorkingHours || "N/A"}
                     </td>
-                    <td className="py-3 text-center">
+                    <td className="py-3 text-center max-lg:text-xs max-lg:font-semibold">
                       {entry.status ? entry.status : "No"}
                     </td>
                   </tr>

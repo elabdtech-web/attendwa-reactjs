@@ -53,7 +53,7 @@ export default function AnnouncementDetails() {
   };
 
   return (
-    <div className="m-6 w-[70%] mt-10">
+    <div className="base:m-6 m-auto base:w-[75%] w-[95%] mt-10">
       {loading ? (
         <p>Loading announcement...</p>
       ) : announcement ? (
@@ -91,7 +91,7 @@ export default function AnnouncementDetails() {
             />
           </div>
 
-          <div className="mt-16">
+          <div className="xsm:mt-16 mt-20">
             <button onClick={() => {handleClose()}} className="bg-primary text-white px-4 py-1 rounded">Close</button>
             </div>
         </div>

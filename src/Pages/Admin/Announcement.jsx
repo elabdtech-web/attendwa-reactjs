@@ -59,7 +59,7 @@ export default function Announcements() {
     <div className="flex relative">
       <div className="flex-1 flex flex-col">
         {isAnnouncementsPage ? (
-          <div className="mt-[3%] mx-[10%]">
+          <div className="mt-[3%] base:mx-[10%] mx-[2%]">
             <div className="flex justify-between items-center mb-3">
               <h1 className="text-2xl font-semibold">Announcements</h1>
               {isAdminPage && (
