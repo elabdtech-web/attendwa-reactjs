@@ -182,13 +182,13 @@ export default function EmployeeDetails() {
               <div className="flex items-center text-xl text-gray-700">
                 <p className="font-medium text-gray-600">Phone:</p>
                 <p className="font-normal text-gray-800 pl-1">
-                  {employeeData.phone || "N/A"}
+                  {employeeData.phone || " ------"}
                 </p>
               </div>
               <div className="flex items-center text-xl text-gray-700 pt-1">
                 <p className="font-medium text-gray-600">Address:</p>
                 <p className="font-normal text-gray-800 pl-1">
-                  {employeeData.address || "N/A"}
+                  {employeeData.address || "------"}
                 </p>
               </div>
             </div>

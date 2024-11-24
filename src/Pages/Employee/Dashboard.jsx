@@ -117,73 +117,78 @@ export default function Dashboard() {
     try {
       const startOfMonth = new Date(selectedYear, selectedMonth, 1);
       const endOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
-
+  
+      const formattedStartOfMonth = startOfMonth.toISOString().split("T")[0];
+      const formattedEndOfMonth = endOfMonth.toISOString().split("T")[0];
+  
       const q = query(
         collection(db, "checkIns"),
         where("userId", "==", allData.regId),
-        where("checkInTime", ">=", startOfMonth),
-        where("checkInTime", "<=", endOfMonth)
+        where("date", ">=", formattedStartOfMonth),
+        where("date", "<=", formattedEndOfMonth)
       );
-
+  
       const querySnapshot = await getDocs(q);
-      const checkIns = querySnapshot.docs.map((doc) => doc.data());
 
+      const checkIns = querySnapshot.docs.map((doc) => doc.data());
       let totalHours = 0;
       let totalMinutes = 0;
+      let workFromHome = 0;
       let presentDays = 0;
       let absentDays = 0;
       let leaveDays = 0;
-
+  
       const allStatusDates = new Set();
-
+  
       checkIns.forEach((checkIn) => {
         const { status, totalWorkingHours: twh, date } = checkIn;
-
-        if (twh !== null) {
+  
+        if (date && (status === "present" || status === "home" || status === "absent" || status === "leave")) {
           allStatusDates.add(date);
-
-          if (status === "present" && twh) {
-            const hours = parseInt(twh.split("h")[0].trim()) || 0;
-            const minutes =
-              parseInt(twh.split("m")[0].split("h")[1].trim()) || 0;
-
-            totalHours += hours;
-            totalMinutes += minutes;
-
-            if (totalMinutes >= 60) {
-              totalHours += Math.floor(totalMinutes / 60);
-              totalMinutes = totalMinutes % 60;
+  
+          if (status === "present" || status === "home") {
+            if (twh) {
+              const hours = parseInt(twh.split("h")[0].trim()) || 0;
+              const minutes = parseInt(twh.split("m")[0].split("h")[1].trim()) || 0;
+  
+              totalHours += hours;
+              totalMinutes += minutes;
+  
+              if (totalMinutes >= 60) {
+                totalHours += Math.floor(totalMinutes / 60);
+                totalMinutes = totalMinutes % 60;
+              }
             }
-
-            presentDays++;
-          } else if (status === "absent") {
-            absentDays++;
-          } else if (status === "leave") {
-            leaveDays++;
           }
+          if (status === "present") presentDays++;
+          if (status === "home") workFromHome++;
+          if (status === "absent") absentDays++;
+          if (status === "leave") leaveDays++;
         }
       });
-      const formattedTotalWorkingHours = `${String(totalHours).padStart(
-        2,
-        "0"
-      )}h : ${String(totalMinutes).padStart(2, "0")}m`;
-
+  
+      const formattedTotalWorkingHours = `${String(totalHours).padStart(2, "0")}h : ${String(totalMinutes).padStart(2, "0")}m`;
+  
       const workingDaysInMonth = allStatusDates.size;
-      const percentage = Math.floor((presentDays / workingDaysInMonth) * 100);
-
+      const percentageOfWorkingDays = Math.floor(((presentDays + workFromHome) / workingDaysInMonth) * 100);
+      const percentageOfLeaveDays = Math.floor((leaveDays / 2) * 100);
       setAttendanceSummary({
         presentDays,
         absentDays,
         leaveDays,
+        workFromHome,
         workingDaysInMonth,
         totalDutyHours: workingDaysInMonth * 9,
         totalWorkingHours: formattedTotalWorkingHours,
-        percentage,
+        percentageOfWorkingDays,
+        percentageOfLeaveDays,
       });
     } catch (error) {
-      toast.error("Error fetching attendance data:", error.message);
+      console.error("Error fetching attendance data:", error);
+      toast.error(`Error fetching attendance data: ${error.message}`);
     }
   };
+  
 
   useEffect(() => {
     let timerInterval;
@@ -404,7 +409,9 @@ export default function Dashboard() {
                     </p>
                   </div>
                   <div className="flex max-sm:justify-center xl:justify-center max-xl:px-6 gap-7 text-gray-500">
-                    <p className="font-medium text-[14px] pb-4 ">Check Out time</p>
+                    <p className="font-medium text-[14px] pb-4 ">
+                      Check Out time
+                    </p>
                     <p className="font-medium pb-4">-- : -- : --</p>
                   </div>
                   <div className="xl:text-center max-xl:px-6 max-sm:text-center">
@@ -475,8 +482,8 @@ export default function Dashboard() {
             <div className="sm:w-[25%] flex justify-center mx-auto">
               {attendanceSummary ? (
                 <CircularProgressbar
-                  value={attendanceSummary.percentage}
-                  text={`${attendanceSummary.percentage}%`}
+                  value={attendanceSummary.percentageOfWorkingDays}
+                  text={`${attendanceSummary.percentageOfWorkingDays}%`}
                   styles={{
                     text: { fill: "#41E975" },
                     path: { stroke: "#41E975" },
@@ -500,6 +507,10 @@ export default function Dashboard() {
                   <div className="flex justify-between">
                     <p className="text-gray-500 font-medium">Leave:</p>
                     <p>{attendanceSummary.leaveDays} days</p>
+                  </div>
+                  <div className="flex justify-between">
+                    <p className="text-gray-500 font-medium">Work From Home:</p>
+                    <p>{attendanceSummary.workFromHome} days</p>
                   </div>
                   <div className="flex justify-between">
                     <p className="text-gray-500 font-medium">Working Days:</p>
@@ -535,8 +546,8 @@ export default function Dashboard() {
           <div className="min-xl:mt-5 min-lg:mb-10 pt-10 mx-auto xl:w-[60%] base:w-[40%]">
             {attendanceSummary ? (
               <CircularProgressbar
-                value={attendanceSummary.leaveDays}
-                text={`${attendanceSummary.leaveDays}%`}
+                value={attendanceSummary.percentageOfLeaveDays}
+                text={`${attendanceSummary.percentageOfLeaveDays}%`}
                 styles={{
                   text: { fill: "#41E975" },
                   path: { stroke: "#41E975" },
@@ -553,13 +564,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-
-
-
-
-
-
-
 
       {/* ------> Dialog Boxes <------- */}
 
