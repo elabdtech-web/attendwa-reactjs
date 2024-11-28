@@ -420,7 +420,7 @@ export default function Dashboard() {
               <h1 className="mt-1 text-gray-500">Have a nice day</h1>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <img src="/image 12.png" alt="" className="w-[150px]" />
+              <img src="/imagesWelcome.jpg" alt="" className="w-[200px]" />
             </div>
             </div>
           </div>
