@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../hooks/AuthContext";
-import { useUserContext } from "../../hooks/HeadertextContext";
 import {
   collection,
   addDoc,
@@ -11,6 +10,7 @@ import {
   query,
   where,
   getDocs,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../../Firebase/FirebaseConfig";
 import { toast } from "react-toastify";
@@ -74,7 +74,6 @@ const Calendar = ({
 
 export default function Dashboard() {
   const { userType, allData } = useContext(AuthContext);
-  const { setHeaderText } = useUserContext();
   const [loading, setLoading] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [isCheckedIn, setIsCheckedIn] = useState(false);
@@ -94,8 +93,6 @@ export default function Dashboard() {
   const [attendanceSummary, setAttendanceSummary] = useState(null);
 
   useEffect(() => {
-    // setHeaderText("Dashboard");
-
     const interval = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 60000);
@@ -117,17 +114,17 @@ export default function Dashboard() {
     try {
       const startOfMonth = new Date(selectedYear, selectedMonth, 1);
       const endOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
-  
+
       const formattedStartOfMonth = startOfMonth.toISOString().split("T")[0];
       const formattedEndOfMonth = endOfMonth.toISOString().split("T")[0];
-  
+
       const q = query(
         collection(db, "checkIns"),
         where("userId", "==", allData.regId),
         where("date", ">=", formattedStartOfMonth),
         where("date", "<=", formattedEndOfMonth)
       );
-  
+
       const querySnapshot = await getDocs(q);
 
       const checkIns = querySnapshot.docs.map((doc) => doc.data());
@@ -137,23 +134,31 @@ export default function Dashboard() {
       let presentDays = 0;
       let absentDays = 0;
       let leaveDays = 0;
-  
+      let holidays = 0;
+
       const allStatusDates = new Set();
-  
+
       checkIns.forEach((checkIn) => {
         const { status, totalWorkingHours: twh, date } = checkIn;
-  
-        if (date && (status === "present" || status === "home" || status === "absent" || status === "leave")) {
+
+        if (
+          date &&
+          (status === "present" ||
+            status === "home" ||
+            status === "absent" ||
+            status === "leave")
+        ) {
           allStatusDates.add(date);
-  
+
           if (status === "present" || status === "home") {
             if (twh) {
               const hours = parseInt(twh.split("h")[0].trim()) || 0;
-              const minutes = parseInt(twh.split("m")[0].split("h")[1].trim()) || 0;
-  
+              const minutes =
+                parseInt(twh.split("m")[0].split("h")[1].trim()) || 0;
+
               totalHours += hours;
               totalMinutes += minutes;
-  
+
               if (totalMinutes >= 60) {
                 totalHours += Math.floor(totalMinutes / 60);
                 totalMinutes = totalMinutes % 60;
@@ -165,18 +170,22 @@ export default function Dashboard() {
           if (status === "absent") absentDays++;
           if (status === "leave") leaveDays++;
         }
+        if (status === "holiday") holidays++;
       });
-  
+
       const formattedTotalWorkingHours = `${String(totalHours).padStart(2, "0")}h : ${String(totalMinutes).padStart(2, "0")}m`;
-  
+
       const workingDaysInMonth = allStatusDates.size;
-      const percentageOfWorkingDays = Math.floor(((presentDays + workFromHome) / workingDaysInMonth) * 100);
+      const percentageOfWorkingDays = Math.floor(
+        ((presentDays + workFromHome) / workingDaysInMonth) * 100
+      );
       const percentageOfLeaveDays = Math.floor((leaveDays / 2) * 100);
       setAttendanceSummary({
         presentDays,
         absentDays,
         leaveDays,
         workFromHome,
+        holidays,
         workingDaysInMonth,
         totalDutyHours: workingDaysInMonth * 9,
         totalWorkingHours: formattedTotalWorkingHours,
@@ -188,7 +197,6 @@ export default function Dashboard() {
       toast.error(`Error fetching attendance data: ${error.message}`);
     }
   };
-  
 
   useEffect(() => {
     let timerInterval;
@@ -226,12 +234,14 @@ export default function Dashboard() {
 
       if (data.length < 1) {
         setIsCheckedIn(false);
-      } else {
+      } 
+      if (data.length > 0) {
         const checkInData = data[0];
         if (checkInData.checkOutTime) {
           setIsCheckedIn(false);
           setTotalTime(checkInData.totalWorkingHours);
-        } else {
+        } 
+        if (!checkInData.checkOutTime) {
           setIsCheckedIn(true);
           setCheckInDocId(checkInData.id);
           const savedCheckInTime = checkInData.checkInTime.toDate();
@@ -248,65 +258,83 @@ export default function Dashboard() {
   const handleCheckIn = async () => {
     setLoading(true);
     try {
-      toast.success("Check-in successful");
-      const checkInTimestamp = Timestamp.now();
-      const createdAt = Timestamp.now();
-      const date = new Date();
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+      const createdAt = serverTimestamp(); 
+      const formattedDate = new Date().toISOString().split("T")[0];
+  
       const docRef = await addDoc(collection(db, "checkIns"), {
         userId: allData.regId,
         createdAt,
-        checkInTime: checkInTimestamp,
+        checkInTime: serverTimestamp(),
         checkOutTime: null,
         totalWorkingHours: null,
         status: "present",
         date: formattedDate,
       });
+      const savedDoc = await getDoc(docRef);
+      if (!savedDoc.exists()) {
+        toast.error("Failed to retrieve saved check-in data.");
+      }
+  
+      const checkInData = savedDoc.data();
+      const resolvedCheckInTime = checkInData.checkInTime.toDate();
+  
       setCheckInDocId(docRef.id);
       setIsCheckedIn(true);
-      setCheckInTime(checkInTimestamp.toDate());
+      setCheckInTime(resolvedCheckInTime);
       setTotalTime(null);
       setElapsedTime(0);
+      toast.success("Check-in Time :" + resolvedCheckInTime.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }));
     } catch (error) {
       toast.error("Error during check-in:", error);
     }
-    setLoading(false);
+      setLoading(false);
   };
 
   const handleCheckOut = async () => {
     setLoading(true);
     try {
-      toast.success("Check-out successful");
       const userRef = doc(db, "checkIns", checkInDocId);
       const checkInDoc = await getDoc(userRef);
       if (!checkInDoc.exists()) {
         toast.error("Check-in document does not exist.");
         return;
       }
-
+  
       const { checkInTime } = checkInDoc.data();
+      if (!checkInTime) {
+        toast.error("Check-in time not available in document.");
+      }
       const checkInDate = checkInTime.toDate();
-      const checkOutTime = Timestamp.now();
-      const checkOutDate = checkOutTime.toDate();
+      const checkOutTime = serverTimestamp();
+  
+      await updateDoc(userRef, { checkOutTime });
 
-      const totalWorkingMilliseconds = checkOutDate - checkInDate;
+      const updatedDoc = await getDoc(userRef);
+      const resolvedCheckOutTime = updatedDoc.data().checkOutTime.toDate();
+  
+      toast.success("Check-out Time: " + resolvedCheckOutTime.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }));
+
+      const totalWorkingMilliseconds = resolvedCheckOutTime - checkInDate;
       const totalWorkingHours = `
         ${Math.floor(totalWorkingMilliseconds / (1000 * 60 * 60))}h 
-        ${Math.floor(
-          (totalWorkingMilliseconds % (1000 * 60 * 60)) / (1000 * 60)
-        )}m 
+        ${Math.floor((totalWorkingMilliseconds % (1000 * 60 * 60)) / (1000 * 60))}m 
         ${Math.floor((totalWorkingMilliseconds % (1000 * 60)) / 1000)}s`;
-
-      await updateDoc(userRef, { checkOutTime, totalWorkingHours });
-
+  
+      await updateDoc(userRef, { totalWorkingHours });
       setTotalTime(totalWorkingHours);
       setIsCheckedIn(false);
     } catch (error) {
       toast.error("Error during check-out:", error);
     }
-    setLoading(false);
+      setLoading(false);
   };
 
   const formatElapsedTime = (timeInSeconds) => {
@@ -355,8 +383,33 @@ export default function Dashboard() {
         <div className="flex w-full justify-between max-xl:flex-col">
           <div
             className="shadow xl:w-[70%] min-xl:w-full 
-          p-6 max-xsm:p-1 flex justify-between items-center "
+          p-6 max-xsm:p-1 "
           >
+            <div className="font-sans font-medium text-gray-500 flex xsm:justify-end justify-start pb-3">
+              <div className="flex gap-1">
+                <p>
+                  {currentDateTime.toLocaleDateString("en-GB", {
+                    weekday: "long",
+                  })}
+                  ,
+                </p>
+                <p>
+                  {currentDateTime.toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+              <p className="pl-2">
+                {currentDateTime.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </p>
+            </div>
+            <div className="flex justify-between items-center">
             <div>
               <h1 className="font-semibold text-xl mb-1">
                 {allData.fullName ? allData.fullName : "Guest"}
@@ -367,31 +420,8 @@ export default function Dashboard() {
               <h1 className="mt-1 text-gray-500">Have a nice day</h1>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <div className="font-sans font-medium text-gray-500 text-center md:flex">
-                <div className="flex gap-1">
-                  <p>
-                    {currentDateTime.toLocaleDateString("en-GB", {
-                      weekday: "long",
-                    })}
-                    ,
-                  </p>
-                  <p>
-                    {currentDateTime.toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </p>
-                </div>
-                <p className="pl-2">
-                  {currentDateTime.toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </p>
-              </div>
               <img src="/image 12.png" alt="" className="w-[150px]" />
+            </div>
             </div>
           </div>
           <div className="shadow py-6 xl:w-[28%] max-xl:mt-10">
@@ -501,16 +531,20 @@ export default function Dashboard() {
                     <p>{attendanceSummary.presentDays} days</p>
                   </div>
                   <div className="flex justify-between">
-                    <p className="text-gray-500 font-medium">Absent:</p>
-                    <p>{attendanceSummary.absentDays} days</p>
+                    <p className="text-gray-500 font-medium">Work From Home:</p>
+                    <p>{attendanceSummary.workFromHome} days</p>
                   </div>
                   <div className="flex justify-between">
                     <p className="text-gray-500 font-medium">Leave:</p>
                     <p>{attendanceSummary.leaveDays} days</p>
                   </div>
                   <div className="flex justify-between">
-                    <p className="text-gray-500 font-medium">Work From Home:</p>
-                    <p>{attendanceSummary.workFromHome} days</p>
+                    <p className="text-gray-500 font-medium">Absent:</p>
+                    <p>{attendanceSummary.absentDays} days</p>
+                  </div>
+                  <div className="flex justify-between">
+                    <p className="text-gray-500 font-medium">Holidays:</p>
+                    <p>{attendanceSummary.holidays} days</p>
                   </div>
                   <div className="flex justify-between">
                     <p className="text-gray-500 font-medium">Working Days:</p>

@@ -3,7 +3,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import styles for the text editor
 import CustomInputField from "../../Components/CustomInputField";
 import { db } from "../../Firebase/FirebaseConfig"; // Firebase config
-import { collection, addDoc, Timestamp, query, where, getDocs } from "firebase/firestore"; 
+import { collection, addDoc, Timestamp, query, where, getDocs,serverTimestamp } from "firebase/firestore"; 
 import {useLocation} from "react-router-dom"
 import { toast } from "react-toastify";
 import emailjs from "emailjs-com";
@@ -31,18 +31,16 @@ export default function AddNewAnnouncement() {
 
     try {
       setLoading(true);
-      // Add the announcement to Firebase
       await addDoc(collection(db, "announcements"), {
         title,
         description,
-        createdAt: Timestamp.now(), // Store the current timestamp in UTC
+        createdAt: serverTimestamp(), 
       });
 
       setTitle("");
       setDescription("");
       toast.success("Announcement added successfully!");
 
-      // Fetch active employees and send emails
       sendEmailNotifications();
       setLoading(false);
     } catch (error) {
@@ -67,7 +65,7 @@ export default function AddNewAnnouncement() {
       for (const email of emailList) {
         const templateParams = {
           to_email: email, 
-        from_name:"Elabd Tech", 
+          from_name:"Elabd Tech", 
          message: description, 
         };
   
