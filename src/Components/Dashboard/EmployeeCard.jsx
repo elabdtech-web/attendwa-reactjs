@@ -3,6 +3,7 @@ import { db } from "../../Firebase/FirebaseConfig";
 import { collection, query, where, getDocs, updateDoc, addDoc, Timestamp,setDoc,doc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import CustomInputField from "../CustomInputField";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployeeCard() {
   const [employees, setEmployees] = useState([]);
@@ -12,6 +13,7 @@ export default function EmployeeCard() {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showDialogConfirmation, setShowDialogConfirmation] = useState(false);
   const [holidayDate, setHolidayDate] = useState(""); 
+  const navigate = useNavigate();
 
   const fetchEmployeesAttendanceData = async () => {
     try {
@@ -204,6 +206,10 @@ export default function EmployeeCard() {
     }
   };
 
+  const handleEmployeeClick = (employee) => {
+    navigate(`/a-dashboard/employees/${employee.regId}`);
+  };
+
   const openCheckInDialog = () => setShowDialogConfirmation(true);
   const closeCheckInDialog = () => setShowDialogConfirmation(false);
 
@@ -288,7 +294,7 @@ export default function EmployeeCard() {
           ) : (
             employees.map((employee) => (
               <tr key={employee.id} className="border-b bg-[#ECF4FF]">
-                <td className="py-2 px-4 w-[19%]">{employee.fullName}</td>
+                <td className="py-2 px-4 w-[19%] cursor-pointer hover:text-secondary" onClick={() => handleEmployeeClick(employee)}>{employee.fullName}</td>
                 <td className="py-2 px-4 w-[18%]">{employee.checkInTime?employee.checkInTime:"--"}</td>
                 <td className="py-2 px-4 w-[18%]">{employee.checkOutTime?employee.checkOutTime:"--"}</td>
                 <td className="py-2 px-1 w-[45%] flex-1 justify-between">

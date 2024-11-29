@@ -13,6 +13,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../../Firebase/FirebaseConfig";
+import { format } from "date-fns";
 import { toast } from "react-toastify";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -112,17 +113,20 @@ export default function Dashboard() {
 
   const fetchAttendanceData = async () => {
     try {
-      const startOfMonth = new Date(selectedYear, selectedMonth, 1);
-      const endOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
-
-      const formattedStartOfMonth = startOfMonth.toISOString().split("T")[0];
-      const formattedEndOfMonth = endOfMonth.toISOString().split("T")[0];
+      const startOfMonth = format(
+        new Date(selectedYear, selectedMonth, 1),
+        "yyyy-MM-dd"
+      );
+      const endOfMonth = format(
+        new Date(selectedYear, selectedMonth + 1, 0),
+        "yyyy-MM-dd"
+      );
 
       const q = query(
         collection(db, "checkIns"),
         where("userId", "==", allData.regId),
-        where("date", ">=", formattedStartOfMonth),
-        where("date", "<=", formattedEndOfMonth)
+        where("date", ">=", startOfMonth),
+        where("date", "<=", endOfMonth),
       );
 
       const querySnapshot = await getDocs(q);
@@ -135,6 +139,7 @@ export default function Dashboard() {
       let absentDays = 0;
       let leaveDays = 0;
       let holidays = 0;
+      let workingDaysInMonth =30;
 
       const allStatusDates = new Set();
 
@@ -175,9 +180,9 @@ export default function Dashboard() {
 
       const formattedTotalWorkingHours = `${String(totalHours).padStart(2, "0")}h : ${String(totalMinutes).padStart(2, "0")}m`;
 
-      const workingDaysInMonth = allStatusDates.size;
+      // const workingDaysInMonth = allStatusDates.size - leaveDays;
       const percentageOfWorkingDays = Math.floor(
-        ((presentDays + workFromHome) / workingDaysInMonth) * 100
+        ((workingDaysInMonth-absentDays) / workingDaysInMonth ) * 100
       );
       const percentageOfLeaveDays = Math.floor((leaveDays / 2) * 100);
       setAttendanceSummary({
@@ -187,17 +192,15 @@ export default function Dashboard() {
         workFromHome,
         holidays,
         workingDaysInMonth,
-        totalDutyHours: workingDaysInMonth * 9,
+        totalDutyHours: (allStatusDates.size - leaveDays) * 9,
         totalWorkingHours: formattedTotalWorkingHours,
         percentageOfWorkingDays,
         percentageOfLeaveDays,
       });
     } catch (error) {
-      console.error("Error fetching attendance data:", error);
       toast.error(`Error fetching attendance data: ${error.message}`);
     }
   };
-
   useEffect(() => {
     let timerInterval;
     if (isCheckedIn) {
@@ -364,6 +367,10 @@ export default function Dashboard() {
     return "Good Evening!";
   };
 
+  const handleAlert = () => {
+    alert("Formula Used For This Progress Bar Is: \n(Total Days In Month - Absent Days) * 100 / Total Days In Month");
+  }
+
   const handleMonthChange = (month) => {
     setSelectedMonth(month === "" ? null : parseInt(month));
   };
@@ -496,6 +503,7 @@ export default function Dashboard() {
       </div>
 
       <div className="xl:flex justify-between px-5 sm:mx-4 mt-10  gap-3">
+      {/* Attendance Summary Card */}
         <div className="shadow xl:w-[70%] xsm:p-6 p-2">
           <div className="sm:flex justify-between">
             <p className="font-medium text-xl">Attendance</p>
@@ -509,7 +517,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex max-sm:flex-col max-xl:items-center justify-between mt-10 gap-5">
-            <div className="sm:w-[25%] flex justify-center mx-auto">
+            <div className="sm:w-[25%] flex justify-center mx-auto cursor-pointer" onClick={handleAlert} >
               {attendanceSummary ? (
                 <CircularProgressbar
                   value={attendanceSummary.percentageOfWorkingDays}
@@ -567,6 +575,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+        {/* Leave Summary Card */}
         <div className="shadow xl:w-[28%] xsm:p-6 p-2 max-xl:mt-10">
           <div className="flex justify-between">
             <p className="font-medium text-xl">Leave stats</p>

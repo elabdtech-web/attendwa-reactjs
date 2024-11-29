@@ -2,12 +2,38 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../../Firebase/FirebaseConfig";
 import { format } from "date-fns";
-import {collection,query,where,orderBy,getDocs,doc,} from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  doc,
+} from "firebase/firestore";
 import EditAttendance from "../../Components/EditAttendance";
 import AddAttendance from "../../Components/Dashboard/AddAttendance";
-import {toast} from "react-toastify";
-const Calendar = ({selectedMonth,selectedYear,onMonthChange,onYearChange}) => {
-  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+import { CircularProgressbar } from "react-circular-progressbar";
+import { toast } from "react-toastify";
+const Calendar = ({
+  selectedMonth,
+  selectedYear,
+  onMonthChange,
+  onYearChange,
+}) => {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   const years = [];
   const currentYear = new Date().getFullYear();
@@ -46,6 +72,7 @@ const Calendar = ({selectedMonth,selectedYear,onMonthChange,onYearChange}) => {
 
 export default function EmployeeDetails() {
   const [attendanceData, setAttendanceData] = useState([]);
+  const [attendanceSummary, setAttendanceSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -89,9 +116,78 @@ export default function EmployeeDetails() {
           ...doc.data(),
         }));
         setAttendanceData(data);
-      } 
-      if (userSnapshot.empty) {
+        const checkIns = userSnapshot.docs.map((doc) => doc.data());
+        let totalHours = 0;
+        let totalMinutes = 0;
+        let workFromHome = 0;
+        let presentDays = 0;
+        let absentDays = 0;
+        let leaveDays = 0;
+        let holidays = 0;
+        let workingDaysInMonth =30;
+
+        const allStatusDates = new Set();
+
+        checkIns.forEach((checkIn) => {
+          const { status, totalWorkingHours: twh, date } = checkIn;
+
+          if (
+            date &&
+            (status === "present" ||
+              status === "home" ||
+              status === "absent" ||
+              status === "leave")
+          ) {
+            allStatusDates.add(date);
+
+            if (status === "present" || status === "home") {
+              if (twh) {
+                const hours = parseInt(twh.split("h")[0].trim()) || 0;
+                const minutes =
+                  parseInt(twh.split("m")[0].split("h")[1].trim()) || 0;
+
+                totalHours += hours;
+                totalMinutes += minutes;
+
+                if (totalMinutes >= 60) {
+                  totalHours += Math.floor(totalMinutes / 60);
+                  totalMinutes = totalMinutes % 60;
+                }
+              }
+            }
+            if (status === "present") presentDays++;
+            if (status === "home") workFromHome++;
+            if (status === "absent") absentDays++;
+            if (status === "leave") leaveDays++;
+          }
+          if (status === "holiday") holidays++;
+        });
+
+        const formattedTotalWorkingHours = `${String(totalHours).padStart(
+          2,
+          "0"
+        )}h : ${String(totalMinutes).padStart(2, "0")}m`;
+
+        // const workingDaysInMonth = allStatusDates.size;
+        const percentageOfWorkingDays = Math.floor(
+          ((workingDaysInMonth-absentDays) / workingDaysInMonth ) * 100
+        );
+        const percentageOfLeaveDays = Math.floor((leaveDays / 2) * 100);
+        setAttendanceSummary({
+          presentDays,
+          absentDays,
+          leaveDays,
+          workFromHome,
+          holidays,
+          workingDaysInMonth,
+          totalDutyHours: (allStatusDates.size - leaveDays) * 9,
+          totalWorkingHours: formattedTotalWorkingHours,
+          percentageOfWorkingDays,
+          percentageOfLeaveDays,
+        });
+      } else {
         setAttendanceData([]);
+        setAttendanceSummary(null);
       }
       setLoading(false);
     } catch (error) {
@@ -110,7 +206,7 @@ export default function EmployeeDetails() {
       if (!userSnapshot.empty) {
         const userData = userSnapshot.docs[0].data();
         setEmployeeData(userData);
-      } 
+      }
       if (userSnapshot.empty) {
         setEmployeeData(null);
       }
@@ -149,7 +245,7 @@ export default function EmployeeDetails() {
           </button>
         </div>
         {employeeData ? (
-          <div className="py-[2%] text-left">
+          <div className="pt-[2%] text-left">
             <div className="flex justify-between">
               <div className="flex items-center text-xl text-gray-700">
                 <p className="font-medium text-gray-600">Name:</p>
@@ -204,12 +300,79 @@ export default function EmployeeDetails() {
             </h2>
           </div>
           <div className="flex justify-end">
-          <Calendar
+            <Calendar
               selectedMonth={selectedMonth}
               selectedYear={selectedYear}
               onMonthChange={handleMonthChange}
               onYearChange={handleYearChange}
             />
+          </div>
+        </div>
+        <div className="flex max-sm:flex-col max-xl:items-center justify-between mt-10 gap-5">
+          <div className="sm:w-[25%] flex justify-center mx-auto">
+            {attendanceSummary ? (
+              <CircularProgressbar
+                value={attendanceSummary.percentageOfWorkingDays}
+                text={`${attendanceSummary.percentageOfWorkingDays}%`}
+                styles={{
+                  text: { fill: "#41E975" },
+                  path: { stroke: "#41E975" },
+                }}
+              />
+            ) : (
+              <CircularProgressbar value={0} text={`0%`}
+              styles={{
+                text: { fill: "#41E975" },
+                path: { stroke: "#41E975" },
+              }} />
+            )}
+          </div>
+          <div className="sm:w-[60%] w-full mt-3 flex flex-col justify-center">
+            { loading ? (
+              <p className="mt-6 text-gray-500">
+                Loading attendance summary...
+            </p>
+            )
+            : attendanceSummary ? (
+              <div>
+                <div className="flex justify-between">
+                  <p className="text-gray-500 font-medium">Present:</p>
+                  <p>{attendanceSummary.presentDays} days</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="text-gray-500 font-medium">Work From Home:</p>
+                  <p>{attendanceSummary.workFromHome} days</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="text-gray-500 font-medium">Leave:</p>
+                  <p>{attendanceSummary.leaveDays} days</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="text-gray-500 font-medium">Absent:</p>
+                  <p>{attendanceSummary.absentDays} days</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="text-gray-500 font-medium">Holidays:</p>
+                  <p>{attendanceSummary.holidays} days</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="text-gray-500 font-medium">Working Days:</p>
+                  <p>{attendanceSummary.workingDaysInMonth} days</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="text-gray-500 font-medium">Duty Hours:</p>
+                  <p>{attendanceSummary.totalDutyHours} hours</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="text-gray-500 font-medium">Working Hours:</p>
+                  <p>{attendanceSummary.totalWorkingHours} hours</p>
+                </div>
+              </div>
+            ) : (
+              <p className="mt-6 text-gray-500">
+                No attendance data available.
+              </p>
+            )}
           </div>
         </div>
 
@@ -290,7 +453,7 @@ export default function EmployeeDetails() {
         <div className="absolute w-full h-full top-0 bg-white">
           <EditAttendance
             attendanceId={editAttendance.id}
-            closeEdit={() => setEditAttendance(null)} 
+            closeEdit={() => setEditAttendance(null)}
           />
         </div>
       )}
