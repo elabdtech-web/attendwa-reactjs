@@ -67,7 +67,7 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
     let checkInTimestamp = finalCheckInTime && !isNaN(finalCheckInTime) ? Timestamp.fromDate(finalCheckInTime) : null;
     let checkOutTimestamp = finalCheckOutTime && !isNaN(finalCheckOutTime) ? Timestamp.fromDate(finalCheckOutTime) : null;
     
-    let totalWorkingHours = "N/A";
+    let totalWorkingHours = null;
     if (checkInTimestamp && checkOutTimestamp) {
       const totalWorkingMilliseconds = checkOutTimestamp.toMillis() - checkInTimestamp.toMillis();
       totalWorkingHours = `
@@ -82,7 +82,7 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
       finalCheckOutTime = new Date(`${date}T18:00:00`);
     }
     if (status === "holiday" || status === "leave" || status === "absent") {
-      totalWorkingHours = "N/A";
+      totalWorkingHours = null;
       finalCheckInTime = null;
       finalCheckOutTime = null;
     }

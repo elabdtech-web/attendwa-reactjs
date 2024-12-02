@@ -102,7 +102,7 @@ export default function EmployeeCard() {
       if (checkInSnapshot.empty) {
         let checkInTime = null;
         let checkOutTime = null;
-        let totalWorkingHours = "N/A";
+        let totalWorkingHours = null;
         if (status === "home") {
           totalWorkingHours = "9h 0m 0s";
           const checkInDate = new Date();

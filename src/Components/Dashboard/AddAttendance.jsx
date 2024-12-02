@@ -31,7 +31,7 @@ export default function AddAttendance({ id }) {
   
       let checkInTimestamp = null;
       let checkOutTimestamp = null;
-      let totalWorkingHours = "N/A";
+      let totalWorkingHours = null;
   
       if (status === "home") {
         const checkInDate = new Date(`${date}T09:00:00`);
