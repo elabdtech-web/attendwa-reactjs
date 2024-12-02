@@ -113,14 +113,13 @@ export default function Dashboard() {
 
   const fetchAttendanceData = async () => {
     try {
-      const startOfMonth = format(
-        new Date(selectedYear, selectedMonth, 1),
-        "yyyy-MM-dd"
-      );
-      const endOfMonth = format(
-        new Date(selectedYear, selectedMonth + 1, 0),
-        "yyyy-MM-dd"
-      );
+      const startOfMonth = startOfDay(
+        new Date(selectedYear, selectedMonth, 1)
+      ).toISOString(); // Converts to UTC ISO string
+      const endOfMonth = endOfDay(
+        new Date(selectedYear, selectedMonth + 1, 0)
+      ).toISOString();
+  
 
       const q = query(
         collection(db, "checkIns"),
