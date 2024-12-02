@@ -115,7 +115,7 @@ export default function Dashboard() {
     try {
       const startOfMonth = startOfDay(
         new Date(selectedYear, selectedMonth, 1)
-      ).toISOString(); // Converts to UTC ISO string
+      ).toISOString(); 
       const endOfMonth = endOfDay(
         new Date(selectedYear, selectedMonth + 1, 0)
       ).toISOString();
@@ -154,24 +154,19 @@ export default function Dashboard() {
         ) {
           allStatusDates.add(date);
 
-          if ((status === "present" || status === "home") && twh) {
-            try {
-              // Split the `twh` string into hours and minutes safely
-              const twhParts = twh.split("h");
-              const hours = parseInt(twhParts[0]?.trim() || "0", 10); // Safely parse hours
-              const minutes = parseInt(twhParts[1]?.split("m")[0]?.trim() || "0", 10); // Safely parse minutes
-          
-              // Add to total hours and minutes
+          if (status === "present" || status === "home") {
+            if (twh) {
+              const hours = parseInt(twh.split("h")[0].trim()) || 0;
+              const minutes =
+                parseInt(twh.split("m")[0].split("h")[1].trim()) || 0;
+
               totalHours += hours;
               totalMinutes += minutes;
-          
-              // Adjust minutes if >= 60
+
               if (totalMinutes >= 60) {
                 totalHours += Math.floor(totalMinutes / 60);
                 totalMinutes = totalMinutes % 60;
               }
-            } catch (error) {
-              console.error("Error parsing totalWorkingHours:", { twh, error });
             }
           }
           
