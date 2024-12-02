@@ -34,12 +34,12 @@ export default function AddAttendance({ id }) {
       let totalWorkingHours = null;
   
       if (status === "home") {
-        const checkInDate = new Date(`${date}T09:00:00`);
+        const checkInDate = new Date(`${date}T10:00:00`);
         const checkOutDate = new Date(`${date}T18:00:00`);
         
         checkInTimestamp = Timestamp.fromDate(checkInDate);
         checkOutTimestamp = Timestamp.fromDate(checkOutDate);
-        totalWorkingHours = "9h 0m 0s";
+        totalWorkingHours = "8h 0m 0s";
       }
   
       if (checkInTime && checkOutTime) {

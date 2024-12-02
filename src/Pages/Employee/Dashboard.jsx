@@ -113,13 +113,14 @@ export default function Dashboard() {
 
   const fetchAttendanceData = async () => {
     try {
-      const startOfMonth = startOfDay(
-        new Date(selectedYear, selectedMonth, 1)
-      ).toISOString(); 
-      const endOfMonth = endOfDay(
-        new Date(selectedYear, selectedMonth + 1, 0)
-      ).toISOString();
-  
+      const startOfMonth = format(
+        new Date(selectedYear, selectedMonth, 1),
+        "yyyy-MM-dd"
+      );
+      const endOfMonth = format(
+        new Date(selectedYear, selectedMonth + 1, 0),
+        "yyyy-MM-dd"
+      );
 
       const q = query(
         collection(db, "checkIns"),
@@ -169,7 +170,7 @@ export default function Dashboard() {
               }
             }
           }
-          
+
           if (status === "present") presentDays++;
           if (status === "home") workFromHome++;
           if (status === "absent") absentDays++;
@@ -182,7 +183,7 @@ export default function Dashboard() {
 
       // const workingDaysInMonth = allStatusDates.size - leaveDays;
       const percentageOfWorkingDays = Math.floor(
-        ((workingDaysInMonth-absentDays) / workingDaysInMonth ) * 100
+        ((workingDaysInMonth-absentDays) / workingDaysInMonth) * 100
       );
       const percentageOfLeaveDays = Math.floor((leaveDays / 2) * 100);
       setAttendanceSummary({
@@ -238,13 +239,13 @@ export default function Dashboard() {
 
       if (data.length < 1) {
         setIsCheckedIn(false);
-      } 
+      }
       if (data.length > 0) {
         const checkInData = data[0];
         if (checkInData.checkOutTime) {
           setIsCheckedIn(false);
           setTotalTime(checkInData.totalWorkingHours);
-        } 
+        }
         if (!checkInData.checkOutTime) {
           setIsCheckedIn(true);
           setCheckInDocId(checkInData.id);
@@ -262,9 +263,9 @@ export default function Dashboard() {
   const handleCheckIn = async () => {
     setLoading(true);
     try {
-      const createdAt = serverTimestamp(); 
+      const createdAt = serverTimestamp();
       const formattedDate = new Date().toISOString().split("T")[0];
-  
+
       const docRef = await addDoc(collection(db, "checkIns"), {
         userId: allData.regId,
         createdAt,
@@ -278,24 +279,25 @@ export default function Dashboard() {
       if (!savedDoc.exists()) {
         toast.error("Failed to retrieve saved check-in data.");
       }
-  
+
       const checkInData = savedDoc.data();
       const resolvedCheckInTime = checkInData.checkInTime.toDate();
-  
+
       setCheckInDocId(docRef.id);
       setIsCheckedIn(true);
       setCheckInTime(resolvedCheckInTime);
       setTotalTime(null);
       setElapsedTime(0);
       toast.success("Check-in Time :" + resolvedCheckInTime.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      }));
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })
+      );
     } catch (error) {
       toast.error("Error during check-in:", error);
     }
-      setLoading(false);
+    setLoading(false);
   };
 
   const handleCheckOut = async () => {
@@ -307,38 +309,43 @@ export default function Dashboard() {
         toast.error("Check-in document does not exist.");
         return;
       }
-  
+
       const { checkInTime } = checkInDoc.data();
       if (!checkInTime) {
         toast.error("Check-in time not available in document.");
       }
       const checkInDate = checkInTime.toDate();
       const checkOutTime = serverTimestamp();
-  
+
       await updateDoc(userRef, { checkOutTime });
 
       const updatedDoc = await getDoc(userRef);
       const resolvedCheckOutTime = updatedDoc.data().checkOutTime.toDate();
-  
-      toast.success("Check-out Time: " + resolvedCheckOutTime.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      }));
+
+      toast.success(
+        "Check-out Time: " +
+          resolvedCheckOutTime.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })
+      );
 
       const totalWorkingMilliseconds = resolvedCheckOutTime - checkInDate;
       const totalWorkingHours = `
         ${Math.floor(totalWorkingMilliseconds / (1000 * 60 * 60))}h 
-        ${Math.floor((totalWorkingMilliseconds % (1000 * 60 * 60)) / (1000 * 60))}m 
+        ${Math.floor(
+          (totalWorkingMilliseconds % (1000 * 60 * 60)) / (1000 * 60)
+        )}m 
         ${Math.floor((totalWorkingMilliseconds % (1000 * 60)) / 1000)}s`;
-  
+
       await updateDoc(userRef, { totalWorkingHours });
       setTotalTime(totalWorkingHours);
       setIsCheckedIn(false);
     } catch (error) {
       toast.error("Error during check-out:", error);
     }
-      setLoading(false);
+    setLoading(false);
   };
 
   const formatElapsedTime = (timeInSeconds) => {
@@ -369,8 +376,10 @@ export default function Dashboard() {
   };
 
   const handleAlert = () => {
-    alert("Formula Used For This Progress Bar Is: \n(Total Days In Month - Absent Days) * 100 / Total Days In Month");
-  }
+    alert(
+      "Formula Used For This Progress Bar Is: \n(Total Days In Month - Absent Days) * 100 / Total Days In Month"
+    );
+  };
 
   const handleMonthChange = (month) => {
     setSelectedMonth(month === "" ? null : parseInt(month));
@@ -418,18 +427,18 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex justify-between items-center">
-            <div>
-              <h1 className="font-semibold text-xl mb-1">
-                {allData.fullName ? allData.fullName : "Guest"}
-              </h1>
-              <h1 className="font-semibold text-primary text-sm">
-                {getGreeting()}
-              </h1>
-              <h1 className="mt-1 text-gray-500">Have a nice day</h1>
-            </div>
-            <div className="flex flex-col items-center justify-center">
-              <img src="/imagesWelcome.jpg" alt="" className="w-[200px]" />
-            </div>
+              <div>
+                <h1 className="font-semibold text-xl mb-1">
+                  {allData.fullName ? allData.fullName : "Guest"}
+                </h1>
+                <h1 className="font-semibold text-primary text-sm">
+                  {getGreeting()}
+                </h1>
+                <h1 className="mt-1 text-gray-500">Have a nice day</h1>
+              </div>
+              <div className="flex flex-col items-center justify-center">
+                <img src="/imagesWelcome.jpg" alt="" className="w-[200px]" />
+              </div>
             </div>
           </div>
           <div className="shadow py-6 xl:w-[28%] max-xl:mt-10">
@@ -504,7 +513,7 @@ export default function Dashboard() {
       </div>
 
       <div className="xl:flex justify-between px-5 sm:mx-4 mt-10  gap-3">
-      {/* Attendance Summary Card */}
+        {/* Attendance Summary Card */}
         <div className="shadow xl:w-[70%] xsm:p-6 p-2">
           <div className="sm:flex justify-between">
             <p className="font-medium text-xl">Attendance</p>
@@ -518,7 +527,10 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex max-sm:flex-col max-xl:items-center justify-between mt-10 gap-5">
-            <div className="sm:w-[25%] flex justify-center mx-auto cursor-pointer" onClick={handleAlert} >
+            <div
+              className="sm:w-[25%] flex justify-center mx-auto cursor-pointer"
+              onClick={handleAlert}
+            >
               {attendanceSummary ? (
                 <CircularProgressbar
                   value={attendanceSummary.percentageOfWorkingDays}

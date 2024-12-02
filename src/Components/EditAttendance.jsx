@@ -77,8 +77,8 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
       `;
     }
     if (status === "home") {
-      totalWorkingHours = "9h 0m 0s";
-      finalCheckInTime = new Date(`${date}T09:00:00`);
+      totalWorkingHours = "8h 0m 0s";
+      finalCheckInTime = new Date(`${date}T10:00:00`);
       finalCheckOutTime = new Date(`${date}T18:00:00`);
     }
     if (status === "holiday" || status === "leave" || status === "absent") {

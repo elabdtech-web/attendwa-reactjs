@@ -104,9 +104,9 @@ export default function EmployeeCard() {
         let checkOutTime = null;
         let totalWorkingHours = null;
         if (status === "home") {
-          totalWorkingHours = "9h 0m 0s";
+          totalWorkingHours = "8h 0m 0s";
           const checkInDate = new Date();
-          checkInDate.setHours(9, 0, 0, 0);
+          checkInDate.setHours(10, 0, 0, 0);
           checkInTime = checkInDate;
           const checkOutDate = new Date();
           checkOutDate.setHours(18, 0, 0, 0);
@@ -185,7 +185,7 @@ export default function EmployeeCard() {
             checkOutTime: null,
             createdAt: timestamp,
             status: "holiday",
-            totalWorkingHours: "N/A",
+            totalWorkingHours: null,
           });
         } 
         if (checkInSnapshot.empty) {
@@ -196,7 +196,7 @@ export default function EmployeeCard() {
             createdAt: timestamp,
             date: selectedDate,
             status: "holiday",
-            totalWorkingHours: "N/A",
+            totalWorkingHours: null,
           });
         }
       }
