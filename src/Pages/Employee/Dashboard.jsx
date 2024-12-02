@@ -13,7 +13,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../../Firebase/FirebaseConfig";
-import { format } from "date-fns";
+import { startOfDay, endOfDay, format } from "date-fns";
 import { toast } from "react-toastify";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -198,6 +198,7 @@ export default function Dashboard() {
       });
     } catch (error) {
       toast.error(`Error fetching attendance data: ${error.message}`);
+      console.log("Error fetching attendance data:", error);
     }
   };
   useEffect(() => {
