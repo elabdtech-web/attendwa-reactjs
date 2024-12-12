@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../Firebase/FirebaseConfig";
-import { collection, query, where, getDocs, updateDoc, addDoc, Timestamp,setDoc,doc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  addDoc,
+  Timestamp,
+  setDoc,
+  doc,
+} from "firebase/firestore";
 import { toast } from "react-toastify";
 import CustomInputField from "../CustomInputField";
 import { useNavigate } from "react-router-dom";
-import { BsFillCalendarDateFill } from "react-icons/bs";
+import { MdDateRange } from "react-icons/md";
 
 export default function EmployeeCard() {
   const [employees, setEmployees] = useState([]);
@@ -13,7 +23,7 @@ export default function EmployeeCard() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showDialogConfirmation, setShowDialogConfirmation] = useState(false);
-  const [holidayDate, setHolidayDate] = useState(""); 
+  const [holidayDate, setHolidayDate] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const navigate = useNavigate();
 
@@ -26,7 +36,7 @@ export default function EmployeeCard() {
         where("status", "==", "active")
       );
       const employeeSnapshot = await getDocs(employeeQuery);
- 
+
       const employeeList = await Promise.all(
         employeeSnapshot.docs.map(async (doc) => {
           const employeeData = doc.data();
@@ -55,7 +65,7 @@ export default function EmployeeCard() {
               hasCheckedIn: true,
               status: checkInData.status || "present",
             };
-          } 
+          }
           if (checkInSnapshot.size === 0) {
             return {
               id: doc.id,
@@ -82,7 +92,7 @@ export default function EmployeeCard() {
     setLoading(true);
     try {
       const checkInCollection = collection(db, "checkIns");
-      
+
       const checkInQuery = query(
         checkInCollection,
         where("userId", "==", userId),
@@ -133,7 +143,7 @@ export default function EmployeeCard() {
               : employee
           )
         );
-      } 
+      }
       if (checkInSnapshot.size > 0) {
         const docRef = checkInSnapshot.docs[0].ref;
         await updateDoc(docRef, { status: status, createdAt });
@@ -154,11 +164,15 @@ export default function EmployeeCard() {
   const markHolidayForActiveEmployees = async () => {
     try {
       const usersRef = collection(db, "users");
-      const activeEmployeesQuery = query(usersRef, where("status", "==", "active"));
+      const activeEmployeesQuery = query(
+        usersRef,
+        where("status", "==", "active")
+      );
       const querySnapshot = await getDocs(activeEmployeesQuery);
 
       const timestamp = Timestamp.now();
-      const selectedDate = holidayDate || new Date().toISOString().split("T")[0];
+      const selectedDate =
+        holidayDate || new Date().toISOString().split("T")[0];
 
       for (const doc of querySnapshot.docs) {
         const { regId } = doc.data();
@@ -180,7 +194,7 @@ export default function EmployeeCard() {
             status: "holiday",
             totalWorkingHours: null,
           });
-        } 
+        }
         if (checkInSnapshot.empty) {
           await addDoc(checkInCollection, {
             userId: regId,
@@ -229,15 +243,24 @@ export default function EmployeeCard() {
     fetchEmployeesAttendanceData();
   }, [date]);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
 
   return (
     <div className=" mt-8 border">
       <div className="py-2 px-4 shadow w-full text-2xl flex justify-between items-center">
         <div className="font-semibold">Today's Attendance</div>
         <div className="flex items-center">
-          {/* <BsFillCalendarDateFill className="text-primary cursor-pointer"  /> */}
-          <input type="date" onChange={(e) => setDate(e.target.value)} max={today} className="p-1  border rounded-md text-base" />
+          <p className="mr-3 text-primary text-lg">{date}</p>
+          <div className="relative inline-block">
+            <MdDateRange className="text-primary text-3xl" />
+            <input
+              type="date"
+              id="datePicker"
+              onChange={(e) => setDate(e.target.value)}
+              max={today}
+              className="absolute inset-0 opacity-0"
+            />
+          </div>
           <button
             className="bg-primary text-white px-3 py-1 text-base rounded-md ml-5"
             onClick={openCheckInDialog}
@@ -266,12 +289,23 @@ export default function EmployeeCard() {
           ) : (
             employees.map((employee) => (
               <tr key={employee.id} className="border-b bg-[#ECF4FF]">
-                <td className="py-2 px-4 w-[19%] cursor-pointer hover:text-secondary" onClick={() => handleEmployeeClick(employee)}>{employee.fullName}</td>
-                <td className="py-2 px-4 w-[18%]">{employee.checkInTime?employee.checkInTime:"--"}</td>
-                <td className="py-2 px-4 w-[18%]">{employee.checkOutTime?employee.checkOutTime:"--"}</td>
+                <td
+                  className="py-2 px-4 w-[19%] cursor-pointer hover:text-secondary"
+                  onClick={() => handleEmployeeClick(employee)}
+                >
+                  {employee.fullName}
+                </td>
+                <td className="py-2 px-4 w-[18%]">
+                  {employee.checkInTime ? employee.checkInTime : "--"}
+                </td>
+                <td className="py-2 px-4 w-[18%]">
+                  {employee.checkOutTime ? employee.checkOutTime : "--"}
+                </td>
                 <td className="py-2 px-1 w-[45%] flex-1 justify-between">
                   {employee.status !== "N/A" ? (
-                    <span className="text-gray-800 ml-2">{employee.status}</span>
+                    <span className="text-gray-800 ml-2">
+                      {employee.status}
+                    </span>
                   ) : (
                     <div>
                       <button
@@ -329,12 +363,21 @@ export default function EmployeeCard() {
       {showDialogConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded shadow-lg">
-            <h2 className="text-xl font-semibold mb-4 text-center">Which Date you want to give Holiday</h2>
-            <CustomInputField type="date"  name="holidayDate" value={holidayDate} onChange={(e) => setHolidayDate(e.target.value)} />
+            <h2 className="text-xl font-semibold mb-4 text-center">
+              Which Date you want to give Holiday
+            </h2>
+            <CustomInputField
+              type="date"
+              name="holidayDate"
+              value={holidayDate}
+              onChange={(e) => setHolidayDate(e.target.value)}
+            />
             <div className="flex justify-end mt-4">
               <button
-                onClick={()=>{markHolidayForActiveEmployees();
-                setShowDialogConfirmation(false);}}
+                onClick={() => {
+                  markHolidayForActiveEmployees();
+                  setShowDialogConfirmation(false);
+                }}
                 className="bg-primary text-white px-4 py-2 rounded mr-2"
               >
                 Mark Holiday
