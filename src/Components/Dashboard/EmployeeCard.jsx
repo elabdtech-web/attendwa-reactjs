@@ -4,6 +4,7 @@ import { collection, query, where, getDocs, updateDoc, addDoc, Timestamp,setDoc,
 import { toast } from "react-toastify";
 import CustomInputField from "../CustomInputField";
 import { useNavigate } from "react-router-dom";
+import { BsFillCalendarDateFill } from "react-icons/bs";
 
 export default function EmployeeCard() {
   const [employees, setEmployees] = useState([]);
@@ -13,6 +14,7 @@ export default function EmployeeCard() {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showDialogConfirmation, setShowDialogConfirmation] = useState(false);
   const [holidayDate, setHolidayDate] = useState(""); 
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const navigate = useNavigate();
 
   const fetchEmployeesAttendanceData = async () => {
@@ -24,12 +26,7 @@ export default function EmployeeCard() {
         where("status", "==", "active")
       );
       const employeeSnapshot = await getDocs(employeeQuery);
-
-      const today = new Date();
-      const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
-
+ 
       const employeeList = await Promise.all(
         employeeSnapshot.docs.map(async (doc) => {
           const employeeData = doc.data();
@@ -39,7 +36,7 @@ export default function EmployeeCard() {
           const checkInQuery = query(
             checkInCollection,
             where("userId", "==", userId),
-            where("date", "==", formattedDate)
+            where("date", "==", date)
           );
           const checkInSnapshot = await getDocs(checkInQuery);
 
@@ -85,15 +82,11 @@ export default function EmployeeCard() {
     setLoading(true);
     try {
       const checkInCollection = collection(db, "checkIns");
-      const today = new Date();
-      const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
-
+      
       const checkInQuery = query(
         checkInCollection,
         where("userId", "==", userId),
-        where("date", "==", formattedDate)
+        where("date", "==", date)
       );
 
       const checkInSnapshot = await getDocs(checkInQuery);
@@ -120,7 +113,7 @@ export default function EmployeeCard() {
           checkOutTime: checkOutTime,
           totalWorkingHours: totalWorkingHours,
           createdAt,
-          date: formattedDate,
+          date: date,
         });
 
         setEmployees((prevEmployees) =>
@@ -234,46 +227,25 @@ export default function EmployeeCard() {
 
   useEffect(() => {
     fetchEmployeesAttendanceData();
-  }, []);
+  }, [date]);
+
+  const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="mx-auto mt-8 border">
-      <div className="py-2 px-4 shadow w-full text-2xl flex justify-between">
+    <div className=" mt-8 border">
+      <div className="py-2 px-4 shadow w-full text-2xl flex justify-between items-center">
         <div className="font-semibold">Today's Attendance</div>
-        <div>
+        <div className="flex items-center">
+          {/* <BsFillCalendarDateFill className="text-primary cursor-pointer"  /> */}
+          <input type="date" onChange={(e) => setDate(e.target.value)} max={today} className="p-1  border rounded-md text-base" />
           <button
-            className="bg-primary text-white px-3 py-1 text-base rounded-md"
+            className="bg-primary text-white px-3 py-1 text-base rounded-md ml-5"
             onClick={openCheckInDialog}
           >
             Holiday
           </button>
         </div>
       </div>
-
-      {showDialog && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Confirm Action</h2>
-            <p className="mb-4">
-              Are you sure you want to set the status to "{selectedStatus}"?
-            </p>
-            <div className="flex justify-end">
-              <button
-                onClick={confirmStatusUpdate}
-                className="bg-primary text-white px-4 py-2 rounded mr-2"
-              >
-                Yes
-              </button>
-              <button
-                onClick={closeDialog}
-                className="bg-gray-300 px-4 py-2 rounded"
-              >
-                No
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <table className="w-full shadow">
         <thead className="shadow bg-primary">
@@ -328,6 +300,31 @@ export default function EmployeeCard() {
           )}
         </tbody>
       </table>
+
+      {showDialog && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Confirm Action</h2>
+            <p className="mb-4">
+              Are you sure you want to set the status to "{selectedStatus}"?
+            </p>
+            <div className="flex justify-end">
+              <button
+                onClick={confirmStatusUpdate}
+                className="bg-primary text-white px-4 py-2 rounded mr-2"
+              >
+                Yes
+              </button>
+              <button
+                onClick={closeDialog}
+                className="bg-gray-300 px-4 py-2 rounded"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showDialogConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

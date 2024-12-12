@@ -10,6 +10,7 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
   const [checkInTime, setCheckInTime] = useState("");
   const [checkOutTime, setCheckOutTime] = useState("");
   const [date, setDate] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchAttendanceData = async () => {
@@ -49,12 +50,18 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
   }, [attendanceId]);
 
   const handleSave = async () => {
+    setLoading(true);
     const docRef = doc(db, "checkIns", attendanceId);
   
-    if (!date) {
-      toast.warning("Please fill in the date");
+    if (!date || !status) {
+      toast.warning("Please Fill Date and Status.");
       return;
     }
+    if (status === "present" && (!checkInTime || !checkOutTime)) {
+      toast.warning("Please select check-in and check-out times.");
+      return;
+    }
+    
   
     let finalCheckInTime = checkInTime ? new Date(`${date}T${checkInTime}:00`) : null;
     let finalCheckOutTime = checkOutTime ? new Date(`${date}T${checkOutTime}:00`) : null;
@@ -100,6 +107,7 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
     } catch (error) {
       toast.error("Error updating document:", error);
     }
+    setLoading(false);
   };
 
   if (!attendanceData) return <p>Loading...</p>;
@@ -150,6 +158,15 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
           </div>
 
           <div className="flex justify-between gap-4">
+           {loading ? (
+             <button
+             type="button"
+             onClick={handleSave}
+             className="bg-primary text-white font-semibold px-4 py-2 rounded-lg w-full"
+           >
+             Loading
+           </button>
+           ) : (
             <button
               type="button"
               onClick={handleSave}
@@ -157,6 +174,7 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
             >
               Save Changes
             </button>
+           )}
             <button
               type="button"
               onClick={closeEdit}

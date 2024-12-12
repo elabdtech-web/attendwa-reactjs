@@ -8,11 +8,19 @@ export default function AddAttendance({ id }) {
   const [checkInTime, setCheckInTime] = useState('');
   const [checkOutTime, setCheckOutTime] = useState('');
   const [date, setDate] = useState('');
-  const [status, setStatus] = useState('present');
+  const [status, setStatus] = useState();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!date || !status) {
+      toast.warning('Please select Date and Status.');
+      return;
+    }
+    if (status === 'present' && (!checkInTime || !checkOutTime)) {
+      toast.warning('Please select check-in and check-out times.');
+      return;
+    } 
     setLoading(true);
   
     try {
@@ -121,7 +129,7 @@ export default function AddAttendance({ id }) {
         <div className="flex items-center justify-between">
           <label className="block text-gray-600 font-medium mb-2 text-xl">Date:</label>
           <div className="w-[300px]">
-          <CustomInputField type={"date"} name="date" value={date} onChange={(e) => setDate(e.target.value)} required max={today}/>
+          <CustomInputField type={"date"} name="date" value={date} onChange={(e) => setDate(e.target.value)} max={today}/>
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -129,9 +137,9 @@ export default function AddAttendance({ id }) {
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            required
             className="px-4 py-2 ml-5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 w-[300px]"
           >
+            <option value="">Select Status</option>
             <option value="present">Present</option>
             <option value="absent">Absent</option>
             <option value="leave">Leave</option>
