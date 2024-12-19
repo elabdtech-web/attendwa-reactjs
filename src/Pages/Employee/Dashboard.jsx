@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import Calendar from "../../Components/Calendar";
+import ProjectCard from "../../Components/Dashboard/ProjectCard";
 
 export default function Dashboard() {
   const { userType, allData } = useContext(AuthContext);
@@ -472,7 +473,7 @@ export default function Dashboard() {
           </div>
           <div className="flex max-sm:flex-col max-xl:items-center justify-between mt-10 gap-5">
             <div
-              className="sm:w-[25%] flex justify-center mx-auto cursor-pointer"
+              className="sm:w-[25%] w-[80%] flex justify-center mx-auto cursor-pointer"
               onClick={handleAlert}
             >
               {attendanceSummary ? (
@@ -543,7 +544,7 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="min-xl:mt-5 min-lg:mb-10 pt-10 mx-auto xl:w-[60%] base:w-[40%]">
+          <div className="min-xl:mt-5 min-lg:mb-10 pt-10 mx-auto xl:w-[60%] base:w-[40%] w-[80%]">
             {attendanceSummary ? (
               <CircularProgressbar
                 value={attendanceSummary.percentageOfLeaveDays}
@@ -564,6 +565,8 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      <ProjectCard/>
 
       {/* ------> Dialog Boxes <------- */}
 

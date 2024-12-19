@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 export default function EmployeeLayout() {
   const [loading, setLoading] = useState(true);
   const { userType, setUserType } = useContext(AuthContext);
-  const { allData,setAllData} = useContext(AuthContext);
+  const { allData, setAllData } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const fetchUserRole = async (email) => {
@@ -22,8 +22,8 @@ export default function EmployeeLayout() {
     if (!snapshot.empty) {
       const userData = snapshot.docs[0].data();
       setAllData(userData);
-      setUserType(userData.role)
-    } 
+      setUserType(userData.role);
+    }
     if (snapshot.empty) {
       toast.error("No user found with this email.");
     }
@@ -45,39 +45,41 @@ export default function EmployeeLayout() {
     });
     return () => unsubscribe();
   }, []);
-  
+
   useEffect(() => {
-    if (userType === "admin"){
-      navigate("/a-dashboard")
-}
+    if (userType === "admin") {
+      navigate("/a-dashboard");
+    }
   }, [userType, navigate]);
 
   useEffect(() => {
     const handleResize = () => {
       const isMdOrAbove = window.matchMedia("(min-width: 768px)").matches;
-      setIsSidebarOpen(isMdOrAbove); 
+      setIsSidebarOpen(isMdOrAbove);
     };
 
     handleResize();
-    window.addEventListener("resize", handleResize); 
+    window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener("resize", handleResize); 
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
- 
-  
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   if (loading) {
-    return <p className="flex justify-center items-center h-screen text-xl">LOADING ..</p>;
+    return (
+      <p className="flex justify-center items-center h-screen text-xl">
+        LOADING ..
+      </p>
+    );
   }
 
   return (
     <UserContext>
       <div className="flex">
-      {isSidebarOpen && (
+        {isSidebarOpen && (
           <Sidebar toggleSidebar={toggleSidebar} isOpen={isSidebarOpen} />
         )}
         <div className="flex-1">

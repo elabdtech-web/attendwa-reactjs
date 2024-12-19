@@ -246,7 +246,7 @@ export default function EmployeeCard() {
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <div className=" mt-8 border">
+    <div className=" mt-8 shadow">
       <div className="py-2 px-4 shadow w-full text-2xl flex justify-between items-center">
         <div className="font-semibold">Today's Attendance</div>
         <div className="flex items-center">

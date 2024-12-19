@@ -22,6 +22,10 @@ import Announcements from "./Pages/Admin/Announcement";
 import AddNewAnnouncement from "./Pages/Admin/AddNewAnnouncement";
 import AnnouncementDetails from "./Pages/Admin/AnnouncementDetails";
 import SalaryCalculation from "./Pages/Admin/SalaryCalculation";
+import ProjectsAdmin from "./Pages/Admin/ProjectsAdmin";
+import ProjectForm from "./Pages/Auth/ProjectForm";
+import ProjectDetails from "./Pages/Admin/ProjectDetails";
+import EditProject from "./Pages/Admin/EditProject";
 
 export default function App() {
   return (
@@ -33,6 +37,11 @@ export default function App() {
         <Route path="/a-dashboard" element={<AdminLayout />}>
           <Route index element={<DashboardAdmin />} />
           <Route path="tasks" element={<Tasks />} />
+          <Route path="a-projects" element={<ProjectsAdmin/>}>
+            <Route path="projectForm" element={<ProjectForm />} />
+            <Route path=":id" element={<ProjectDetails />} />
+            <Route path=":id/edit" element={<EditProject />} />
+          </Route>
           <Route path="employees" element={<Employees />}>
             <Route path="FormPage" element={<FormPage />} />
             <Route path=":id" element={<EmployeeDetails />}/>

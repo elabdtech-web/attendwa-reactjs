@@ -1,23 +1,17 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect} from "react";
 import HeaderDashboard from "../../Components/Dashboard/HeaderDashboard";
 import Sidebar from "../../Components/Dashboard/EmployeeSidebar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../Firebase/FirebaseConfig";
-import { useUserContext } from "../../hooks/HeadertextContext";
-import { AuthContext } from "../../hooks/AuthContext";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { RiFileDownloadFill } from "react-icons/ri";
 
 export default function Employees() {
-  const { userType } = useContext(AuthContext);
   const [employees, setEmployees] = useState([]);
-  const [showDetails, setShowDetails] = useState(null);
-  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { setHeaderText } = useUserContext();
   const navigate = useNavigate();
   const location = useLocation();
   const isEmployeePage = location.pathname == "/a-dashboard/employees";
@@ -25,7 +19,6 @@ export default function Employees() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const handleClick = () => {
-    setShowForm(true);
     navigate("/a-dashboard/employees/FormPage");
   };
   const fetchEmployees = async () => {
@@ -64,7 +57,6 @@ export default function Employees() {
 
   useEffect(() => {
     fetchEmployees();
-    setHeaderText("Employees");
   }, []);
   return (
     <div className="flex relative">
@@ -145,14 +137,12 @@ export default function Employees() {
                             <div className="flex justify-center px-5 gap-1">
                               <button
                                 className="border bg-primary text-white text-[12px] px-2 py-1 rounded-lg"
-                                onClick={() => setShowDetails(employee)}
                               >
                                 <Link to={`./${employee.regId}`}>View</Link>
                               </button>
 
                               <button
                                 className="border bg-primary text-white text-[12px] px-2 py-1 rounded-lg"
-                                onClick={() => setShowDetails(employee)}
                               >
                                 <Link to={`./${employee.regId}/edit`}>
                                   Edit
@@ -161,7 +151,6 @@ export default function Employees() {
 
                               <button
                                 className="border bg-primary text-white text-[12px] px-2 py-1 rounded-lg"
-                                onClick={() => setShowDetails(employee)}
                               >
                                 <Link to={`./${employee.regId}/salary`}><RiFileDownloadFill /></Link>
                               </button>
@@ -198,6 +187,7 @@ export default function Employees() {
         </div>
       </div>
 
+      {/* Confirmation dialog */}
       {showDialog && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded shadow-lg">

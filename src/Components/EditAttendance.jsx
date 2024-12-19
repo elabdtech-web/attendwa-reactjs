@@ -161,7 +161,6 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
            {loading ? (
              <button
              type="button"
-             onClick={handleSave}
              className="bg-primary text-white font-semibold px-4 py-2 rounded-lg w-full"
            >
              Loading

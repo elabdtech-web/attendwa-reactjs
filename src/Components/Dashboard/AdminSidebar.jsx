@@ -1,6 +1,6 @@
 import React from "react";
 import { FiX } from "react-icons/fi";
-import {Link} from "react-router-dom"
+import {NavLink} from "react-router-dom"
 import { MdDashboard } from "react-icons/md";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { FaTasks } from "react-icons/fa";
@@ -23,44 +23,52 @@ export default function Sidebar({ toggleSidebar, isOpen }) {
       <div className="p-[45px]">
         <ul className="space-y-8">
           <li>
-            <Link to="/a-dashboard" className="hover:text-primary">
+            <NavLink to="/a-dashboard" className="hover:text-primary" end>
             <div className="flex items-center gap-3 hover:underline">
               <MdDashboard className="w-[20px] size-10"/>
               <p className='font-semibold text-[18px]'>Dashboard</p>
               </div>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/a-dashboard/employees" className="hover:text-primary">
+            <NavLink to="/a-dashboard/employees" className="hover:text-primary">
             <div className="flex items-center gap-3 hover:underline">
               <FaPeopleGroup className="w-[20px] size-10"/>
               <p className='font-semibold text-[18px]'>Employees</p>
               </div>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/a-dashboard/tasks" className="hover:text-primary">
+            <NavLink to="/a-dashboard/a-projects" className="hover:text-primary">
             <div className="flex items-center gap-3 hover:underline">
               <FaTasks className="w-[20px] size-10"/>
-              <p className='font-semibold text-[18px]'>Tasks</p>
+              <p className='font-semibold text-[18px]'>Projects</p>
               </div>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/a-dashboard/a-salary" className="hover:text-primary">
+            <NavLink to="/a-dashboard/a-salary" className="hover:text-primary">
             <div className="flex items-center gap-3 hover:underline">
               <FaRegMoneyBillAlt className="w-[20px] size-10"/>
               <p className='font-semibold text-[18px]'>Salary</p>
               </div>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/a-dashboard/announcements" className="hover:text-primary">
+            <NavLink to="/a-dashboard/announcements" className="hover:text-primary">
             <div className="flex items-center gap-3 hover:underline">
               <GrAnnounce className="w-[20px] size-10"/>
               <p className='font-semibold text-[18px]'>Announcements</p>
               </div>
-            </Link>
+            </NavLink>
+          </li>
+          <li className="hidden">
+            <NavLink to="/a-dashboard/tasks" className="hover:text-primary">
+            <div className="flex items-center gap-3 hover:underline">
+              <FaTasks className="w-[20px] size-10"/>
+              <p className='font-semibold text-[18px]'>Tasks</p>
+              </div>
+            </NavLink>
           </li>
         </ul>
       </div>
