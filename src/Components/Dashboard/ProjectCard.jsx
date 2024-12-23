@@ -66,7 +66,7 @@ export default function ProjectCard() {
               ))
             ) : (
               <tr>
-                <td colSpan="3" className="text-center py-3 text-xl">
+                <td colSpan="5" className="text-center py-3 text-xl">
                   No projects found.
                 </td>
               </tr>
