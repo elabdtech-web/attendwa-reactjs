@@ -17,17 +17,32 @@ export default function HeaderDashboard({
   fullName,
   email,
 }) {
-  const catMenu = useRef(null);
+  const dropdownRef = useRef(null);
   const { setUserType, setAllData } = useContext(AuthContext);
-  const [isDropdownOpen, setIsDropdownOpen] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const { headerText } = useUserContext();
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const toggleDropdown = (e) => {
+    e.stopPropagation();
+    setIsDropdownOpen((prev) => !prev);
   };
-  const closeDropdown = () => {
-    setIsDropdownOpen(false);
+  const closeDropdown = (e) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      setIsDropdownOpen(false);
+    }
   };
+
+  useEffect(()=> {
+    if (isDropdownOpen) {
+      document.addEventListener("click", closeDropdown);
+    }
+    else {
+      document.removeEventListener("click", closeDropdown);
+    }
+    return () => {
+      document.removeEventListener("click", closeDropdown);
+    }
+  },[isDropdownOpen])
   const handleLogout = () => {
     signOut(auth);
     localStorage.removeItem("accesstoken");
@@ -59,12 +74,12 @@ export default function HeaderDashboard({
         </button>
 
         {isDropdownOpen && (
-          <div className="absolute right-0 mt-10 mr-5 w-60 bg-white border rounded shadow-lg p-5 z-50">
+          <div ref={dropdownRef} className="absolute right-0 mt-10 mr-5 w-60 bg-white border rounded shadow-lg p-5 z-50">
             <div className="text-left mb-2 px-1">
               <p className="font-semibold">{fullName}</p>
               <p className="text-sm text-gray-600">{email}</p>
             </div>
-            <ul onClick={closeDropdown}>
+            <ul>
               <li className="px-1 py-2 hover:bg-gray-100 cursor-pointer">
                 <Link to="/dashboard/profile">Profile</Link>
               </li>

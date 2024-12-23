@@ -37,7 +37,6 @@ export default function LinearWithValueLabel({from,to}) {
 
   const progressPercentage = ((currentDateTime - startDate) / (endDate - startDate)) * 100;
   setPP(progressPercentage);
-  console.log("progressPercentage",progressPercentage)
   };
 
   React.useEffect(() => {
@@ -46,7 +45,7 @@ export default function LinearWithValueLabel({from,to}) {
   
 
   return (
-    <Box sx={{ width: '70%' }} className="mx-auto">
+    <Box sx={{ width: '95%' }} className="mx-auto">
       <LinearProgressWithLabel value={pP} sx={{
         height: 15,
         borderRadius: 5 // Adjust the height to make it thinner

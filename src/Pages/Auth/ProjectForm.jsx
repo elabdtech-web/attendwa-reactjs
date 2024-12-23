@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../Firebase/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 import CustomInputField from "../../Components/CustomInputField";
@@ -13,7 +9,7 @@ import { toast } from "react-toastify";
 import MultipleSelectChip from "../../Components/MultiSelect";
 
 export default function ProjectForm() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [projectTitle, setProjectTitle] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -22,7 +18,6 @@ export default function ProjectForm() {
   const [status, setStatus] = useState("active");
   const [loading, setLoading] = useState(false);
 
-  
   const validateFields = () => {
     let validationErrors = {};
 
@@ -38,7 +33,7 @@ export default function ProjectForm() {
 
     if (members.length === 0) {
       validationErrors.members = "Members are required";
-    }    
+    }
 
     Object.values(validationErrors).forEach((errorMessage) => {
       toast.error(errorMessage);
@@ -82,7 +77,10 @@ export default function ProjectForm() {
   };
   return (
     <div className="flex justify-center ">
-      <form className=" shadow rounded-lg w-[60%] px-5 mb-5" onSubmit={handleSubmit}>
+      <form
+        className=" shadow rounded-lg w-[60%] px-5 mb-5"
+        onSubmit={handleSubmit}
+      >
         <div className="text-center font-semibold text-2xl  pb-[6px] pt-3">
           <h1>Enter Project Details Here</h1>
         </div>
@@ -119,7 +117,8 @@ export default function ProjectForm() {
                 type="date"
                 name="startDate"
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                onChange={(e) => 
+                  setStartDate(e.target.value)}
               />
             </div>
             <div className="mt-3 flex justify-between items-center">

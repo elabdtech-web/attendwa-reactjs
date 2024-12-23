@@ -208,6 +208,7 @@ export default function EmployeeCard() {
         }
       }
       toast.success("Holiday marked for all active employees.");
+      fetchEmployeesAttendanceData();
     } catch (error) {
       toast.success("Failed to mark holiday for employees.");
     }

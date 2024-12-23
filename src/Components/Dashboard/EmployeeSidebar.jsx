@@ -1,6 +1,6 @@
 import React from "react";
 import { FiX } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { MdDashboard,MdCoPresent } from "react-icons/md";
 import { GrUpdate } from "react-icons/gr";
 import { FaRegMoneyBillAlt } from "react-icons/fa";
@@ -21,36 +21,36 @@ export default function Sidebar({ toggleSidebar, isOpen }) {
       <div className="p-[55px]">
         <ul className="space-y-8">
           <li>
-            <Link to="/dashboard" className="hover:text-primary">
+            <NavLink to="/dashboard" className="hover:text-primary" end>
             <div className="flex items-center gap-3 hover:underline">
               <MdDashboard className="w-[20px] size-10"/>
               <p className='font-semibold text-[18px]'>Dashboard</p>
               </div>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/dashboard/attendance" className="hover:text-primary">
+            <NavLink to="/dashboard/attendance" className="hover:text-primary">
             <div className="flex items-center gap-3 hover:underline">
              <MdCoPresent className="w-[20px] size-10"/>
               <p className='font-semibold text-[18px]'>Attendance</p>
               </div>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/dashboard/announcements" className="hover:text-primary">
+            <NavLink to="/dashboard/announcements" className="hover:text-primary">
             <div className="flex items-center gap-3 hover:underline">
              <GrUpdate className="w-[20px] size-10"/>
               <p className='font-semibold text-[18px]'>Updates</p>
               </div>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/dashboard/salary" className="hover:text-primary">
+            <NavLink to="/dashboard/salary" className="hover:text-primary">
             <div className="flex items-center gap-3 hover:underline">
              <FaRegMoneyBillAlt className="w-[20px] size-10"/>
               <p className='font-semibold text-[18px]'>Salary</p>
               </div>
-            </Link>
+            </NavLink>
           </li>
         </ul>
       </div>

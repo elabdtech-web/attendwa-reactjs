@@ -42,7 +42,6 @@ export default function MultipleSelectCheckmarks({onChange}) {
         const q = query(collection(db, "users"), where("status", "==", "active"));
         const querySnapshot = await getDocs(q);
         const activeEmployees = querySnapshot.docs.map((doc) =>({...doc.data(),id:doc.id}) );
-        console.log(activeEmployees)
         setEmployees(activeEmployees);
     } catch (error) {
         toast.error("Error fetching employees: ", error);

@@ -3,6 +3,7 @@ import { db } from "../Firebase/FirebaseConfig";
 import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
 import {toast} from "react-toastify";
 import CustomInputField from "../Components/CustomInputField"
+import { useNavigate } from "react-router-dom";
 
 const EditAttendance = ({ attendanceId, closeEdit }) => {
   const [attendanceData, setAttendanceData] = useState(null);
@@ -11,6 +12,7 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
   const [checkOutTime, setCheckOutTime] = useState("");
   const [date, setDate] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAttendanceData = async () => {
@@ -101,11 +103,13 @@ const EditAttendance = ({ attendanceId, closeEdit }) => {
     };
     try {
       await updateDoc(docRef, updatedData);
-      window.location.reload();
+      // fetchAttendanceData();
+      toast.success("Document updated successfully!");
       closeEdit(); 
     
     } catch (error) {
       toast.error("Error updating document:", error);
+      console.log("Error updating document:", error);
     }
     setLoading(false);
   };

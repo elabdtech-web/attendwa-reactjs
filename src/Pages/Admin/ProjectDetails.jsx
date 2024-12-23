@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../../Firebase/FirebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../hooks/AuthContext";
 
 export default function ProjectDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const {userType} = useContext(AuthContext);
 
   const fetchProjectDetails = async () => {
     try {
@@ -33,7 +35,12 @@ export default function ProjectDetails() {
   }, [id]);
 
   const handleClose = () => {
+    if (userType === "admin"){
     navigate("/a-dashboard/a-projects");
+    }
+    if (userType === "employee"){
+      navigate("/dashboard");
+    }
   };
 
   return (

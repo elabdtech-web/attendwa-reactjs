@@ -73,7 +73,7 @@ export default function Dashboard() {
         collection(db, "checkIns"),
         where("userId", "==", allData.regId),
         where("date", ">=", startOfMonth),
-        where("date", "<=", endOfMonth),
+        where("date", "<=", endOfMonth)
       );
 
       const querySnapshot = await getDocs(q);
@@ -86,7 +86,7 @@ export default function Dashboard() {
       let absentDays = 0;
       let leaveDays = 0;
       let holidays = 0;
-      let workingDaysInMonth =30;
+      let workingDaysInMonth = 30;
 
       const allStatusDates = new Set();
 
@@ -126,9 +126,12 @@ export default function Dashboard() {
         if (status === "holiday") holidays++;
       });
 
-      const formattedTotalWorkingHours = `${String(totalHours).padStart(2, "0")}h : ${String(totalMinutes).padStart(2, "0")}m`;
+      const formattedTotalWorkingHours = `${String(totalHours).padStart(
+        2,
+        "0"
+      )}h : ${String(totalMinutes).padStart(2, "0")}m`;
       const percentageOfWorkingDays = Math.floor(
-        ((workingDaysInMonth-absentDays) / workingDaysInMonth) * 100
+        ((workingDaysInMonth - absentDays) / workingDaysInMonth) * 100
       );
       const percentageOfLeaveDays = Math.floor((leaveDays / 2) * 100);
       setAttendanceSummary({
@@ -233,7 +236,9 @@ export default function Dashboard() {
       setCheckInTime(resolvedCheckInTime);
       setTotalTime(null);
       setElapsedTime(0);
-      toast.success("Check-in Time :" + resolvedCheckInTime.toLocaleTimeString([], {
+      toast.success(
+        "Check-in Time :" +
+          resolvedCheckInTime.toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
             hour12: true,
@@ -342,117 +347,119 @@ export default function Dashboard() {
   return (
     <div className=" bg-white h-screen">
       <div className="flex bg-white xsm:px-5 px-3 sm:m-4 m-1 gap-3">
-        <div className="flex w-full justify-between max-xl:flex-col">
-          <div
-            className="shadow xl:w-[70%] min-xl:w-full 
-          p-6 max-xsm:p-1 "
-          >
-            <div className="font-sans font-medium text-gray-500 flex xsm:justify-end justify-start pb-3">
-              <div className="flex gap-1">
-                <p>
-                  {currentDateTime.toLocaleDateString("en-GB", {
-                    weekday: "long",
-                  })}
-                  ,
-                </p>
-                <p>
-                  {currentDateTime.toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </p>
-              </div>
-              <p className="pl-2">
-                {currentDateTime.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </p>
-            </div>
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="font-semibold text-xl mb-1">
-                  {allData.fullName ? allData.fullName : "Guest"}
-                </h1>
-                <h1 className="font-semibold text-primary text-sm">
-                  {getGreeting()}
-                </h1>
-                <h1 className="mt-1 text-gray-500">Have a nice day</h1>
-              </div>
-              <div className="flex flex-col items-center justify-center">
-                <img src="/imagesWelcome.jpg" alt="" className="w-[200px]" />
-              </div>
-            </div>
+        <div className="flex w-full justify-between max-lg:flex-col gap-5">
+          <div className="w-full">
+            <ProjectCard />
           </div>
-          <div className="shadow py-6 xl:w-[28%] max-xl:mt-10">
-            <div>
-              {isCheckedIn ? (
-                <div className="">
-                  <div className="flex max-sm:justify-center xl:justify-center max-xl:px-6 gap-10 text-gray-500">
-                    <p className="font-medium text-[14px]">Check In time</p>
-                    <p className="font-medium">
-                      {checkInTime?.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </p>
+
+          <div className="lg:w-[28%] max-lg:mt-10">
+            <div
+              className="shadow w-full 
+          px-1 max-xsm:p-1 mb-2 pb-3"
+            >
+              <div className="font-sans font-medium text-gray-500 pb-3 max-lg:flex gap-2 max-lg:px-6 xl:flex xl:justify-between">
+                <div className="flex gap-1 lg:text-[12px] xl:text-[13px]">
+                  <p>
+                    {currentDateTime.toLocaleDateString("en-GB", {
+                      weekday: "long",
+                    })}
+                    ,
+                  </p>
+                  <p>
+                    {currentDateTime.toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
+                <p className="lg:text-[12px] xl:text-[13px]">
+                  {currentDateTime.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </p>
+              </div>
+              <div className="lg:text-center max-lg:px-20 max-sm:px-0 max-sm:text-center">
+                <div>
+                  <h1 className="font-semibold text-xl mb-1">
+                    {allData.fullName ? allData.fullName : "Guest"}
+                  </h1>
+                  <h1 className="font-semibold text-primary text-sm">
+                    {getGreeting()}
+                  </h1>
+                </div>
+              </div>
+            </div>
+            <div className="py-3 shadow">
+              <div>
+                {isCheckedIn ? (
+                  <div className="">
+                    <div className="lg:text-center lg:px-1 text-gray-500 pb-2 max-lg:flex gap-5 sm:px-14 max-sm:justify-center">
+                      <p className="font-medium text-[14px]">Check In time</p>
+                      <p className="text-[14px] font-medium">
+                        {checkInTime?.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+                      </p>
+                    </div>
+                    {/* <div className="text-center text-gray-500  ">
+                      <p className="font-medium text-[14px] ">
+                        Check Out time
+                      </p>
+                      <p className="font-medium ">-- : -- : --</p>
+                    </div> */}
+                    <div className="xl:text-center max-lg:px-6 max-sm:text-center px-2">
+                      {loading ? (
+                        <div className="ml-2 text-[14px]">
+                          <span>Loading...</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={openCheckOutDialog}
+                          className="font-medium text-[14px] bg-primary lg:w-full max-lg:px-20 py-2 rounded-lg text-white"
+                        >
+                          Check Out
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex max-sm:justify-center xl:justify-center max-xl:px-6 gap-7 text-gray-500">
+                ) : totalTime ? (
+                  <div className="text-center p-6 pt-6 w-full">
+                    <p className="font-medium text-base text-primary">
+                      Your Total Working Hours are :
+                    </p>
+                    <h2 className="text-lg font-semibold pt-3">{totalTime}</h2>
+                  </div>
+                ) : (
+                  <div className="xl:text-center max-lg:px-6 max-sm:text-center">
                     <p className="font-medium text-[14px] pb-4 ">
-                      Check Out time
+                      You are not checked in today yet.
                     </p>
-                    <p className="font-medium pb-4">-- : -- : --</p>
-                  </div>
-                  <div className="xl:text-center max-xl:px-6 max-sm:text-center">
                     {loading ? (
                       <div className="ml-2 text-[14px]">
                         <span>Loading...</span>
                       </div>
                     ) : (
                       <button
-                        onClick={openCheckOutDialog}
-                        className="font-medium text-[14px] bg-primary px-20 py-2 rounded-lg text-white"
+                        onClick={openCheckInDialog}
+                        className="font-medium text-[14px] bg-primary lg:w-full max-lg:px-20 py-2 rounded-lg text-white"
                       >
-                        Check Out
+                        Check In
                       </button>
                     )}
                   </div>
-                </div>
-              ) : totalTime ? (
-                <div className="text-center p-6 pt-6 w-full">
-                  <p className="font-medium text-base text-primary">
-                    Your Total Working Hours are :
-                  </p>
-                  <h2 className="text-lg font-semibold pt-3">{totalTime}</h2>
-                </div>
-              ) : (
-                <div className="xl:text-center max-xl:px-6 max-sm:text-center">
-                  <p className="font-medium text-[14px] pb-4 ">
-                    You are not checked in today yet.
-                  </p>
-                  {loading ? (
-                    <div className="ml-2 text-[14px]">
-                      <span>Loading...</span>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={openCheckInDialog}
-                      className="font-medium text-[14px] bg-primary px-20 py-2 rounded-lg text-white"
-                    >
-                      Check In
-                    </button>
-                  )}
+                )}
+              </div>
+              {totalTime === null && (
+                <div className="lg2:text-xl md:text-md font-semibold lg:text-center pt-3 max-lg:px-20 max-sm:text-center lg:pl-2">
+                  {formatElapsedTime(elapsedTime)}
                 </div>
               )}
             </div>
-            {totalTime === null && (
-              <div className="text-xl font-semibold xl:text-center pt-3 max-xl:px-12 max-sm:text-center">
-                {formatElapsedTime(elapsedTime)}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -565,8 +572,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-
-      <ProjectCard/>
 
       {/* ------> Dialog Boxes <------- */}
 

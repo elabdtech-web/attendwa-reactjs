@@ -33,26 +33,26 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/forgetPasswordPage" element={<ForgetPasswordPage/>}/>
+        <Route path="/forgetPasswordPage" element={<ForgetPasswordPage />} />
         <Route path="/a-dashboard" element={<AdminLayout />}>
           <Route index element={<DashboardAdmin />} />
           <Route path="tasks" element={<Tasks />} />
-          <Route path="a-projects" element={<ProjectsAdmin/>}>
+          <Route path="a-projects" element={<ProjectsAdmin />}>
             <Route path="projectForm" element={<ProjectForm />} />
             <Route path=":id" element={<ProjectDetails />} />
             <Route path=":id/edit" element={<EditProject />} />
           </Route>
           <Route path="employees" element={<Employees />}>
             <Route path="FormPage" element={<FormPage />} />
-            <Route path=":id" element={<EmployeeDetails />}/>
-            <Route path=":id/edit" element={<EditPage />} /> 
-            <Route path=":id/salary" element={<SalaryCalculation/>} />
+            <Route path=":id" element={<EmployeeDetails />} />
+            <Route path=":id/edit" element={<EditPage />} />
+            <Route path=":id/salary" element={<SalaryCalculation />} />
           </Route>
           <Route path="a-salary" element={<SalaryAdmin />} />
-          <Route path="announcements" element={<Announcements/>} >
-            <Route path="addNewAnnouncement" element={<AddNewAnnouncement/>}/>
+          <Route path="announcements" element={<Announcements />}>
+            <Route path="addNewAnnouncement" element={<AddNewAnnouncement />} />
             <Route path=":id" element={<AnnouncementDetails />} />
-            </Route>
+          </Route>
         </Route>
 
         <Route path="/dashboard" element={<EmployeeLayout />}>
@@ -60,11 +60,12 @@ export default function App() {
           <Route path="attendance" element={<Attendance />} />
           <Route path="salary" element={<Salary />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="changePassword" element={<ChangePassword/>}/>
-          <Route path="announcements" element={<Announcements/>} >
-            <Route path="addNewAnnouncement" element={<AddNewAnnouncement/>}/>
+          <Route path="changePassword" element={<ChangePassword />} />
+          <Route path="announcements" element={<Announcements />}>
+            <Route path="addNewAnnouncement" element={<AddNewAnnouncement />} />
             <Route path=":id" element={<AnnouncementDetails />} />
-            </Route>
+          </Route>
+          <Route path=":id" element={<ProjectDetails/>} />
         </Route>
       </Routes>
     </div>
