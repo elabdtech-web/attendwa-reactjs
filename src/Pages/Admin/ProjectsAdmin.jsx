@@ -19,6 +19,7 @@ export default function ProjectsAdmin() {
   const [loading, setLoading] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [projectId, setProjectId] = useState("");
+  const [users, setUsers] = useState({});
   const handleClick = () => {
     navigate("/a-dashboard/a-projects/projectForm");
   };
@@ -30,13 +31,25 @@ export default function ProjectsAdmin() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
+      // Fetch all projects
       const projectCollection = collection(db, "projects");
       const projectSnapshot = await getDocs(projectCollection);
       const projectList = projectSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
+
+      // Fetch all users
+      const userCollection = collection(db, "users");
+      const userSnapshot = await getDocs(userCollection);
+      const userList = userSnapshot.docs.reduce((acc, doc) => {
+        const userData = doc.data();
+        acc[userData.regId] = userData.fullName; // Assuming 'employeeId' and 'name' fields exist
+        return acc;
+      }, {});
+
       setProjects(projectList);
+      setUsers(userList);
       setLoading(false);
     } catch (error) {
       toast.error("Error fetching projects");
@@ -131,7 +144,9 @@ export default function ProjectsAdmin() {
                               {project.projectTitle}
                             </td>
                             <td className="border text-center py-2">
-                              {project.members.join(", ")}
+                              {project.members
+                                .map((regId) => users[regId] || "Emp Name")
+                                .join(", ")}
                             </td>
                             <td className="border text-center py-2">
                               <select
