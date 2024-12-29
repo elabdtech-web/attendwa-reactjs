@@ -56,7 +56,7 @@ export default function ProjectCard() {
           <tbody>
             {projects.length > 0 ? (
               projects.map((project) => (
-                <tr key={project.id} onClick={() => {handleProjectClick(project.id)}} className="cursor-pointer hover:bg-primary max-sm:text-[10px]">
+                <tr key={project.id} onClick={() => {handleProjectClick(project.id)}} className="cursor-pointer hover:text-primary max-sm:text-[10px]">
                   <td className="border text-center py-2">{project.projectTitle}</td>
                   <td className="border text-center py-2">{project.startDate}</td>
                   <td className="border text-center py-2"><ProjectProgressBar from={project.startDate} to={project.deadline}/></td>
