@@ -32,17 +32,16 @@ export default function HeaderDashboard({
     }
   };
 
-  useEffect(()=> {
+  useEffect(() => {
     if (isDropdownOpen) {
       document.addEventListener("click", closeDropdown);
-    }
-    else {
+    } else {
       document.removeEventListener("click", closeDropdown);
     }
     return () => {
       document.removeEventListener("click", closeDropdown);
-    }
-  },[isDropdownOpen])
+    };
+  }, [isDropdownOpen]);
   const handleLogout = () => {
     signOut(auth);
     localStorage.removeItem("accesstoken");
@@ -53,7 +52,7 @@ export default function HeaderDashboard({
     toast.success("Logout Successfully");
   };
   return (
-    <div className="p-4 flex justify-end items-end w-full h-[80px]">
+    <div className="p-4 flex justify-end items-center w-full h-[80px] shadow">
       {!isSidebarOpen && (
         <div className="flex justify-start xsm:ml-5 w-[50%]">
           <button onClick={toggleSidebar} className="text-2xl xsm:mr-4">
@@ -74,7 +73,10 @@ export default function HeaderDashboard({
         </button>
 
         {isDropdownOpen && (
-          <div ref={dropdownRef} className="absolute right-0 mt-10 mr-5 w-60 bg-white border rounded shadow-lg p-5 z-50">
+          <div
+            ref={dropdownRef}
+            className="absolute right-0 mt-10 mr-5 w-60 bg-white border rounded shadow-lg p-5 z-50"
+          >
             <div className="text-left mb-2 px-1">
               <p className="font-semibold">{fullName}</p>
               <p className="text-sm text-gray-600">{email}</p>
